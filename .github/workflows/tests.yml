@@ -31,7 +31,8 @@ jobs:
 
       - name: Install GaussSuppression and SSBtools
         run: |
-          echo '#install.packages(c("GaussSuppression", "SSBtools"))' >> install.R
+          echo 'tryCatch(install.packages(c("GaussSuppression", "SSBtools"), repos="http://cran.us.r-project.org"),
+                         error = function(e) print(e))' > install.R
           R CMD BATCH install.R
           cat install.Rout
 
