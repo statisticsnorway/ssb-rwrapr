@@ -22,16 +22,15 @@ jobs:
           pipx install poetry
           poetry --version
 
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+
       - name: Install dplyr
         run: |
           sudo apt-get install r-cran-dplyr 
           # I could encorporate this to the code
                                             # below, but this is way faster, 
                                             # since packages on apt are precompiled
-
-      - name: Install GaussSuppression and SSBtools
-      - name: Set up R
-        uses: r-lib/actions/setup-r@v2
 
       - name: Install R packages
         run: |
