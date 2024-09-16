@@ -1,0 +1,50 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Shallow clones disabled for a better SonarCloud analysis
+
+      - name: Install Poetry
+        run: |
+          pipx install poetry
+          poetry --version
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: "poetry"
+
+      - name: Install dependencies
+        run: poetry install --no-root
+
+      - name: Run tests
+        run: poetry run pytest -v --cov --cov-report=term-missing --cov-report=xml
+
+      # Need to fix coverage source paths for SonarCloud scanning in GitHub actions.
+      # Replace root path with /github/workspace (mounted in docker container).
+      - name: Override coverage source paths for SonarCloud
+        run: |
+          sed -i "s/<source><\/source>/<source>\/github\/workspace<\/source>/g" coverage.xml
+          sed -i "s/<source>tests/<source>\/github\/workspace\/tests/g" coverage.xml
+
+      - name: SonarCloud Scan
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        # No need to run SonarCloud analysis if dependabot update or token not defined
+        if: env.SONAR_TOKEN != '' && (github.actor != 'dependabot[bot]')
+        uses: SonarSource/sonarcloud-github-action@v2.1.1
