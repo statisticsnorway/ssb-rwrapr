@@ -12,13 +12,14 @@ from rpy2.robjects import FloatVector, pandas2ri, numpy2ri
 
 from .rutils import rcall
 
-type RBaseObject = (
-        ro.FloatVector | ro.FloatVector | ro.IntVector | 
-        ro.ListVector | ro.Array | ro.FactorVector |
-        ro.Matrix | ro.BoolVector | ro.StrVector
-    )
-
-type PyDtype = (int | bool | str | float)
+# We can uncomment this when we transition to 3.12
+# type RBaseObject = (
+#         ro.FloatVector | ro.FloatVector | ro.IntVector | 
+#         ro.ListVector | ro.Array | ro.FactorVector |
+#         ro.Matrix | ro.BoolVector | ro.StrVector
+#     )
+# 
+# type PyDtype = (int | bool | str | float)
 
 
 # functions for converting from py 2 R -----------------------------------------
@@ -29,7 +30,7 @@ def convert_py2r(args: List[Any], kwargs: Dict[str, Any]) -> None:
         kwargs[k] = convert_pyobject2r(v)
 
 
-def convert_pyobject2r(x: Any) -> RBaseObject | PyDtype | Any:
+def convert_pyobject2r(x: Any) -> Any: # RBaseObject | PyDtype | Any:
     match x:
         case np.ndarray():
             out = convert_numpy2r(x)
@@ -57,7 +58,7 @@ def convert_pyobject2r(x: Any) -> RBaseObject | PyDtype | Any:
 
 
 
-def convert_numpy2r(x: NDArray) -> RBaseObject:
+def convert_numpy2r(x: NDArray) -> Any: # RBaseObject:
     if not x.shape:
         x = x[np.newaxis]
     match len(x.shape):
@@ -71,7 +72,7 @@ def convert_numpy2r(x: NDArray) -> RBaseObject:
             return convert_numpyND(x)
 
        
-def convert_numpy1D(x: NDArray) -> RBaseObject:
+def convert_numpy1D(x: NDArray) -> Any: # RBaseObject:
     match x.dtype.kind:
         case "b":
             return ro.BoolVector(x)
@@ -94,7 +95,7 @@ def convert_numpy1D(x: NDArray) -> RBaseObject:
 
 
 
-def convert_numpy2D(x: NDArray) -> RBaseObject:
+def convert_numpy2D(x: NDArray) -> Any: # RBaseObject:
     flat_x: NDArray = x.flatten()
     nrow, ncol = x.shape
     y = convert_numpy1D(flat_x)
@@ -102,7 +103,7 @@ def convert_numpy2D(x: NDArray) -> RBaseObject:
     return f(y, nrow=nrow, ncol=ncol)
 
 
-def convert_numpyND(x: NDArray) -> RBaseObject:
+def convert_numpyND(x: NDArray) -> Any: # RBaseObject:
     flat_x: NDArray = x.flatten()
     dim: Tuple = x.shape
     y = convert_numpy1D(flat_x)
@@ -130,6 +131,6 @@ def convert_pysparsematrix(x: scipy.sparse.coo_array | scipy.sparse.coo_matrix):
         return x
 
 
-def pandas2r(x: pd.DataFrame) -> RBaseObject:
+def pandas2r(x: pd.DataFrame) -> Any: # RBaseObject:
     return ro.DataFrame({k: convert_pyobject2r(x[k].to_numpy()) for k in x})
 

@@ -31,6 +31,8 @@ def lazy_wrap(args: List[Any], kwargs: Dict[str, Any],
         return func
     if func_name is None or func_name == "":
         raise ValueError("Lazy expressions not supported for unnamed functions")
-    return rcall(f"function(...) {func_name}(..., {",".join(lazy_arg_exprs)})")
-
-
+    # this seemingly doesnt work in py3.10, parser bug? works when replacing 
+    # "," with ','. Python wants to parse the string as 
+    # "f"function(...) {func_name}(..., {" ? 
+    # return rcall(f"function(...) {func_name}(..., {",".join(lazy_arg_exprs)})") 
+    return rcall(f"function(...) {func_name}(..., {','.join(lazy_arg_exprs)})")
