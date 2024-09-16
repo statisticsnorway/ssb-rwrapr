@@ -21,7 +21,6 @@ jobs:
         run: |
           pipx install poetry
           poetry --version
-          sudo apt-get install r-cran-dplyr
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v5
@@ -29,8 +28,18 @@ jobs:
           python-version: "3.10"
           cache: "poetry"
 
-      - name: Install dependencies
+      - name: Install Python dependencies
         run: poetry install --no-root
+
+        
+      - name: Install R dependencies
+        run: |
+          sudo apt-get install r-cran-dplyr # I could encorporate this to the code
+                                            # below, but this is way faster, 
+                                            # since packages on apt are precompiled
+          echo 'install.packages(c("GaussSuppression", "SSBtools"))' >> install.R
+          R CMD BATCH install.R
+          cat install.Rout
 
       - name: Run tests
         run: poetry run pytest -v --cov --cov-report=term-missing --cov-report=xml
