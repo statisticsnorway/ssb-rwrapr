@@ -36,7 +36,7 @@ jobs:
                         repos="http://cran.us.r-project.org", 
                         lib="~/R/library"),
                         error = function(e) print(e))' > install.R
-          R CMD BATCH install.R
+          sudo R CMD BATCH install.R
           cat install.Rout
         env:
           R_LIBS_USER: ~/R/library
