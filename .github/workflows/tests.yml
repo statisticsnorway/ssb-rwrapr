@@ -30,16 +30,12 @@ jobs:
                                             # since packages on apt are precompiled
 
       - name: Install GaussSuppression and SSBtools
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+
+      - name: Install R packages
         run: |
-          mkdir -p ~/.R/library
-          echo 'tryCatch(install.packages(c("GaussSuppression", "SSBtools"), 
-                        repos="http://cran.us.r-project.org", 
-                        lib="~/R/library"),
-                        error = function(e) print(e))' > install.R
-          sudo R CMD BATCH install.R
-          cat install.Rout
-        env:
-          R_LIBS_USER: ~/R/library
+          Rscript -e 'install.packages(c("GaussSuppression", "SSBtools"), repos="http://cran.us.r-project.org")'
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v5
