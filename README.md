@@ -51,4 +51,6 @@ df = dplyr.mutate(iris, Sepal = wr.lazily("round(Sepal.Length * 2, 0)"))
             - it is just a list with a dict[label: str, index: int]
             - boolean indexing?
         - wrapper for R-objects using a intuitive Python-Api, with an option
-            to return as python object!
+            to return as python object?
+    6. Configure github workflow:
+        - Find a way to install GaussSuppression, and SSBtools
