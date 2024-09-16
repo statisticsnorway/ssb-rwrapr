@@ -31,7 +31,7 @@ jobs:
 
       - name: Install GaussSuppression and SSBtools
         run: |
-          echo 'install.packages(c("GaussSuppression", "SSBtools"))' >> install.R
+          echo '#install.packages(c("GaussSuppression", "SSBtools"))' >> install.R
           R CMD BATCH install.R
           cat install.Rout
 
