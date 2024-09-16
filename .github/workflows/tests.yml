@@ -31,10 +31,15 @@ jobs:
 
       - name: Install GaussSuppression and SSBtools
         run: |
-          echo 'tryCatch(install.packages(c("GaussSuppression", "SSBtools"), repos="http://cran.us.r-project.org"),
-                         error = function(e) print(e))' > install.R
+          mkdir -p ~/.R/library
+          echo 'tryCatch(install.packages(c("GaussSuppression", "SSBtools"), 
+                        repos="http://cran.us.r-project.org", 
+                        lib="~/R/library"),
+                        error = function(e) print(e))' > install.R
           R CMD BATCH install.R
           cat install.Rout
+        env:
+          R_LIBS_USER: ~/R/library
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v5
