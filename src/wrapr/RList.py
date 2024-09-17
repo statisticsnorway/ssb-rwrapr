@@ -29,7 +29,7 @@ class RList(np.ndarray):
         # return with_attributes(R-dataframe, **R-Attributes) 
 
 def convert_list(X: List | Tuple) -> Any:
-    from convert_r2py import convert_r2py
+    from .convert_r2py import convert_r2py
     out = [convert_r2py(x) for x in X]
     if isinstance(X, tuple):
         out = tuple(out)
@@ -37,7 +37,7 @@ def convert_list(X: List | Tuple) -> Any:
        
 
 def convert_rlist2py(X: vc.ListVector | vc.ListSexpVector) -> Any:
-    from RArray import convert_numpy
+    from .RArray import convert_numpy
     names = convert_numpy(X.names)
     if names is not None and len(names):
         return convert_dict({n: x for n, x in zip(names, X)})
@@ -55,7 +55,7 @@ def is_rlist(X: Any) -> bool:
 
 def convert_dict(X: Dict | OrderedDict,
                  is_RDict: bool = False) -> Any:
-    from convert_r2py import convert_r2py
+    from .convert_r2py import convert_r2py
     try:
         # this needs to be improved considering named vectors
         if is_RDict and np.all(np.array(X.keys()) == None):

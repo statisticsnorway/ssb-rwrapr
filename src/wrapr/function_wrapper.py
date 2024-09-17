@@ -5,12 +5,12 @@ from numpy.typing import NDArray
 from typing import Any, Callable, Dict, List
 from .convert_py2r import convert_py2r
 from .convert_r2py import convert_r2py
-from .RObject import RObject
 from .rutils import rcall
 from .lazy_rexpr import lazy_wrap
 from .settings import Settings, settings
 
 def wrap_rfunc(func: Callable | Any, name: str | None) -> Callable | Any:
+    from .RObject import RObject
     # should be a Callable, but may f-up (thus Any)
     if not callable(func):
         return None
