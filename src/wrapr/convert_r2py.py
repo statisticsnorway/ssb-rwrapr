@@ -15,6 +15,35 @@ from .nputils import np_collapse
 from .lazy_rexpr import lazily, lazy_wrap
 from .rutils import rcall
 
+from .RDataFrame import convert_pandas, attempt_pandas_conversion
+from .RArray import convert_numpy, is_valid_numpy, filter_numpy
+
+
+class Robject():
+    def __init__(self, Robj: Any):
+        self.Robj = Robj
+
+    def __str__(self) -> str:
+        # return captureRprint(self.Robj) 
+        return self.Robj.__str__()
+
+    def __repr__(self):
+        # return self.Robj.__repr__()
+        return self.Robj.__str__()
+
+    def __getattr__(self, name: str) -> Any:
+        fun: Callable = rfunc(name)
+        return fun(self.Robj)
+
+    def __getitem__(self, *args):
+        return self.Robj.__getitem__(*args)
+
+    def __iter__(self):
+        return self.Robj.__iter__()
+
+    def to_py(self):
+        return convert_r2py(self.Robj)
+
 
 def convert_r2py(x: Any) -> Any:
     match x:
@@ -22,8 +51,6 @@ def convert_r2py(x: Any) -> Any:
             return x
         case rpy2.rinterface_lib.sexp.NULLType():
             return None
-        case ro.methods.RS4():
-            return convert_s4(x)
         case vc.DataFrame():
             return convert_pandas(x)
         case vc.Vector() | vc.Matrix() | vc.Array() if not is_rlist(x):
@@ -45,7 +72,7 @@ def convert_r2py(x: Any) -> Any:
         case vc.ListSexpVector() | vc.ListVector():
             return convert_rlist2py(x)
         case _:
-            return generic_conversion(x)
+            return Robject(x)
         
 
 def convert_list(X: List | Tuple) -> Any:
@@ -85,83 +112,3 @@ def convert_dict(X: Dict | OrderedDict,
             X[key] = convert_r2py(X[key])
     finally:
         return X
-
-
-def convert_numpy(x: vc.Vector | NDArray) -> NDArray | None:
-    if isinstance(x, rpy2.rinterface_lib.sexp.NULLType):
-        return None
-    match x: # this should be expanded upon
-        case vc.BoolVector() | vc.BoolArray() | vc.BoolMatrix():
-            dtype = "bool"
-        case vc.FloatVector() | vc.FloatArray() | vc.FloatMatrix():
-            dtype = "float"
-        case vc.IntVector() | vc.IntArray() | vc.IntMatrix():
-            dtype = "int"
-        case vc.StrArray() | vc.StrVector() | vc.StrMatrix():
-            dtype = "U"
-        case _:
-            dtype = None
-
-    y = np.asarray(x, dtype=dtype)
-    return filter_numpy(y)
-
-
-def filter_numpy(x: NDArray) -> NDArray | int | str | float | bool:
-    # sometimes a numpy array will have one element with shape (,)
-    # this should be (1,)
-    y = x[np.newaxis][0] if not x.shape else x
-    # if shape is (1,) we should just return as int | str | float | bool
-    # R doesn't have these types, only vectors/arrays, this will probably
-    # give unexpected results for users who are unfamiliar with R, so
-    # we return the first element instead
-    y = y[0] if y.shape == (1,) else y
-    return y
-
-
-def is_valid_numpy(x: NDArray) -> bool:
-    return x.dtype.fields is None
-
-
-def convert_pandas(df: vc.DataFrame) -> pd.DataFrame:
-    colnames = df.names
-    df_dict = {c: convert_numpy(x) for c, x in zip(colnames, list(df))}
-    return pd.DataFrame(df_dict) 
-
-    with (ro.default_converter + pandas2ri.converter).context():
-        pd_df = ro.conversion.get_conversion().rpy2py(df)
-    return pd_df
-
-
-def attempt_pandas_conversion(x: Any) -> Any:
-    try: 
-        return pd.DataFrame(x)
-    except:
-        return x
-
-
-def generic_conversion(x: Any) -> Any:
-    try:
-        arr = np.asarray(x)
-        if not is_valid_numpy(arr):
-            raise Error
-        return arr
-    except: 
-        return attempt_pandas_conversion(x)
-
-
-def convert_s4(x: ro.methods.RS4) -> Any:
-    rclass = get_rclass(x)
-    if rclass is None:
-        return generic_conversion(x)
-
-    match np_collapse(rclass):
-        case "dgCMatrix": # to do: put this in a seperate function
-            dense = convert_numpy(as_matrix(x))
-            sparse = scipy.sparse.coo_matrix(dense)
-            return sparse
-        case _:
-            return generic_conversion(x)
-
-
-
-

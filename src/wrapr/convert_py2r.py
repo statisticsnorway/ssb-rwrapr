@@ -11,7 +11,7 @@ from typing import Any, Callable, Dict, List, Set, Tuple
 from rpy2.robjects import FloatVector, pandas2ri, numpy2ri
 
 from .rutils import rcall
-
+from .convert_r2py import Robject
 # We can uncomment this when we transition to 3.12
 # type RBaseObject = (
 #         ro.FloatVector | ro.FloatVector | ro.IntVector | 
@@ -32,30 +32,30 @@ def convert_py2r(args: List[Any], kwargs: Dict[str, Any]) -> None:
 
 def convert_pyobject2r(x: Any) -> Any: # RBaseObject | PyDtype | Any:
     match x:
+        case Robject():
+            return x.Robj
         case np.ndarray():
-            out = convert_numpy2r(x)
+            return convert_numpy2r(x)
         case scipy.sparse.coo_array() | scipy.sparse.coo_matrix():
-            out = convert_pysparsematrix(x)
+            return convert_pysparsematrix(x)
         case OrderedDict() | dict():
-            out = dict2rlist(x)
+            return dict2rlist(x)
         case list() | tuple() | set():
-            out = pylist2rlist(x)
+            return pylist2rlist(x)
         case pd.DataFrame():
-            out = pandas2r(x)
+            return pandas2r(x)
         case NoneType():
-            out = ro.NULL
+            return ro.NULL
         case np.bool_():
-            out = bool(x)
+            return bool(x)
         case np.int8() | np.int16() | np.int32() | np.int64():
-            out = int(x)
-        case np.float16() | np.float32() | np.float64() | np.float128():
-            out = float(x)
+            return int(x)
+        case np.float16() | np.float32() | np.float64():
+            return float(x)
         case np.str_() | np.bytes_():
-            out = str(x)
+            return str(x)
         case _:
-            out = x
-    return out
-
+            return x
 
 
 def convert_numpy2r(x: NDArray) -> Any: # RBaseObject:
@@ -117,7 +117,8 @@ def dict2rlist(x: Dict | OrderedDict) -> ro.ListVector:
 
 def pylist2rlist(x: List | Tuple | Set) -> ro.ListVector:
     y: Dict[str, Any] = {str(k): v for k, v in enumerate(x)}
-    return ro.ListVector(dict2rlist(y))
+    unname: Callable = rcall("unname")
+    return unname(dict2rlist(y))
 
 
 def convert_pysparsematrix(x: scipy.sparse.coo_array | scipy.sparse.coo_matrix):

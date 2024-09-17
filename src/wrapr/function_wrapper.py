@@ -4,44 +4,10 @@ import numpy as np
 from numpy.typing import NDArray
 from typing import Any, Callable, Dict, List
 from .convert_py2r import convert_py2r
-from .convert_r2py import convert_r2py
+from .convert_r2py import convert_r2py, Robject
 from .rutils import rcall
 from .lazy_rexpr import lazy_wrap
-from .robject import Robject
-
-# def robjectwrap(py_object: Any, r_object: Any = None) -> Any:
-#     if py_object is None:
-#         return None
-# 
-#     class RobjectWrapper(type(py_object)):
-#         @classmethod
-#         def from_existing(cls, existing_instance, new_r_object):
-#             # Create a new instance of RobjectWrapper
-#             new_instance = cls(existing_instance._obj, new_r_object)
-#             return new_instance
-# 
-#         def __strip__(self):
-#             return self._obj
-# 
-#     # Wrap the initial py_object
-#     wrapped_object = RobjectWrapper(py_object, r_object)
-#     
-#     return wrapped_object
-# 
-# 
-# def strip_RobjectWrapper(x: Any) -> Any:
-#     if hasattr(x, "__strip__"):
-#         return x.__strip__()
-#     else:
-#         return x
-
-
-# def strip_args(args: List[Any], kwargs: Dict[str, Any]) -> None:
-#     for i, x in enumerate(args):
-#         args[i] = strip_RobjectWrapper(x)
-#     for k, v in kwargs.items():
-#         kwargs[k] = strip_RobjectWrapper(v)
-
+from .settings import Settings, settings
 
 def wrap_rfunc(func: Callable | Any, name: str | None) -> Callable | Any:
     # should be a Callable, but may f-up (thus Any)
@@ -55,9 +21,12 @@ def wrap_rfunc(func: Callable | Any, name: str | None) -> Callable | Any:
         lazyfunc = lazy_wrap(args=args, kwargs=kwargs, func=func,
                              func_name=name)
         r_object: Any = lazyfunc(*args, **kwargs)
-        py_object = convert_r2py(r_object)
-        # return robjectwrap(py_object, r_object)
-        return py_object
+
+        if settings.Rview:
+            return Robject(r_object)  
+        else:
+            return convert_r2py(r_object)
+
 
     try:
         wrap.__doc__ = func.__doc__
