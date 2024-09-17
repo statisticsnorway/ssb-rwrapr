@@ -12,7 +12,7 @@ from .RArray import convert_numpy
 class RDataFrame(pd.DataFrame):
     def __init__(self, Rdata):
         super().__init__(convert_pandas(Rdata))
-        self.Rattributes = get_attributes_dataframe()
+        self.attrs["__Rattributes__"] = get_attributes_dataframe()
     
     # def toR(self):
         # -> R-dataframe

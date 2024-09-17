@@ -20,7 +20,7 @@ def convert_r2py(x: Any) -> Any:
     from .RObject import RObject
     from .RArray  import convert_numpy, is_valid_numpy, filter_numpy
     from .RDataFrame import convert_pandas, attempt_pandas_conversion, RDataFrame
-    from .RList import convert_list, convert_dict, convert_rlist2py
+    from .RList import convert_list, convert_dict, convert_rlist2py, is_rlist
 
     match x:
         case str() | int() | bool() | float():
