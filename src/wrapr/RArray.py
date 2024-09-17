@@ -4,6 +4,16 @@ import rpy2.robjects.vectors as vc
 
 from numpy.typing import NDArray
 
+class RArray(np.ndarray):
+    def __init__(self, Rdata):
+        super().__init__(convert_numpy(Rdata))
+        self.Rattributes = None
+    
+    # def toR(self):
+        # -> R-dataframe
+        # -> R-Attributes -> convert to R
+        # with_attributes: Callable = rcall("structure")
+        # return with_attributes(R-dataframe, **R-Attributes) 
 
 def convert_numpy(x: vc.Vector | NDArray) -> NDArray | None:
     if isinstance(x, rpy2.rinterface_lib.sexp.NULLType):
