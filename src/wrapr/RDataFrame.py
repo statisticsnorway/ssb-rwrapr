@@ -4,7 +4,27 @@ import rpy2.robjects as ro
 import rpy2.robjects.vectors as vc
 
 from typing import Any
+
+from wrapr.rutils import rcall
 from .RArray import convert_numpy
+
+
+class RDataFrame(pd.DataFrame):
+    def __init__(self, Rdata):
+        super().__init__(convert_pandas(Rdata))
+        self.Rattributes = get_attributes_dataframe()
+    
+    # def toR(self):
+        # -> R-dataframe
+        # -> R-Attributes -> convert to R
+        # with_attributes: Callable = rcall("structure")
+        # return with_attributes(R-dataframe, **R-Attributes) 
+
+
+def get_attributes_dataframe():
+    # Rlist[...] -> f() -> Dict[WrappedObjects]
+    return {"some attribute": "hello there"}
+
 
 def convert_pandas(df: vc.DataFrame) -> pd.DataFrame:
     colnames = df.names

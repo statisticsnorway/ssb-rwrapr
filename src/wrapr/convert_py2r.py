@@ -11,7 +11,6 @@ from typing import Any, Callable, Dict, List, Set, Tuple
 from rpy2.robjects import FloatVector, pandas2ri, numpy2ri
 
 from .rutils import rcall
-from .convert_r2py import Robject
 # We can uncomment this when we transition to 3.12
 # type RBaseObject = (
 #         ro.FloatVector | ro.FloatVector | ro.IntVector | 
@@ -31,8 +30,9 @@ def convert_py2r(args: List[Any], kwargs: Dict[str, Any]) -> None:
 
 
 def convert_pyobject2r(x: Any) -> Any: # RBaseObject | PyDtype | Any:
+    from .RObject import RObject
     match x:
-        case Robject():
+        case RObject():
             return x.Robj
         case np.ndarray():
             return convert_numpy2r(x)
