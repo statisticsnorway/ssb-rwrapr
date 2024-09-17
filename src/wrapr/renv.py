@@ -16,6 +16,9 @@ from .load_namespace import load_base_envs, try_load_namespace
 from .utils import ROutputCapture, pinfo
 from .function_wrapper import rfunc, wrap_rfunc # wrap_rfunc should perhaps be its own module
 from .rutils import rcall
+from .convert_r2py import convert_r2py, Robject
+from .settings import Settings, settings
+
 
 class Renv:
     def __init__(self, env_name):
@@ -95,14 +98,19 @@ class Renv:
     #         return attributes
 
 
-def fetch_data(dataset: str, module: rpkg.Package) -> pd.DataFrame | None:
-    with (ro.default_converter + pandas2ri.converter).context():
-        try:
-            return rpkg.data(module).fetch(dataset)[dataset]
-        except KeyError:
-            return None
-        except:
-            return None
+def fetch_data(dataset: str, module: rpkg.Package) -> pd.DataFrame | Robject | None:
+    try:
+        r_object = rpkg.data(module).fetch(dataset)[dataset]
+
+        if settings.Rview:
+            return Robject(r_object)
+        else:
+            return convert_r2py(r_object)
+
+    except KeyError:
+        return None
+    except:
+        return None
 
         
 def get_assets(env_name: str, module: rpkg.Package) -> Tuple[Set[str], Set[str]]:
