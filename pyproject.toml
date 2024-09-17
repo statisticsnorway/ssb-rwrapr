@@ -5,7 +5,7 @@ description = "Python package for using R in Python"
 authors = ["ssb-pph <pph@ssb.no>"]
 license = "MIT"
 readme = "README.md"
-package-mode = false
+package-mode = true
 
 [tool.poetry.dependencies]
 python = ">=3.10"
