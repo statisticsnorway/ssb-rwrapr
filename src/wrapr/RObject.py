@@ -1,9 +1,7 @@
-from typing import Any
+from typing import Any, Callable
 from .rutils import rcall
 
 class RObject():
-    from .convert_r2py import convert_r2py
-    from .function_wrapper import rfunc
 
     def __init__(self, Robj: Any):
         self.Robj = Robj
@@ -17,6 +15,7 @@ class RObject():
         return self.Robj.__str__()
 
     def __getattr__(self, name: str) -> Any:
+        from .function_wrapper import rfunc
         fun: Callable = rfunc(name)
         return fun(self.Robj)
 
@@ -27,6 +26,7 @@ class RObject():
         return self.Robj.__iter__()
 
     def to_py(self):
+        from .convert_r2py import convert_r2py
         return convert_r2py(self.Robj)
 
     def toR(self):
