@@ -38,7 +38,7 @@ def convert_list(X: List | Tuple) -> Any:
 
 def convert_rlist2py(X: vc.ListVector | vc.ListSexpVector) -> Any:
     from .RArray import convert_numpy
-    names = convert_numpy(X.names)
+    names = convert_numpy(X.names, flatten=False)
     if names is not None and len(names):
         return convert_dict({n: x for n, x in zip(names, X)})
     else:
