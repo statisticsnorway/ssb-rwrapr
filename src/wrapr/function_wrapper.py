@@ -3,7 +3,7 @@ import numpy as np
 
 from numpy.typing import NDArray
 from typing import Any, Callable, Dict, List
-from .convert_py2r import convert_py2r
+from .convert_py2r import convert_py_args2r
 from .convert_r2py import convert_r2py
 from .rutils import rcall
 from .lazy_rexpr import lazy_wrap
@@ -18,11 +18,10 @@ def wrap_rfunc(func: Callable | Any, name: str | None) -> Callable | Any:
     def wrap(*args, **kwargs):
         args = list(args) if args is not None else args # make args mutable
         # strip_args(args=args, kwargs=kwargs)
-        convert_py2r(args=args, kwargs=kwargs)
+        convert_py_args2r(args=args, kwargs=kwargs)
         lazyfunc = lazy_wrap(args=args, kwargs=kwargs, func=func,
                              func_name=name)
         r_object: Any = lazyfunc(*args, **kwargs)
-
         if settings.Rview:
             return RObject(r_object)  
         else:
@@ -42,15 +41,3 @@ def rfunc(name: str) -> Callable | Any:
     # This function must not be used in Rpy-in functions
     return wrap_rfunc(rcall(name), name=name)
 
-
-def get_rclass(x: Any) -> NDArray[np.unicode_] | None:
-    try:
-        f: Callable | Any = rfunc("class")
-        return np.asarray(f(x), dtype = "U")
-    except:
-        return None
-
-
-def as_matrix(x: Any, str = None) -> NDArray | Any:
-    f: Callable | Any = rfunc("as.matrix")
-    return f(x)
