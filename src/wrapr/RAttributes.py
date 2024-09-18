@@ -1,25 +1,28 @@
+import numpy as np
 from typing import Any
 from typing import Callable
 from typing import Dict
 
 from .convert_py2r import convert_py_args2r
 
+def get_attr(x, exclude) -> Any:
+    from .function_wrapper import rfunc
+    attributes: Callable = rfunc("""
+    function(x, exclude) {
+        attributes <- attributes(x)
+        if (is.null(attributes)) return(NULL)
+
+        attributes <- attributes[!names(attributes) %in% exclude]
+        if (length(attributes) == 0) return(NULL)
+
+        attributes
+    } 
+    """)
+    return attributes(x, exclude)
+
 
 def get_Rattributes(x: Any, exclude: list = []) -> Dict | None:
-    from .function_wrapper import rfunc
-    get_attr: Callable = rfunc("attributes")
-    attributes = get_attr(x)
-    if attributes is None:
-        return None
-    return clean_basic_attributes(attributes, exclude=exclude)
-
-
-def clean_basic_attributes(x: Dict, exclude: list = []) -> Dict:
-    return {key: value for (key, value) in x.items() if not exclude_condition(key, exclude=exclude)}
-
-
-def exclude_condition(key: str, exclude: list = []) -> bool:
-    return key in exclude
+    return get_attr(x, exclude = np.array(exclude))
 
 
 def structure(x, **kwargs) -> Any:

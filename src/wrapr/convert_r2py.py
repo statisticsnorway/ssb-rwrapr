@@ -24,7 +24,8 @@ from wrapr.RArray import get_RArray
 from wrapr.RArray import RArray, get_RArray
 
 from .nputils import np_collapse
-from .rutils import rcall
+from .lazy_rexpr import lazily, lazy_wrap
+from .rutils import has_unsupported_rclass, rcall
 
 
 def convert_r2py(x: Any) -> Any:
@@ -49,6 +50,10 @@ def convert_r2py(x: Any) -> Any:
         case vc.Vector() | vc.Matrix() | vc.Array() if not is_rlist(x):
             # return convert_numpy(x)
             return get_RArray(x) # return RArray, or int|str|bool|float if len == 1
+        case ro.methods.RS4():
+            return RObject(x)
+        case _ if has_unsupported_rclass(x):
+            return RObject(x)
         case list():
             return convert_list(x)
         case tuple():

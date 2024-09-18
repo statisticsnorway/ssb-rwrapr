@@ -3,6 +3,8 @@ import rpy2.robjects as ro
 from typing import Any, Callable
 import numpy as np
 
+supported_classes = {"list", "array", "matrix", "vector", "atomic"}
+
 def rcall(expr: str) -> Any:
     return ro.r(expr, print_r_warnings=False, invisible=True)
 
@@ -15,9 +17,11 @@ def get_rclass(x: Any) -> NDArray[np.unicode_] | None:
     except:
         return None
 
-def has_rclass(x: Any) -> bool:
+def has_unsupported_rclass(x: Any) -> bool:
     rclass = get_rclass(x)
-    return rclass is not None and len(rclass) > 0
+    if rclass is not None:
+        rclass = set(rclass.tolist())
+    return rclass is not None and len(rclass) > 0 and rclass.issubset(supported_classes)
         
 
 def as_matrix(x: Any, str = None) -> NDArray | Any:
