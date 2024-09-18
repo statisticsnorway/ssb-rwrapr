@@ -7,7 +7,7 @@ from numpy.typing import NDArray
 class RArray(np.ndarray):
     def __init__(self, Rdata):
         super().__init__(convert_numpy(Rdata))
-        self.Rattributes = None
+        self.__Rattributes__ = None
     
     # def toR(self):
         # -> R-dataframe
