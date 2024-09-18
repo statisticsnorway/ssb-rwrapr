@@ -5,7 +5,7 @@ from typing import Dict
 
 from .convert_py2r import convert_py_args2r
 
-def get_attr(x, exclude) -> Any:
+def get_Rattributes(x, exclude = []) -> Any:
     from .function_wrapper import rfunc
     attributes: Callable = rfunc("""
     function(x, exclude) {
@@ -21,15 +21,14 @@ def get_attr(x, exclude) -> Any:
     return attributes(x, exclude)
 
 
-def get_Rattributes(x: Any, exclude: list = []) -> Dict | None:
-    return get_attr(x, exclude = np.array(exclude))
-
-
 def structure(x, **kwargs) -> Any:
     from .rutils import rcall
     return rcall("structure")(x, **kwargs)
 
 
-def attributes2r(attrs: Dict[str, Any]) -> Dict[str, Any]:
-    convert_py_args2r(args=[], kwargs=attrs)
-    return attrs
+def attributes2r(attrs: Dict[str, Any] | None) -> Dict[str, Any] | None:
+    if attrs is None:
+        return {}
+    modified_attrs = attrs.copy()
+    convert_py_args2r(args=[], kwargs=modified_attrs)
+    return modified_attrs

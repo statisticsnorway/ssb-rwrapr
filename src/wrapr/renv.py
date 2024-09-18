@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-import warnings
 
 import rpy2.robjects as ro
 import rpy2.robjects.vectors as vc
@@ -65,7 +64,6 @@ class Renv:
             capture.reset_r_output()
             return getattr(self, name)
         else: 
-            warnings.warn("fetching assets from R-environment directly, this feature is not finished yet")
             fun: Callable = rfunc(name) # in the future this should also work for datasets
             # add error handling for corrupt function, getting stuck to Renv
             self.__attach__(name=name, attr=fun)
