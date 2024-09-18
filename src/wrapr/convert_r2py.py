@@ -21,8 +21,8 @@ from rpy2.robjects import rpy2
 from wrapr.RArray import RArray
 from wrapr.RArray import get_RArray
 
-from .lazy_rexpr import lazily
-from .lazy_rexpr import lazy_wrap
+from wrapr.RArray import RArray, get_RArray
+
 from .nputils import np_collapse
 from .rutils import rcall
 
@@ -48,7 +48,7 @@ def convert_r2py(x: Any) -> Any:
             return RDataFrame(x)
         case vc.Vector() | vc.Matrix() | vc.Array() if not is_rlist(x):
             # return convert_numpy(x)
-            return get_RArray(x)  # return RArray, or int|str|bool|float if len == 1
+            return get_RArray(x) # return RArray, or int|str|bool|float if len == 1
         case list():
             return convert_list(x)
         case tuple():
