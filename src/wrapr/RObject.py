@@ -29,4 +29,7 @@ class RObject():
     def to_py(self):
         return convert_r2py(self.Robj)
 
+    def toR(self):
+        return self.Robj
+
 

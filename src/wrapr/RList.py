@@ -1,3 +1,4 @@
+from collections import UserDict, UserList
 import numpy as np
 
 import rpy2.robjects as ro
@@ -9,6 +10,8 @@ from typing import Any, Callable, Dict, List, OrderedDict, Set, Tuple
 from copy import Error
 from rpy2.robjects import pandas2ri, numpy2ri, rpy2
 
+from wrapr.RAttributes import attributes2r
+
 from .nputils import np_collapse
 from .lazy_rexpr import lazily, lazy_wrap
 from .rutils import rcall
@@ -17,18 +20,41 @@ from .rutils import rcall
 # from .RArray  import convert_numpy, is_valid_numpy, filter_numpy
 # from .RDataFrame import convert_pandas, attempt_pandas_conversion, RDataFrame
 
-class RList(np.ndarray):
-    def __init__(self, Rdata):
-        super().__init__()#convert_numpy(Rdata))
-        self.Rattributes = None
+class RList(UserList):
+    def __init__(self, x, attributes): 
+        super().__init__(x)
+        self.__Rattributes__ = attributes
     
-    # def toR(self):
+    def toR(self):
+        from .convert_py2r import convert_numpy2r
+        from .RAttributes import structure, attributes2r
         # -> R-dataframe
+        R_object = convert_list(self)
         # -> R-Attributes -> convert to R
-        # with_attributes: Callable = rcall("structure")
-        # return with_attributes(R-dataframe, **R-Attributes) 
+        if self.__Rattributes__ is None:
+            return R_object
+        R_attributes = attributes2r(self.__Rattributes__)
+        return structure(R_object, **R_attributes)
 
-def convert_list(X: List | Tuple) -> Any:
+
+class RDict(UserDict):
+    def __init__(self, x, attributes): 
+        super().__init__(x)
+        self.__Rattributes__ = attributes
+    
+    def toR(self):
+        from .convert_py2r import convert_numpy2r
+        from .RAttributes import structure, attributes2r
+        # -> R-dataframe
+        R_object = convert_dict(self)
+        # -> R-Attributes -> convert to R
+        if self.__Rattributes__ is None:
+            return R_object
+        R_attributes = attributes2r(self.__Rattributes__)
+        return structure(R_object, **R_attributes)
+
+
+def convert_list(X: List | Tuple | UserList | RList) -> Any:
     from .convert_r2py import convert_r2py
     out = [convert_r2py(x) for x in X]
     if isinstance(X, tuple):
@@ -38,11 +64,16 @@ def convert_list(X: List | Tuple) -> Any:
 
 def convert_rlist2py(X: vc.ListVector | vc.ListSexpVector) -> Any:
     from .RArray import convert_numpy
+    from .RAttributes import get_Rattributes
     names = convert_numpy(X.names, flatten=False)
+    attributes = get_Rattributes(X, exclude=["names"])
+
     if names is not None and len(names):
-        return convert_dict({n: x for n, x in zip(names, X)})
+        y = convert_dict({n: x for n, x in zip(names, X)})
+        return RDict(y, attributes=attributes)
     else:
-        return convert_list([x for x in X])
+        y = convert_list([x for x in X])
+        return RList(y, attributes=attributes)
 
 
 def is_rlist(X: Any) -> bool:
@@ -53,7 +84,7 @@ def is_rlist(X: Any) -> bool:
             return False
 
 
-def convert_dict(X: Dict | OrderedDict,
+def convert_dict(X: Dict | OrderedDict | UserDict | RDict,
                  is_RDict: bool = False) -> Any:
     from .convert_r2py import convert_r2py
     try:
