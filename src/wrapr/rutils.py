@@ -19,9 +19,15 @@ def get_rclass(x: Any) -> NDArray[np.unicode_] | None:
 
 def has_unsupported_rclass(x: Any) -> bool:
     rclass = get_rclass(x)
-    if rclass is not None:
+
+    if rclass is None or len(rclass.tolist()) == 0:
+        return False
+    if isinstance(rclass.tolist(), str):
+        rclass = {rclass.tolist()}
+    else:
         rclass = set(rclass.tolist())
-    return rclass is not None and len(rclass) > 0 and rclass.issubset(supported_classes)
+
+    return len(rclass) > 0 and not rclass.issubset(supported_classes)
         
 
 def as_matrix(x: Any, str = None) -> NDArray | Any:

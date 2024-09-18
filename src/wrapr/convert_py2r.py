@@ -32,7 +32,7 @@ def convert_py_args2r(args: List[Any], kwargs: Dict[str, Any]) -> None:
 def convert_py2r(x: Any) -> Any:  # RBaseObject | PyDtype | Any:
     from .RObject import RObject
     from .RArray import RArray
-    from .RList import RList, RDict
+    from .RList import RList, RDict, pylist2rlist, dict2rlist
     from .RDataFrame import RDataFrame
 
     match x:
@@ -40,8 +40,8 @@ def convert_py2r(x: Any) -> Any:  # RBaseObject | PyDtype | Any:
             return x.toR()
         case np.ndarray():
             return convert_numpy2r(x)
-        # case scipy.sparse.coo_array() | scipy.sparse.coo_matrix():
-        #     return convert_pysparsematrix(x)
+        case scipy.sparse.coo_array() | scipy.sparse.coo_matrix():
+            return convert_pysparsematrix(x)
         case OrderedDict() | dict():
             return dict2rlist(x)
         case list() | tuple() | set():
@@ -114,16 +114,6 @@ def convert_numpyND(x: NDArray) -> Any:  # RBaseObject:
     y = convert_numpy1D(flat_x)
     f: Callable = ro.r("array")
     return f(y, dim=ro.IntVector(dim))
-
-
-def dict2rlist(x: Dict | OrderedDict) -> ro.ListVector:
-    return ro.ListVector({k: convert_py2r(v) for k, v in x.items()})
-
-
-def pylist2rlist(x: List | Tuple | Set) -> ro.ListVector:
-    y: Dict[str, Any] = {str(k): v for k, v in enumerate(x)}
-    unname: Callable = rcall("unname")
-    return unname(dict2rlist(y))
 
 
 def convert_pysparsematrix(x: scipy.sparse.coo_array | scipy.sparse.coo_matrix):

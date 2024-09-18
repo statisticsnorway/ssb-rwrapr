@@ -26,15 +26,15 @@ class RList(UserList):
         self.__Rattributes__ = attributes
     
     def toR(self):
-        from .convert_py2r import convert_numpy2r
         from .RAttributes import structure, attributes2r
         # -> R-dataframe
-        R_object = convert_list(self)
+        R_object = pylist2rlist(self)
         # -> R-Attributes -> convert to R
         if self.__Rattributes__ is None:
             return R_object
         R_attributes = attributes2r(self.__Rattributes__)
         return structure(R_object, **R_attributes)
+
 
 
 class RDict(UserDict):
@@ -43,10 +43,9 @@ class RDict(UserDict):
         self.__Rattributes__ = attributes
     
     def toR(self):
-        from .convert_py2r import convert_numpy2r
         from .RAttributes import structure, attributes2r
         # -> R-dataframe
-        R_object = convert_dict(self)
+        R_object = dict2rlist(self)
         # -> R-Attributes -> convert to R
         if self.__Rattributes__ is None:
             return R_object
@@ -54,7 +53,7 @@ class RDict(UserDict):
         return structure(R_object, **R_attributes)
 
 
-def convert_list(X: List | Tuple | UserList | RList) -> Any:
+def convert_r2pylist(X: List | Tuple | UserList | RList) -> Any:
     from .convert_r2py import convert_r2py
     out = [convert_r2py(x) for x in X]
     if isinstance(X, tuple):
@@ -69,10 +68,10 @@ def convert_rlist2py(X: vc.ListVector | vc.ListSexpVector) -> Any:
     attributes = get_Rattributes(X, exclude=["names"])
 
     if names is not None and len(names):
-        y = convert_dict({n: x for n, x in zip(names, X)})
+        y = convert_r2pydict({n: x for n, x in zip(names, X)})
         return RDict(y, attributes=attributes)
     else:
-        y = convert_list([x for x in X])
+        y = convert_r2pylist([x for x in X])
         return RList(y, attributes=attributes)
 
 
@@ -84,7 +83,7 @@ def is_rlist(X: Any) -> bool:
             return False
 
 
-def convert_dict(X: Dict | OrderedDict | UserDict | RDict,
+def convert_r2pydict(X: Dict | OrderedDict | UserDict | RDict,
                  is_RDict: bool = False) -> Any:
     from .convert_r2py import convert_r2py
     try:
@@ -99,3 +98,16 @@ def convert_dict(X: Dict | OrderedDict | UserDict | RDict,
             X[key] = convert_r2py(X[key])
     finally:
         return X
+
+
+def dict2rlist(x: Dict | OrderedDict | RDict) -> ro.ListVector:
+    from .convert_py2r import convert_py2r
+    return ro.ListVector({k: convert_py2r(v) for k, v in x.items()})
+
+
+def pylist2rlist(x: List | Tuple | Set | RList) -> ro.ListVector:
+    y: Dict[str, Any] = {str(k): v for k, v in enumerate(x)}
+    unname: Callable = rcall("unname")
+    return unname(dict2rlist(y))
+
+
