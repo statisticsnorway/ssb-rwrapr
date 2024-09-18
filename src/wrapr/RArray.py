@@ -1,20 +1,27 @@
+from typing import Dict
 import numpy as np
 import rpy2
 import rpy2.robjects.vectors as vc
 
 from numpy.typing import NDArray
 
+from wrapr.RAttributes import get_Rattributes
+
 class RArray(np.ndarray):
-    def __init__(self, Rdata):
+    def __init__(self, Rdata) -> None:
         from .RAttributes import get_Rattributes
         super().__init__(convert_numpy(Rdata))
-        self.__Rattributes__ = 
+        self.__Rattributes__ = get_attributes_array(Rdata)
     
     # def toR(self):
         # -> R-dataframe
         # -> R-Attributes -> convert to R
         # with_attributes: Callable = rcall("structure")
         # return with_attributes(R-dataframe, **R-Attributes) 
+
+def get_attributes_array(x) -> Dict | None:
+    return get_Rattributes(x, exclude=["class", "row.names",
+                                       "col.names"])
 
 def convert_numpy(x: vc.Vector | NDArray) -> NDArray | None:
     if isinstance(x, rpy2.rinterface_lib.sexp.NULLType):
