@@ -5,6 +5,7 @@ import rpy2.robjects.vectors as vc
 
 from typing import Any
 
+from wrapr.RAttributes import get_Rattributes
 from wrapr.rutils import rcall
 from .RArray import convert_numpy
 
@@ -12,7 +13,7 @@ from .RArray import convert_numpy
 class RDataFrame(pd.DataFrame):
     def __init__(self, Rdata):
         super().__init__(convert_pandas(Rdata))
-        self.attrs["__Rattributes__"] = get_attributes_dataframe()
+        self.attrs["__Rattributes__"] = get_attributes_dataframe(Rdata)
     
     # def toR(self):
         # -> R-dataframe
@@ -21,9 +22,9 @@ class RDataFrame(pd.DataFrame):
         # return with_attributes(R-dataframe, **R-Attributes) 
 
 
-def get_attributes_dataframe():
+def get_attributes_dataframe(df) -> dict[str, Any] | None:
     # Rlist[...] -> f() -> Dict[WrappedObjects]
-    return {"some attribute": "hello there"}
+    return get_Rattributes(df, exclude=["names", "class", "row.names"])
 
 
 def convert_pandas(df: vc.DataFrame) -> pd.DataFrame:
