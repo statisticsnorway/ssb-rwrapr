@@ -1,40 +1,46 @@
-import pandas as pd
-
-import rpy2.robjects as ro
-import rpy2.robjects.vectors as vc
-
 from typing import Any
 
+import pandas as pd
+import rpy2.robjects as ro
+import rpy2.robjects.vectors as vc
+from rpy2.robjects import pandas2ri
+
 from wrapr.RAttributes import get_Rattributes
-from wrapr.rutils import rcall
-from .RArray import convert_numpy
 
 
 class RDataFrame(pd.DataFrame):
-    def __init__(self, Rdata):
-        super().__init__(convert_pandas(Rdata))
-        self.attrs["__Rattributes__"] = get_attributes_dataframe(Rdata)
-    
-    # def toR(self):
-        # -> R-dataframe
-        # -> R-Attributes -> convert to R
-        # with_attributes: Callable = rcall("structure")
-        # return with_attributes(R-dataframe, **R-Attributes) 
+    def __init__(self, data_frame: vc.DataFrame | pd.DataFrame):
+        if isinstance(data_frame, vc.DataFrame):
+            df = toPandas(data_frame)
+            self.attrs["__Rattributes__"] = get_attributes_dataframe(data_frame)
+        else:
+            df = data_frame
+        super().__init__(df)
 
 
-def get_attributes_dataframe(df) -> dict[str, Any] | None:
-    # Rlist[...] -> f() -> Dict[WrappedObjects]
+def get_attributes_dataframe(df: vc.DataFrame) -> dict[str, Any] | None:
     return get_Rattributes(df, exclude=["names", "class", "row.names"])
 
 
-def convert_pandas(df: vc.DataFrame) -> pd.DataFrame:
-    colnames = df.names
-    df_dict = {c: convert_numpy(x) for c, x in zip(colnames, list(df))}
-    return pd.DataFrame(df_dict) 
+def toR(df: RDataFrame) -> vc.DataFrame:
+    with (ro.default_converter + pandas2ri.converter).context():
+        R_df = ro.conversion.get_conversion().py2rpy(df)
+    from .RAttributes import attributes2r
+    from .RAttributes import structure
+
+    attributes = attributes2r(df.attrs["__Rattributes__"])
+    return structure(R_df, **attributes)
 
 
-def attempt_pandas_conversion(x: Any) -> Any:
-    try: 
-        return pd.DataFrame(x)
-    except:
-        return x
+def toPandas(df: vc.DataFrame) -> pd.DataFrame:
+    with (ro.default_converter + pandas2ri.converter).context():
+        pd_df = ro.conversion.get_conversion().rpy2py(df)
+
+    return pd_df
+
+
+def attempt_pandas_conversion(data: Any) -> RDataFrame | TypeError:
+    try:
+        return RDataFrame(pd.DataFrame(data))
+    except TypeError:
+        return TypeError(f"This data will not convert {data}")
