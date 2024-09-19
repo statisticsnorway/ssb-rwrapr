@@ -1,12 +1,17 @@
 import warnings
+
+
 warnings.simplefilter("always")
 
-from .renv import Renv
-from .library import library, importr
-from .load_namespace import try_load_namespace
 from .lazy_rexpr import lazily
-from .RObject import RObject
+from .library import importr
+from .library import library
+from .load_namespace import try_load_namespace
 from .RArray import RArray
-from .RList import RList
 from .RDataFrame import RDataFrame
-from .settings import settings, Settings
+from .renv import Renv
+from .RFactor import RFactor
+from .RList import RList
+from .RObject import RObject
+from .settings import Settings
+from .settings import settings
