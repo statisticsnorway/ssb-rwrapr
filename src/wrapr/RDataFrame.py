@@ -49,6 +49,11 @@ def toPandas(df: vc.DataFrame) -> pd.DataFrame:
     return pd_df
 
 
+def pandas2r(data: pd.DataFrame) -> vc.DataFrame:
+    with (ro.default_converter + pandas2ri.converter).context():
+        return ro.conversion.get_conversion().py2rpy(data)
+
+
 def attempt_pandas_conversion(data: Any) -> RDataFrame | TypeError:
     try:
         return RDataFrame(pd.DataFrame(data))
