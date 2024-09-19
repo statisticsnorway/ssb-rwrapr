@@ -85,7 +85,13 @@ class Renv:
         if not callable(pyfunc):
             raise ValueError("R object is not a function")
         return pyfunc
-    
+   
+    def print(self, x):
+        foo: Callable = rfunc("""function(x, ...) {
+            paste(utils::capture.output(print(x, ...)), collapse = "\n")
+        }""")
+        print(foo(x))
+
     # def attributes(self, py_object: Any) -> Any:
     #     return py_object.__Rattributes__
 

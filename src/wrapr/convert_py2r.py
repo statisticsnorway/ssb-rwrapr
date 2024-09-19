@@ -48,6 +48,8 @@ def convert_py2r(x: Any) -> Any:  # RBaseObject | PyDtype | Any:
             return pylist2rlist(x)
         case pd.DataFrame():
             return pandas2r(x)
+        case pd.Series():
+            return convert_py2r(x.to_numpy())
         case NoneType():
             return ro.NULL
         case np.bool_():
