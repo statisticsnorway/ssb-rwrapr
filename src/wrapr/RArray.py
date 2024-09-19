@@ -14,14 +14,17 @@ import numpy as np
 class RArray(np.ndarray):
     def __new__(cls, Rdata):
         from .RAttributes import get_Rattributes
-        
+
         # Convert Rdata to a numpy array
         arr = convert_numpy(Rdata)
         if not isinstance(arr, np.ndarray):
             raise TypeError("convert_numpy(Rdata) must return a numpy.ndarray")
 
+        # Ensure the array is in C order
+        arr_c = np.ascontiguousarray(arr)
+
         # Create the ndarray instance of our subclass
-        obj = np.asarray(arr).view(cls)
+        obj = arr_c.view(cls)
 
         # Add the R attributes
         obj._Rattributes = get_Rattributes(Rdata)

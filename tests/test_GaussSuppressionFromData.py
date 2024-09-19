@@ -67,13 +67,15 @@ y[k] <- y[sample_k]
 x = y.reshape(x.shape)
 
 # test_that("Advanced with integer overflow", {
-# def test_Advanced_with_integer_overflow():
-#  a = GS.GaussSuppressionFromData(z3, np.arange(1, 7), 7, 
-#                                  x = mm["modelMatrix"].astype("int"), # .copy(), #.astype("int"), 
-#                                  crossTable = mm["crossTable"], 
-#                                  maxN = 5, singletonMethod = "anySumOld", 
-#                                  printInc = printInc)
-#  assert bs.sum(bs.which(a["suppressed"])) == 599685
+def test_Advanced_with_integer_overflow():
+  a = GS.GaussSuppressionFromData(z3, 
+                                  np.arange(1, 7), 7, 
+                                  x = mm["modelMatrix"],
+                                  crossTable = mm["crossTable"], 
+                                  maxN = 5, singletonMethod = "anySumOld", 
+                                  printInc = printInc)
+  assert bs.sum(bs.which(a["suppressed"])) == 599685
+
 #  
 #  # This test involves integer overflow in AnyProportionalGaussInt  
 #   a <- GaussSuppressionFromData(z3, np.arange(1, 6+1), 7, x = x, 
