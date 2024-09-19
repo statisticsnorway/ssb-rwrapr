@@ -33,7 +33,7 @@ def convert_py2r(x: Any) -> Any:  # RBaseObject | PyDtype | Any:
     from .RObject import RObject
     from .RArray import RArray
     from .RList import RList, RDict, pylist2rlist, dict2rlist
-    from .RDataFrame import RDataFrame
+    from .RDataFrame import RDataFrame, pandas2r
 
     match x:
         case RObject() | RArray() | RList() | RDataFrame() | RDict():
@@ -131,5 +131,5 @@ def convert_pysparsematrix(x: scipy.sparse.coo_array | scipy.sparse.coo_matrix):
         return x
 
 
-def pandas2r(x: pd.DataFrame) -> Any:  # RBaseObject:
-    return ro.DataFrame({k: convert_py2r(x[k].to_numpy()) for k in x})
+# def pandas2r(x: pd.DataFrame) -> Any:  # RBaseObject:
+#     return ro.DataFrame({k: convert_py2r(x[k].to_numpy()) for k in x})
