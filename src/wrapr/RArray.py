@@ -32,9 +32,6 @@ class RArray(np.ndarray):
             return R_object
         R_attributes = attributes2r(self.__Rattributes__)
         return structure(R_object, **R_attributes)
-        
-        # with_attributes: Callable = rcall("structure")
-        # return with_attributes(R-dataframe, **R-Attributes) 
 
 
 def get_RArray(x: Any) -> RArray | int:
