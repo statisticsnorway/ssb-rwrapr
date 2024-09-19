@@ -39,4 +39,4 @@ def test_GaussSuppressDec_and_more():
                   == np.array([1, 1]))
   
     
-    assert len(a.__Rattributes__["startRow"]) == 16
+    assert len(a._Rattributes["startRow"]) == 16

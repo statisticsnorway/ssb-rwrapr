@@ -9,34 +9,49 @@ from wrapr.RAttributes import get_Rattributes
 from wrapr.convert_py2r import convert_py2r
 
 
+import numpy as np
+
 class RArray(np.ndarray):
     def __new__(cls, Rdata):
         from .RAttributes import get_Rattributes
+        
+        # Convert Rdata to a numpy array
         arr = convert_numpy(Rdata)
+        if not isinstance(arr, np.ndarray):
+            raise TypeError("convert_numpy(Rdata) must return a numpy.ndarray")
+
+        # Create the ndarray instance of our subclass
         obj = np.asarray(arr).view(cls)
-        obj.__Rattributes__ = get_Rattributes(Rdata)
+
+        # Add the R attributes
+        obj._Rattributes = get_Rattributes(Rdata)
+
         return obj
 
     def __array_finalize__(self, obj):
         if obj is None:
             return
-        self.__Rattributes__ = getattr(obj, '__Rattributes__', None)
-    
+        # Copy the _Rattributes from the source object
+        self._Rattributes = getattr(obj, '_Rattributes', None)
+
     def toR(self):
         from .convert_py2r import convert_numpy2r
         from .RAttributes import structure, attributes2r
-        # -> R-dataframe
-        R_object = convert_numpy2r(self)
-        # -> R-Attributes -> convert to R
-        if self.__Rattributes__ is None:
-            return R_object
-        R_attributes = attributes2r(self.__Rattributes__)
-        return structure(R_object, **R_attributes)
+
+        # Convert the numpy array to R
+        R_object = convert_numpy2r(np.asarray(self))
+
+        # Apply R attributes if they exist
+        if self._Rattributes is not None:
+            R_attributes = attributes2r(self._Rattributes)
+            R_object = structure(R_object, **R_attributes)
+
+        return R_object
 
 
 def get_RArray(x: Any) -> RArray | int:
     y: RArray = RArray(x)
-    return y[0] if y.shape == (1,) and y.__Rattributes__ is None else y
+    return y[0] if y.shape == (1,) and y._Rattributes is None else y
 
 
 
