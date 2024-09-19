@@ -15,7 +15,7 @@ def load_base_envs() -> dict[str, rpkg.InstalledSTPackage| rpkg.InstalledPackage
 
 
 def try_load_namespace(namespace: str, verbose: bool = False,
-                       hide_r_ouptut = True):
+                       hide_r_ouptut = True, interactive = True):
     if hide_r_ouptut:
         capture = ROutputCapture()
         capture.capture_r_output()
@@ -23,6 +23,9 @@ def try_load_namespace(namespace: str, verbose: bool = False,
         warnings.filterwarnings('ignore')  
         module: rpkg.Package = rpkg.importr(namespace)
     except rpkg.PackageNotInstalledError: 
+        if not interactive:
+            raise rpkg.PackageNotInstalledError
+
         choice = input(namespace + " not installed, do you want to install it? (y/n)\n")
         if choice[0] != "y": 
             raise rpkg.PackageNotInstalledError

@@ -19,13 +19,13 @@ from .convert_r2py import convert_r2py
 from .RObject import RObject
 from .settings import Settings, settings
 
-
 class Renv:
-    def __init__(self, env_name):
+    def __init__(self, env_name, interactive = True):
         pinfo("Loading packages...", verbose=True)
         # self.__Renvironments__ = load_base_envs()
-        self.__set_base_lib__(try_load_namespace(env_name, verbose=True))
-        
+        self.__set_base_lib__(try_load_namespace(env_name, verbose=True,
+                                                 interactive=interactive))
+
         funcs, datasets = get_assets(env_name, module=self.__base_lib__)
         self.__setRfuncs__(funcs) 
         self.__setRdatasets__(datasets) 
