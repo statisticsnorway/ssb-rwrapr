@@ -104,7 +104,7 @@ def convert_numpy1D(x: NDArray) -> Any:  # RBaseObject:
 
 
 def convert_numpy2D(x: NDArray) -> Any:  # RBaseObject:
-    flat_x: NDArray = x.flatten()
+    flat_x: NDArray = x.flatten(order="F")
     nrow, ncol = x.shape
     y = convert_numpy1D(flat_x)
     f: Callable = ro.r("matrix")
@@ -112,7 +112,7 @@ def convert_numpy2D(x: NDArray) -> Any:  # RBaseObject:
 
 
 def convert_numpyND(x: NDArray) -> Any:  # RBaseObject:
-    flat_x: NDArray = x.flatten()
+    flat_x: NDArray = x.flatten(order="F")
     dim: Tuple = x.shape
     y = convert_numpy1D(flat_x)
     f: Callable = ro.r("array")

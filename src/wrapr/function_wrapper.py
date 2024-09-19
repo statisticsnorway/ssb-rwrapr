@@ -11,6 +11,8 @@ from .settings import Settings, settings
 
 def wrap_rfunc(func: Callable | Any, name: str | None) -> Callable | Any:
     from .RObject import RObject
+    from .RArray import RArray
+    from .RDataFrame import RDataFrame
     # should be a Callable, but may f-up (thus Any)
     if not callable(func):
         return None
