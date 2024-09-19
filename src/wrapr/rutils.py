@@ -9,7 +9,7 @@ def rcall(expr: str) -> Any:
     return ro.r(expr, print_r_warnings=False, invisible=True)
 
 
-def get_rclass(x: Any) -> NDArray[np.unicode_] | None:
+def get_rclass(x: Any) -> NDArray[np.str_] | None:
     from .function_wrapper import rfunc
     try:
         f: Callable | Any = rfunc("class")
