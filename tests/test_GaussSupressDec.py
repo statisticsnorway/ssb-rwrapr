@@ -3,11 +3,17 @@ import numpy as np
 import pandas as pd
 import pytest
 
-base = wr.importr("base")
-GaussSuppression = wr.importr("GaussSuppression")
-SSBtools = wr.importr("SSBtools")
+@pytest.fixture(scope="module")
+def base():
+   return wr.importr("base", interactive=False)
+@pytest.fixture(scope="module")
+def GaussSuppression():
+    return wr.importr("GaussSuppression", interactive=False)
+@pytest.fixture(scope="module")
+def SSBtools():
+    return wr.importr("SSBtools", interactive=False)
 
-def test_GaussSuppressDec_and_more():
+def test_GaussSuppressDec_and_more(base, GaussSuppression, SSBtools):
     base.set_seed(123)
     z2 = SSBtools.SSBtoolsData("z2")
     z2["y1"] = base.runif(base.nrow(z2))

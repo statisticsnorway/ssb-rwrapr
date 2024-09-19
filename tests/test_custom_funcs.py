@@ -3,7 +3,7 @@ import pytest
 
 
 def test_custom_funcs():
-    base = wr.library("base")
+    base = wr.library("base", interactive=False)
     base.__function__(name="foo_attached2namespace", expr="function(x) x * 2")
     assert base.foo_attached2namespace(2) == 4
     foo = base.function("function(x) x * 2")

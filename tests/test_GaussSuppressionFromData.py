@@ -4,35 +4,43 @@ import pandas as pd
 import pytest
 import string
 
+@pytest.fixture(scope="module")
+def ST ():
+    return wr.library("SSBtools", interactive=False)
 
-ST = wr.library("SSBtools")
-GS = wr.library("GaussSuppression")
-bs = wr.library("base")
+@pytest.fixture(scope="module")
+def GS (): 
+    return wr.library("GaussSuppression", interactive=False)
+
+@pytest.fixture(scope="module")
+def bs ():
+    return wr.library("base", interactive=False)
 
 printInc = True
 
-def test_GaussSuppressionFromData_works():
+def test_GaussSuppressionFromData_works(GS, ST, bs):
     m = GS.GaussSuppressionFromData(ST.SSBtoolsData("z1"), np.array([1, 2]), 3, printInc = printInc)
     assert np.all(GS.which(m["suppressed"]) == [12, 13, 22, 23, 42, 43])
 
 
-# Sample with seed inside test_that do not work
-LETTERS = "|".join(list(string.ascii_uppercase))
-z3 = ST.SSBtoolsData("z3")
-upper = z3["region"].str.contains(LETTERS)
-z3["region"][upper] = z3["region"][upper] + "2"
-z3["region"][~upper] = z3["region"][~upper].str.upper() + "1"
-z3["fylke"] = z3["fylke"].astype("int")
-z3["kostragr"] = z3["kostragr"].astype("int")
+def not_xtest(GS, ST, bs):
+    # Sample with seed inside test_that do not work
+    LETTERS = "|".join(list(string.ascii_uppercase))
+    z3 = ST.SSBtoolsData("z3")
+    upper = z3["region"].str.contains(LETTERS)
+    z3["region"][upper] = z3["region"][upper] + "2"
+    z3["region"][~upper] = z3["region"][~upper].str.upper() + "1"
+    z3["fylke"] = z3["fylke"].astype("int")
+    z3["kostragr"] = z3["kostragr"].astype("int")
 
-mm = ST.ModelMatrix(z3.iloc[:, 0:5], crossTable = True, sparse = False)
-x = mm["modelMatrix"]
-k = np.arange(20000) + 1
-bs.set_seed(123)
-y = x.flatten()
-sample_k = bs.sample(k)
-y[k] <- y[sample_k]
-x = y.reshape(x.shape)
+    mm = ST.ModelMatrix(z3.iloc[:, 0:5], crossTable = True, sparse = False)
+    x = mm["modelMatrix"]
+    k = np.arange(20000) + 1
+    bs.set_seed(123)
+    y = x.flatten()
+    sample_k = bs.sample(k)
+    y[k] <- y[sample_k]
+    x = y.reshape(x.shape)
 
 # test_that("Advanced with integer overflow", {
 #   #skip("Strange behaviour. Test works, but not when run inside Check package")
