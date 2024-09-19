@@ -23,16 +23,16 @@ from .rutils import rcall
 class RList(UserList):
     def __init__(self, x, attributes): 
         super().__init__(x)
-        self.__Rattributes__ = attributes
+        self._Rattributes = attributes
     
     def toR(self):
         from .RAttributes import structure, attributes2r
         # -> R-dataframe
         R_object = pylist2rlist(self)
         # -> R-Attributes -> convert to R
-        if self.__Rattributes__ is None:
+        if self._Rattributes is None:
             return R_object
-        R_attributes = attributes2r(self.__Rattributes__)
+        R_attributes = attributes2r(self._Rattributes)
         return structure(R_object, **R_attributes)
 
 
@@ -40,16 +40,16 @@ class RList(UserList):
 class RDict(UserDict):
     def __init__(self, x, attributes): 
         super().__init__(x)
-        self.__Rattributes__ = attributes
+        self._Rattributes = attributes
     
     def toR(self):
         from .RAttributes import structure, attributes2r
         # -> R-dataframe
         R_object = dict2rlist(self)
         # -> R-Attributes -> convert to R
-        if self.__Rattributes__ is None:
+        if self._Rattributes is None:
             return R_object
-        R_attributes = attributes2r(self.__Rattributes__)
+        R_attributes = attributes2r(self._Rattributes)
         return structure(R_object, **R_attributes)
 
 

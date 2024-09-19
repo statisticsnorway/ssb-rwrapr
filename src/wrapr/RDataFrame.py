@@ -21,7 +21,7 @@ class RDataFrame(pd.DataFrame):
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            self.__Rattributes__ = attrs
+            self._Rattributes = attrs
     
     def toR(self) -> vc.DataFrame:
         from .RAttributes import attributes2r
@@ -29,10 +29,10 @@ class RDataFrame(pd.DataFrame):
         with (ro.default_converter + pandas2ri.converter).context():
             R_df = ro.conversion.get_conversion().py2rpy(self)
 
-        if self.__Rattributes__ is None:
+        if self._Rattributes is None:
             return R_df
         else:
-            attributes = attributes2r(self.__Rattributes__)
+            attributes = attributes2r(self._Rattributes)
             return structure(R_df, **attributes)
 
 

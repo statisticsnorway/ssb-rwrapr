@@ -65,17 +65,18 @@ def convert_py2r(x: Any) -> Any:  # RBaseObject | PyDtype | Any:
 
 
 def convert_numpy2r(x: NDArray) -> Any:  # RBaseObject:
-    if not x.shape:
-        x = x[np.newaxis]
-    match len(x.shape):
+    y = x.copy()
+    if not y.shape:
+        y = y[np.newaxis]
+    match len(y.shape):
         case 0:
             raise ValueError("Unexpected shape of numpy array")
         case 1:
-            return convert_numpy1D(x)
+            return convert_numpy1D(y)
         case 2:
-            return convert_numpy2D(x)
+            return convert_numpy2D(y)
         case _:
-            return convert_numpyND(x)
+            return convert_numpyND(y)
 
 
 def convert_numpy1D(x: NDArray) -> Any:  # RBaseObject:

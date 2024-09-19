@@ -93,7 +93,7 @@ class Renv:
         print(foo(x))
 
     # def attributes(self, py_object: Any) -> Any:
-    #     return py_object.__Rattributes__
+    #     return py_object._Rattributes
 
     # def attr(self, py_object: Any, key: str) -> Any:
     #     attributes = self.attributes(py_object)
