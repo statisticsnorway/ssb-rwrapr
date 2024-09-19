@@ -35,6 +35,9 @@ class RDataFrame(pd.DataFrame):
             attributes = attributes2r(self._Rattributes)
             return structure(R_df, **attributes)
 
+    def toPy(self) -> pd.DataFrame:
+        return pd.DataFrame(self)
+
 
 
 def get_attributes_dataframe(df: vc.DataFrame) -> dict[str, Any] | None:
