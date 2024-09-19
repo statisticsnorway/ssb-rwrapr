@@ -67,7 +67,7 @@ def convert_rlist2py(X: vc.ListVector | vc.ListSexpVector) -> Any:
     names = convert_numpy(X.names, flatten=False)
     attributes = get_Rattributes(X, exclude=["names"])
 
-    if names is not None and len(names):
+    if names is not None and len(names) and not np.any(names == ""):
         y = convert_r2pydict({n: x for n, x in zip(names, X)})
         return RDict(y, attributes=attributes)
     else:
