@@ -18,7 +18,7 @@ def test_RiskyIntervals():
         z3["value"] = bs.rnorm(bs.nrow(z3))**2
         
         bs.set_seed(123)
-        s = bs.sample_int(bs.nrow(z3)-1, size = 400)
+        s = bs.sample_int(bs.nrow(z3), size = 400) -1
         f = wr.lazily("~(region + fylke) * mnd2 + kostragr * hovedint * mnd")
         b = gs.SuppressDominantCells(z3.iloc[s, :], numVar = "value", n = np.array([1, 2]),
                                      k = np.array([70, 95]), formula = f, lpPackage = "Rglpk",
