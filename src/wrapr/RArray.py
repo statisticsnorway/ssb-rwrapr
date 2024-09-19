@@ -9,26 +9,19 @@ from wrapr.RAttributes import get_Rattributes
 from wrapr.convert_py2r import convert_py2r
 
 
-import numpy as np
-
 class RArray(np.ndarray):
     def __new__(cls, Rdata):
         from .RAttributes import get_Rattributes
 
-        # Convert Rdata to a numpy array
         arr = convert_numpy(Rdata)
         if not isinstance(arr, np.ndarray):
             raise TypeError("convert_numpy(Rdata) must return a numpy.ndarray")
 
         # Ensure the array is in C order
         arr_c = np.ascontiguousarray(arr)
-
-        # Create the ndarray instance of our subclass
         obj = arr_c.view(cls)
 
-        # Add the R attributes
         obj._Rattributes = get_Rattributes(Rdata)
-
         return obj
 
     def __array_finalize__(self, obj):
@@ -37,19 +30,134 @@ class RArray(np.ndarray):
         # Copy the _Rattributes from the source object
         self._Rattributes = getattr(obj, '_Rattributes', None)
 
+    def __getitem__(self, index):
+        result = super().__getitem__(index)
+
+        # If the result is not an instance of RArray, return it as is
+        if not isinstance(result, RArray):
+            return result
+
+        # Copy the _Rattributes
+        if hasattr(self, '_Rattributes') and self._Rattributes is not None:
+            result._Rattributes = getattr(self, '_Rattributes', {}).copy()
+
+            orig_dimnames = self._Rattributes.get('dimnames', None)
+            orig_names = self._Rattributes.get('names', None)
+            orig_dim = self._Rattributes.get('dim', None)
+
+            ndim_self = self.ndim
+            ndim_result = result.ndim
+
+            # Normalize the index to match the number of dimensions
+            index_normalized = self._normalize_index(index, ndim_self)
+
+            # Determine which dimensions are kept after indexing
+            dims_kept = self._get_dims_kept(index_normalized)
+
+            # Update dimnames for multi-dimensional arrays
+            if orig_dimnames is not None:
+                new_dimnames = []
+                for i, keep_dim in enumerate(dims_kept):
+                    if i >= len(orig_dimnames):
+                        continue  # No dimname for this dimension
+
+                    names = orig_dimnames[i]
+                    idx = index_normalized[i]
+
+                    if keep_dim:
+                        if names is None:
+                            new_dimnames.append(None)
+                        else:
+                            names_array = np.array(names)
+                            try:
+                                new_names = names_array[idx]
+                            except Exception:
+                                indices = np.arange(len(names_array))[idx]
+                                new_names = names_array[indices]
+
+                            new_dimnames.append(new_names)
+                    else:
+                        # Dimension is removed, do not add dimname
+                        pass
+
+                result._Rattributes['dimnames'] = new_dimnames
+
+            # Update names for 1D arrays
+            elif orig_names is not None:
+                if ndim_self == 1 and ndim_result >= 1:
+                    names = orig_names
+                    idx = index_normalized[0]
+                    names_array = np.array(names)
+                    try:
+                        new_names = names_array[idx]
+                    except Exception:
+                        indices = np.arange(len(names_array))[idx]
+                        new_names = names_array[indices]
+
+                    result._Rattributes['names'] = new_names
+                elif ndim_self == 1 and ndim_result == 0:
+                    result._Rattributes.pop('names', None)
+
+            if orig_dim is not None:
+                if ndim_result > 0:
+                    new_dim = result.shape
+                    new_dim_array = np.array(new_dim)
+                    result._Rattributes['dim'] = new_dim_array
+                else:
+                    # Result is scalar, remove 'dim' attribute
+                    result._Rattributes.pop('dim', None)
+
+        return result
+
+    def _normalize_index(self, index, ndim):
+        if not isinstance(index, tuple):
+            index = (index,)
+
+        index_list = []
+        ellipsis_expanded = False
+
+        for idx in index:
+            if idx is Ellipsis:
+                if ellipsis_expanded:
+                    raise IndexError("Only one ellipsis allowed in index")
+                num_missing = ndim - len(index) + 1
+                index_list.extend([slice(None)] * num_missing)
+                ellipsis_expanded = True
+            else:
+                index_list.append(idx)
+
+        if len(index_list) < ndim:
+            index_list.extend([slice(None)] * (ndim - len(index_list)))
+
+        return tuple(index_list[:ndim])
+
+    def _get_dims_kept(self, index_normalized):
+        dims_kept = []
+        for idx in index_normalized:
+            if isinstance(idx, (slice, type(None), type(Ellipsis))):
+                dims_kept.append(True)
+            elif np.isscalar(idx):
+                dims_kept.append(False)
+            elif isinstance(idx, (list, np.ndarray)):
+                dims_kept.append(True)
+            else:
+                # Unknown type, assume dimension is kept
+                dims_kept.append(True)
+        return dims_kept
+
     def toR(self):
         from .convert_py2r import convert_numpy2r
         from .RAttributes import structure, attributes2r
 
-        # Convert the numpy array to R
         R_object = convert_numpy2r(np.asarray(self))
-
-        # Apply R attributes if they exist
         if self._Rattributes is not None:
             R_attributes = attributes2r(self._Rattributes)
             R_object = structure(R_object, **R_attributes)
 
         return R_object
+
+    def toPy(self):
+        return np.asarray(self)
 
 
 def get_RArray(x: Any) -> RArray | int:

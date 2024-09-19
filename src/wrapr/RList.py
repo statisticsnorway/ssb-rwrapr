@@ -35,6 +35,9 @@ class RList(UserList):
         R_attributes = attributes2r(self._Rattributes)
         return structure(R_object, **R_attributes)
 
+    def toPy(self):
+        return list(self)
+
 
 
 class RDict(UserDict):
@@ -51,6 +54,9 @@ class RDict(UserDict):
             return R_object
         R_attributes = attributes2r(self._Rattributes)
         return structure(R_object, **R_attributes)
+
+    def toPy(self):
+        return dict(self)
 
 
 def convert_r2pylist(X: List | Tuple | UserList | RList) -> Any:
