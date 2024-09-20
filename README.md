@@ -1,4 +1,4 @@
-# `ssb-wrapr-python`
+# `WrapR`<img src="images/WrapR-logo.png" alt="Logo" align = "right" height="139" class="logo">
 wrapr is a `python` package for using R inside of python.
 It is built using `rpy2`, but attempts to be more convient to use. 
 Ideally you should never have to worry about using `R` objects,
