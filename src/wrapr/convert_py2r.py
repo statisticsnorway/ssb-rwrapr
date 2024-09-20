@@ -30,13 +30,13 @@ def convert_py_args2r(args: List[Any], kwargs: Dict[str, Any]) -> None:
 
 
 def convert_py2r(x: Any) -> Any:  # RBaseObject | PyDtype | Any:
-    from .RObject import RObject
+    from .RView import RView
     from .RArray import RArray
     from .RList import RList, RDict, pylist2rlist, dict2rlist
     from .RDataFrame import RDataFrame, pandas2r
 
     match x:
-        case RObject() | RArray() | RList() | RDataFrame() | RDict():
+        case RView() | RArray() | RList() | RDataFrame() | RDict():
             return x.toR()
         case np.ndarray():
             return convert_numpy2r(x)

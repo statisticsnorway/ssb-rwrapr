@@ -5,10 +5,16 @@ from typing import Any, Callable
 from .rutils import rcall
 
 
-class RObject():
-
+class RView():
     def __init__(self, Robj: Any):
-        self.Robj = Robj
+        from .RArray import RArray
+        from .RDataFrame import RDataFrame
+        from .RList import RList, RDict
+
+        if isinstance(Robj, (RArray, RDataFrame, RList, RDict)):
+            self.Robj = Robj.toR()
+        else:
+            self.Robj = Robj
 
     def __str__(self) -> str:
         # return captureRprint(self.Robj) 
@@ -29,9 +35,9 @@ class RObject():
     def __iter__(self):
         return self.Robj.__iter__()
 
-    def to_py(self):
+    def toPy(self, ignoreS3 = False):
         from .convert_r2py import convert_r2py
-        return convert_r2py(self.Robj)
+        return convert_r2py(self.Robj, ignoreS3=ignoreS3)
 
     def toR(self):
         return self.Robj
@@ -44,7 +50,7 @@ def convert_s4(x: ro.methods.RS4) -> Any:
 
     rclass = get_rclass(x)
     if rclass is None:
-        return RObject(x)
+        return RView(x)
 
     match np_collapse(rclass):
         case "dgCMatrix": # to do: put this in a seperate function
@@ -52,4 +58,4 @@ def convert_s4(x: ro.methods.RS4) -> Any:
             sparse = scipy.sparse.coo_matrix(dense)
             return sparse
         case _:
-            return RObject(x)
+            return RView(x)
