@@ -27,7 +27,8 @@ jobs:
 
       - name: Install R packages
         run: |
-          Rscript -e 'install.packages(c("dplyr", "GaussSuppression", "SSBtools"), repos="http://cran.us.r-project.org")'
+          Rscript -e 'install.packages(c("dplyr", "GaussSuppression", 
+                                         "modsem", "SSBtools"), repos="http://cran.us.r-project.org")'
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v5
