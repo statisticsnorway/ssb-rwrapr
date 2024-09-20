@@ -24,7 +24,7 @@ from .lazy_rexpr import lazily, lazy_wrap
 from .rutils import has_unsupported_rclass, rcall
 
 
-def convert_r2py(x: Any) -> Any:
+def convert_r2py(x: Any, ignoreS3: bool = False) -> Any:
     from .RArray import get_RArray, filter_numpy, is_valid_numpy
     from .RDataFrame import RDataFrame
     from .RDataFrame import attempt_pandas_conversion
@@ -32,7 +32,7 @@ def convert_r2py(x: Any) -> Any:
     from .RList import convert_r2pylist
     from .RList import convert_rlist2py
     from .RList import is_rlist
-    from .RObject import RObject, convert_s4
+    from .RView import RView, convert_s4
 
 
     match x:
@@ -47,8 +47,8 @@ def convert_r2py(x: Any) -> Any:
             return get_RArray(x) # return RArray, or int|str|bool|float if len == 1
         case ro.methods.RS4():
             return convert_s4(x)
-        case _ if has_unsupported_rclass(x):
-            return RObject(x)
+        case _ if has_unsupported_rclass(x) and not ignoreS3:
+            return RView(x)
         case list():
             return convert_r2pylist(x)
         case tuple():
@@ -66,4 +66,4 @@ def convert_r2py(x: Any) -> Any:
         case vc.ListSexpVector() | vc.ListVector():
             return convert_rlist2py(x)
         case _:
-            return RObject(x)
+            return RView(x)

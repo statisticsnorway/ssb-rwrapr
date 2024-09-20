@@ -12,6 +12,6 @@ from .RDataFrame import RDataFrame
 from .renv import Renv
 from .RFactor import RFactor
 from .RList import RList, RDict
-from .RObject import RObject
+from .RView import RView
 from .settings import Settings
 from .settings import settings

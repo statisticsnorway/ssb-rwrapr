@@ -10,7 +10,7 @@ from .lazy_rexpr import lazy_wrap
 from .settings import Settings, settings
 
 def wrap_rfunc(func: Callable | Any, name: str | None) -> Callable | Any:
-    from .RObject import RObject
+    from .RView import RView
     from .RArray import RArray
     from .RDataFrame import RDataFrame
     # should be a Callable, but may f-up (thus Any)
@@ -25,7 +25,7 @@ def wrap_rfunc(func: Callable | Any, name: str | None) -> Callable | Any:
                              func_name=name)
         r_object: Any = lazyfunc(*args, **kwargs)
         if settings.Rview:
-            return RObject(r_object)  
+            return RView(r_object)  
         else:
             return convert_r2py(r_object)
 

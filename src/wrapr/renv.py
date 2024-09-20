@@ -16,7 +16,7 @@ from .utils import ROutputCapture, pinfo
 from .function_wrapper import rfunc, wrap_rfunc # wrap_rfunc should perhaps be its own module
 from .rutils import rcall
 from .convert_r2py import convert_r2py 
-from .RObject import RObject
+from .RView import RView
 from .settings import Settings, settings
 
 class Renv:
@@ -103,12 +103,12 @@ class Renv:
     #         return attributes
 
 
-def fetch_data(dataset: str, module: rpkg.Package) -> pd.DataFrame | RObject | None:
+def fetch_data(dataset: str, module: rpkg.Package) -> pd.DataFrame | RView | None:
     try:
         r_object = rpkg.data(module).fetch(dataset)[dataset]
 
         if settings.Rview:
-            return RObject(r_object)
+            return RView(r_object)
         else:
             return convert_r2py(r_object)
 

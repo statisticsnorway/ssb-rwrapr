@@ -16,7 +16,7 @@ from .nputils import np_collapse
 from .lazy_rexpr import lazily, lazy_wrap
 from .rutils import rcall
         
-# from .RObject import RObject
+# from .RView import RView
 # from .RArray  import convert_numpy, is_valid_numpy, filter_numpy
 # from .RDataFrame import convert_pandas, attempt_pandas_conversion, RDataFrame
 
