@@ -39,6 +39,7 @@ x = get_x(mm)
 
 # test_that("Advanced with integer overflow", {
 def test_Advanced_with_integer_overflow():
+    # This test will not pass on all platforms, ask the original author for more information
     a = GS.GaussSuppressionFromData(z3, 
                                     np.arange(1, 7), 7, 
                                     x = mm["modelMatrix"],
