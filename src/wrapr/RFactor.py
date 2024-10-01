@@ -1,17 +1,24 @@
 import pandas as pd
 import rpy2.robjects as ro
+import rpy2.robjects.vectors as vc
 from rpy2.robjects import pandas2ri
-
+from .RAttributes import get_Rattributes
+from typing import Any
 
 class RFactor(pd.Series):
     def __init__(self, r_factor: ro.vectors.FactorVector):
         super().__init__(convert_r_to_py(r_factor))
+        self._Rattributes = get_attributes_factor(r_factor)
 
     def toR(self):
         return convert_to_r(self)
 
     def toPy(self):
         return pd.Series(self)
+
+
+def get_attributes_factor(df: vc.FactorVector) -> dict[str, Any] | None:
+    return get_Rattributes(df, exclude=["class", "levels"])
 
 
 def convert_to_r(series: pd.Series):

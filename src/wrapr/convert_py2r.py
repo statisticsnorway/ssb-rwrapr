@@ -33,10 +33,11 @@ def convert_py2r(x: Any) -> Any:  # RBaseObject | PyDtype | Any:
     from .RView import RView
     from .RArray import RArray
     from .RList import RList, RDict, pylist2rlist, dict2rlist
+    from .RFactor import RFactor
     from .RDataFrame import RDataFrame, pandas2r
 
     match x:
-        case RView() | RArray() | RList() | RDataFrame() | RDict():
+        case RView() | RArray() | RList() | RDataFrame() | RDict() | RFactor():
             return x.toR()
         case np.ndarray():
             return convert_numpy2r(x)
@@ -48,6 +49,8 @@ def convert_py2r(x: Any) -> Any:  # RBaseObject | PyDtype | Any:
             return pylist2rlist(x)
         case pd.DataFrame():
             return pandas2r(x)
+        case pd.Categorical():
+            return ro.FactorVector(x)
         case pd.Series():
             return convert_py2r(x.to_numpy())
         case NoneType():
