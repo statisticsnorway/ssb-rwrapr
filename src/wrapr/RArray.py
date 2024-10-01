@@ -21,7 +21,7 @@ class RArray(np.ndarray):
         arr_c = np.ascontiguousarray(arr)
         obj = arr_c.view(cls)
 
-        obj._Rattributes = get_Rattributes(Rdata)
+        obj._Rattributes = get_attributes_array(Rdata)
         return obj
 
     def __array_finalize__(self, obj):
@@ -167,7 +167,7 @@ def get_RArray(x: Any) -> RArray | int:
 
 
 def get_attributes_array(x) -> Dict | None:
-    return get_Rattributes(x, exclude=["class", "dimnames", "dim"])
+    return get_Rattributes(x, exclude=["class"])
 
 
 def convert_numpy(x: vc.Vector | NDArray, flatten: bool = False) -> NDArray | None:
