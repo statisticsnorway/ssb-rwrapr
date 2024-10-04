@@ -28,7 +28,7 @@
 ## Features
 <img src="images/WrapR-logo.png" alt="Logo" align = "right" height="139" class="logo">
 `WrapR` is a `python` package for using R inside of python.
-It is built using `rpy2`, but attempts to be more convient to use. 
+It is built using `rpy2`, but attempts to be more convient to use.
 Ideally you should never have to worry about using `R` objects,
 instead treating `R` functions as normal `python` functions, where the inputs
 and outputs are `python` objects.
@@ -55,7 +55,7 @@ df = dplyr.mutate(iris, Sepal = wr.lazily("round(Sepal.Length * 2, 0)"))
     2. Names/Dimnames for Vectors/Arrays/Matrices
     3. Factors/Ordered Vectors
     4. Better warning handling (this will likely be tricky)
-        - Sometimes we will get datatypes which are incompatible, 
+        - Sometimes we will get datatypes which are incompatible,
             e.g., warning accompanied by
 
 ## Requirements

@@ -1,6 +1,5 @@
 import warnings
 
-
 warnings.simplefilter("always")
 
 from .lazy_rexpr import lazily
@@ -11,7 +10,8 @@ from .RArray import RArray
 from .RDataFrame import RDataFrame
 from .renv import Renv
 from .RFactor import RFactor
-from .RList import RList, RDict
+from .RList import RDict
+from .RList import RList
 from .RView import RView
 from .settings import Settings
 from .settings import settings

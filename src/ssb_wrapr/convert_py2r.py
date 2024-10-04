@@ -1,16 +1,17 @@
 import warnings
-from numpy._typing import NDArray
-import scipy
-import rpy2.robjects as ro
+from collections import OrderedDict
+from collections.abc import Callable
+from types import NoneType
+from typing import Any
+
 import numpy as np
 import pandas as pd
-
-from types import NoneType
-from collections import OrderedDict
-from typing import Any, Callable, Dict, List, Set, Tuple
-from rpy2.robjects import FloatVector, pandas2ri, numpy2ri
+import rpy2.robjects as ro
+import scipy
+import numpy.typing as npt
 
 from .rutils import rcall
+
 # We can uncomment this when we transition to 3.12
 # type RBaseObject = (
 #         ro.FloatVector | ro.FloatVector | ro.IntVector |
@@ -22,7 +23,7 @@ from .rutils import rcall
 
 
 # functions for converting from py 2 R -----------------------------------------
-def convert_py_args2r(args: List[Any], kwargs: Dict[str, Any]) -> None:
+def convert_py_args2r(args: list[Any], kwargs: dict[str, Any]) -> None:
     for i, x in enumerate(args):
         args[i] = convert_py2r(x)
     for k, v in kwargs.items():
@@ -30,11 +31,15 @@ def convert_py_args2r(args: List[Any], kwargs: Dict[str, Any]) -> None:
 
 
 def convert_py2r(x: Any) -> Any:  # RBaseObject | PyDtype | Any:
-    from .RView import RView
     from .RArray import RArray
-    from .RList import RList, RDict, pylist2rlist, dict2rlist
+    from .RDataFrame import RDataFrame
+    from .RDataFrame import pandas2r
     from .RFactor import RFactor
-    from .RDataFrame import RDataFrame, pandas2r
+    from .RList import RDict
+    from .RList import RList
+    from .RList import dict2rlist
+    from .RList import pylist2rlist
+    from .RView import RView
 
     match x:
         case RView() | RArray() | RList() | RDataFrame() | RDict() | RFactor():
@@ -67,7 +72,7 @@ def convert_py2r(x: Any) -> Any:  # RBaseObject | PyDtype | Any:
             return x
 
 
-def convert_numpy2r(x: NDArray) -> Any:  # RBaseObject:
+def convert_numpy2r(x: npt.NDArray) -> Any:  # RBaseObject:
     y = x.copy()
     if not y.shape:
         y = y[np.newaxis]
@@ -82,7 +87,7 @@ def convert_numpy2r(x: NDArray) -> Any:  # RBaseObject:
             return convert_numpyND(y)
 
 
-def convert_numpy1D(x: NDArray) -> Any:  # RBaseObject:
+def convert_numpy1D(x: npt.NDArray) -> Any:  # RBaseObject:
     match x.dtype.kind:
         case "b":
             return ro.BoolVector(x)
@@ -106,7 +111,7 @@ def convert_numpy1D(x: NDArray) -> Any:  # RBaseObject:
             return x
 
 
-def convert_numpy2D(x: NDArray) -> Any:  # RBaseObject:
+def convert_numpy2D(x: npt.NDArray) -> Any:  # RBaseObject:
     flat_x: NDArray = x.flatten(order="F")
     nrow, ncol = x.shape
     y = convert_numpy1D(flat_x)
@@ -114,9 +119,9 @@ def convert_numpy2D(x: NDArray) -> Any:  # RBaseObject:
     return f(y, nrow=nrow, ncol=ncol)
 
 
-def convert_numpyND(x: NDArray) -> Any:  # RBaseObject:
+def convert_numpyND(x: npt.NDArray) -> Any:  # RBaseObject:
     flat_x: NDArray = x.flatten(order="F")
-    dim: Tuple = x.shape
+    dim: tuple = x.shape
     y = convert_numpy1D(flat_x)
     f: Callable = ro.r("array")
     return f(y, dim=ro.IntVector(dim))

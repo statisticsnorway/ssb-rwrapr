@@ -9,7 +9,7 @@ class Settings:
 
     def _initialize(self):
         self.Rview = False
-    
+
     def set_Rview(self, rview: bool):
         self.Rview = rview
 

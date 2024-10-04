@@ -4,16 +4,13 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-			 // R Extensions
 			 "rdebugger.r-debugger",
 			 "reditorsupport.r",
-			 // Docker Supporting Extensions
 			 "ms-azuretools.vscode-docker",
 			 "ms-vscode-remote.remote-containers",
-			 // Python Extensions
 			 "ms-python.python",
 			 "ms-toolsai.jupyter"
 			]
-		} 
+		}
 	}
  }
