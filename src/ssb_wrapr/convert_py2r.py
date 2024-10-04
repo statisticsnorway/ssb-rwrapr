@@ -5,12 +5,13 @@ from types import NoneType
 from typing import Any
 
 import numpy as np
+import numpy.typing as npt
 import pandas as pd
 import rpy2.robjects as ro
 import scipy
-import numpy.typing as npt
 
 from .rutils import rcall
+
 
 # We can uncomment this when we transition to 3.12
 # type RBaseObject = (

@@ -19,7 +19,9 @@
 
 # %%
 import numpy as np
+
 import ssb_wrapr as wr
+
 
 # %% [markdown]
 # Importere `R`-pakker (`GaussSuppression` og `SSBtools`)

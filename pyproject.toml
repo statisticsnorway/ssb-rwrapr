@@ -43,6 +43,7 @@ xdoctest = { extras = ["colors"], version = ">=0.15.10" }
 myst-parser = { version = ">=0.16.1" }
 ipykernel = ">=6.15.3"
 pytest-cov = ">=2.8"
+isort = ">=5.13.2"
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
@@ -88,13 +89,13 @@ extend-exclude = [
 [tool.ruff.lint]
 select = [
     "A",    # prevent using keywords that clobber python builtins
-    "ANN",  # check type annotations
+#    "ANN",  # check type annotations
     "B",    # bugbear: security warnings
-    "D",    # documentation
+#    "D",    # documentation
     "E",    # pycodestyle
     "F",    # pyflakes
     "ISC",  # implicit string concatenation
-    "I",    # sort imports
+#    "I",    # sort imports
     "UP",   # alert you when better syntax is available in your python version
     "RUF",  # the ruff developer's own rules
 ]
@@ -140,3 +141,17 @@ classmethod-decorators = ["classmethod", "validator", "root_validator", "pydanti
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"
+force_single_line = true
+skip_gitignore = true
+lines_after_imports = 2
+# The line below is needed for jupyter notebooks stored as .py in percent format.
+# See https://github.com/PyCQA/isort/issues/1338 for details
+treat_comments_as_code = ["# %%"]
+
+[tool.jupytext]
+formats = "ipynb,auto:percent"
+notebook_metadata_filter = "jupytext.text_representation,-jupytext.text_representation.jupytext_version,-widgets,-varInspector"
+cell_metadata_filter = "-papermill,tags"

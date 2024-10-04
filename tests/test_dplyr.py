@@ -3,6 +3,7 @@ import pytest
 
 import ssb_wrapr as wr
 
+
 dplyr = wr.library("dplyr")
 dt = wr.library("datasets")
 
