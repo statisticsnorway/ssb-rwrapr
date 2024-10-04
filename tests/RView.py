@@ -1,4 +1,4 @@
-import wrapr as wr
+import ssb_wrapr as wr
 
 bs = wr.library("base")
 dt = wr.library("datasets")
