@@ -1,18 +1,17 @@
-from typing import Any, Dict
 import numpy as np
 import rpy2
 import rpy2.robjects.vectors as vc
+import rpy2.robjects as ro
+import warnings
 
 from numpy.typing import NDArray
-
 from wrapr.RAttributes import get_Rattributes
 from wrapr.convert_py2r import convert_py2r
+from typing import Any, Dict, Tuple, Callable
 
 
 class RArray(np.ndarray):
     def __new__(cls, Rdata):
-        from .RAttributes import get_Rattributes
-
         arr = convert_numpy(Rdata)
         if not isinstance(arr, np.ndarray):
             raise TypeError("convert_numpy(Rdata) must return a numpy.ndarray")
@@ -146,7 +145,6 @@ class RArray(np.ndarray):
         return dims_kept
 
     def toR(self):
-        from .convert_py2r import convert_numpy2r
         from .RAttributes import structure, attributes2r
 
         R_object = convert_numpy2r(np.asarray(self))
@@ -160,7 +158,7 @@ class RArray(np.ndarray):
         return np.asarray(self)
 
 
-def get_RArray(x: Any) -> RArray | int:
+def get_RArray(x: Any) -> RArray | NDArray:
     y: RArray = RArray(x)
     return y[0] if y.shape == (1,) and y._Rattributes is None else y
 
@@ -170,7 +168,7 @@ def get_attributes_array(x) -> Dict | None:
     return get_Rattributes(x, exclude=["class"])
 
 
-def convert_numpy(x: vc.Vector | NDArray, flatten: bool = False) -> NDArray | None:
+def convert_numpy(x: vc.Vector | NDArray, flatten: bool = False) -> NDArray | None | int | str | float | bool:
     if isinstance(x, rpy2.rinterface_lib.sexp.NULLType):
         return None
     match x: # this should be expanded upon
@@ -203,3 +201,56 @@ def filter_numpy(x: NDArray, flatten: bool) -> NDArray | int | str | float | boo
 
 def is_valid_numpy(x: NDArray) -> bool:
     return x.dtype.fields is None
+
+
+def convert_numpy2r(x: NDArray) -> Any:  # RBaseObject:
+    y = x.copy()
+    if not y.shape:
+        y = y[np.newaxis]
+    match len(y.shape):
+        case 0:
+            raise ValueError("Unexpected shape of numpy array")
+        case 1:
+            return convert_numpy1D(y)
+        case 2:
+            return convert_numpy2D(y)
+        case _:
+            return convert_numpyND(y)
+
+
+def convert_numpy1D(x: NDArray) -> Any:  # RBaseObject:
+    match x.dtype.kind:
+        case "b":
+            return ro.BoolVector(x)
+        case "i":
+            return ro.IntVector(x)
+        case "f":
+            return ro.FloatVector(x)
+        case "U" | "S":
+            return ro.StrVector(x)
+        case "O":
+            try:
+                y = x.astype("U")
+            except Exception:
+                warnings.warn("dtype = object is not supported, this will probaly not work")
+                y = convert_py2r(x.tolist())
+            finally:
+                return ro.StrVector(y)
+        case _:
+            return x
+
+
+def convert_numpy2D(x: NDArray) -> Any:  # RBaseObject:
+    flat_x: NDArray = x.flatten(order="F")
+    nrow, ncol = x.shape
+    y = convert_numpy1D(flat_x)
+    f: Callable = ro.r("matrix")
+    return f(y, nrow=nrow, ncol=ncol)
+
+
+def convert_numpyND(x: NDArray) -> Any:  # RBaseObject:
+    flat_x: NDArray = x.flatten(order="F")
+    dim: Tuple = x.shape
+    y = convert_numpy1D(flat_x)
+    f: Callable = ro.r("array")
+    return f(y, dim=ro.IntVector(dim))

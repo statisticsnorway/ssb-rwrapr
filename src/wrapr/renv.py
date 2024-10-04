@@ -19,10 +19,10 @@ from .convert_r2py import convert_r2py
 from .RView import RView
 from .settings import Settings, settings
 
+
 class Renv:
     def __init__(self, env_name, interactive = True):
         pinfo("Loading packages...", verbose=True)
-        # self.__Renvironments__ = load_base_envs()
         self.__set_base_lib__(try_load_namespace(env_name, verbose=True,
                                                  interactive=interactive))
 
@@ -70,6 +70,7 @@ class Renv:
             return getattr(self, name)
 
     def __function__(self, name: str, expr: str) -> None:
+        """Attach an R function to the Renv object."""
         rfunc: Callable | Any = ro.r(expr, invisible=True,
                                      print_r_warnings=False)
         # also attach to global namespace
@@ -79,6 +80,7 @@ class Renv:
         self.__attach__(name=name, attr=pyfunc)
 
     def function(self, expr: str) -> Callable:
+        """Create a Python function from an R expression."""
         rfunc: Callable | Any = ro.r(expr, invisible=True,
                                      print_r_warnings=False)
         pyfunc: Callable = wrap_rfunc(rfunc, name=None)
@@ -87,20 +89,18 @@ class Renv:
         return pyfunc
    
     def print(self, x):
+        """Print an object, as it would be printed in R."""
         foo: Callable = rfunc("""function(x, ...) {
             paste(utils::capture.output(print(x, ...)), collapse = "\n")
         }""")
         print(foo(x))
 
-    # def attributes(self, py_object: Any) -> Any:
-    #     return py_object._Rattributes
-
-    # def attr(self, py_object: Any, key: str) -> Any:
-    #     attributes = self.attributes(py_object)
-    #     try:
-    #         return attributes[key]
-    #     except TypeError:
-    #         return attributes
+    def rclass(self, x):
+        """Get the class of an object, as it would be in R."""
+        foo: Callable = rfunc("""function(x) {
+            class(x)
+        }""")
+        return foo(x)
 
 
 def fetch_data(dataset: str, module: rpkg.Package) -> pd.DataFrame | RView | None:
@@ -114,7 +114,7 @@ def fetch_data(dataset: str, module: rpkg.Package) -> pd.DataFrame | RView | Non
 
     except KeyError:
         return None
-    except:
+    except Exception:
         return None
 
         
