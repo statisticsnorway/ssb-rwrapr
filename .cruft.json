@@ -1,15 +1,29 @@
 {
-  "template": "https://github.com/statisticsnorway/ssb-project-template-stat",
-  "commit": "b41ddc5575550db3fe01c16181e6b05701bd41d4",
-  "checkout": "1.1.7",
+  "template": "https://github.com/statisticsnorway/ssb-pypitemplate.git",
+  "commit": "e6f0ca2794354d16838cf36d97bee2f9f70d3142",
+  "checkout": "2024.9.10",
   "context": {
     "cookiecutter": {
-      "full_name": "ssb-pph",
-      "email": "pph@ssb.no",
-      "project_name": "wrapr",
-      "description": "Python package for using R in Python",
-      "license_year": "2024",
-      "_template": "https://github.com/statisticsnorway/ssb-project-template-stat"
+      "project_name": "ssb-wrapr",
+      "package_name": "ssb_wrapr",
+      "friendly_name": "SSB WrapR",
+      "copyright_owner": "Statistics Norway",
+      "copyright_year": "2024",
+      "author": "Kjell Solem Slupphaug",
+      "email": "kjell.solem.slupphaug",
+      "github_organization": "statisticsnorway",
+      "version": "0.1.0",
+      "license": "MIT",
+      "development_status": "Development Status :: 4 - Beta",
+      "code_quality_level": "Medium",
+      "_copy_without_render": [
+        "*.rst_t"
+      ],
+      "_jinja2_env_vars": {
+        "lstrip_blocks": true,
+        "trim_blocks": true
+      },
+      "_template": "https://github.com/statisticsnorway/ssb-pypitemplate.git"
     }
   },
   "directory": null
