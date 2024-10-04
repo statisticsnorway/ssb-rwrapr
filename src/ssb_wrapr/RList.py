@@ -10,7 +10,7 @@ from typing import Any, Callable, Dict, List, OrderedDict, Set, Tuple
 from copy import Error
 from rpy2.robjects import pandas2ri, numpy2ri, rpy2
 
-from wrapr.RAttributes import attributes2r
+from ssb_wrapr.RAttributes import attributes2r
 
 from .nputils import np_collapse
 from .lazy_rexpr import lazily, lazy_wrap

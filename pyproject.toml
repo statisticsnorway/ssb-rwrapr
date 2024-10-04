@@ -14,7 +14,7 @@ classifiers = ["Development Status :: 4 - Beta"]
 Changelog = "https://github.com/statisticsnorway/ssb-wrapr/releases"
 
 [tool.poetry.dependencies]
-python = ">=3.10"
+python = ">=3.10,<4.0"
 pandas = ">=2.2.0"
 rpy2 = ">=3.5.16"
 termcolor = ">=2.4.0"

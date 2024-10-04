@@ -1,4 +1,4 @@
-import wrapr as wr
+import ssb_wrapr as wr
 import numpy as np
 import pandas as pd
 import pytest

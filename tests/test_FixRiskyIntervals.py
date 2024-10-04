@@ -1,5 +1,5 @@
 import pytest
-import wrapr as wr
+import ssb_wrapr as wr
 import pandas as pd
 import numpy as np
 
