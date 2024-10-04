@@ -1,7 +1,9 @@
-from .renv import Renv
 import rpy2.robjects.packages as rpkg
 
-def library(env_name: str, interactive = True) -> Renv | None:
+from .renv import Renv
+
+
+def library(env_name: str, interactive=True) -> Renv | None:
     try:
         return Renv(env_name, interactive=interactive)
     except rpkg.PackageNotInstalledError:
@@ -11,5 +13,5 @@ def library(env_name: str, interactive = True) -> Renv | None:
             raise rpkg.PackageNotInstalledError
 
 
-def importr(env_name: str, interactive = True) -> Renv | None:
+def importr(env_name: str, interactive=True) -> Renv | None:
     return library(env_name, interactive=interactive)

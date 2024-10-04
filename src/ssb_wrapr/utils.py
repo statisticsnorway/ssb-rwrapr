@@ -1,10 +1,10 @@
-import termcolor as tc
 import rpy2.rinterface_lib.callbacks
+import termcolor as tc
 
 
-def pinfo(message: str, verbose = True) -> None:
+def pinfo(message: str, verbose=True) -> None:
     if verbose:
-        print(tc.colored('Info', 'green') + " | " + message)
+        print(tc.colored("Info", "green") + " | " + message)
 
 
 class ROutputCapture:
@@ -15,8 +15,12 @@ class ROutputCapture:
         self.stderr_orig = None
 
     def capture_r_output(self):
-        def add_to_stdout(line): self.stdout.append(line)
-        def add_to_stderr(line): self.stderr.append(line)
+        def add_to_stdout(line):
+            self.stdout.append(line)
+
+        def add_to_stderr(line):
+            self.stderr.append(line)
+
         self.stdout_orig = rpy2.rinterface_lib.callbacks.consolewrite_print
         self.stderr_orig = rpy2.rinterface_lib.callbacks.consolewrite_warnerror
         rpy2.rinterface_lib.callbacks.consolewrite_print = add_to_stdout

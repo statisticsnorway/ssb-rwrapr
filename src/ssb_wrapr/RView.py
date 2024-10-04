@@ -1,15 +1,16 @@
+from collections.abc import Callable
+from typing import Any
+
 import rpy2.robjects as ro
 import scipy
 
-from typing import Any, Callable
-from .rutils import rcall
 
-
-class RView():
+class RView:
     def __init__(self, Robj: Any):
         from .RArray import RArray
         from .RDataFrame import RDataFrame
-        from .RList import RList, RDict
+        from .RList import RDict
+        from .RList import RList
 
         if isinstance(Robj, (RArray, RDataFrame, RList, RDict)):
             self.Robj = Robj.toR()
@@ -17,7 +18,7 @@ class RView():
             self.Robj = Robj
 
     def __str__(self) -> str:
-        # return captureRprint(self.Robj) 
+        # return captureRprint(self.Robj)
         return self.Robj.__str__()
 
     def __repr__(self):
@@ -26,6 +27,7 @@ class RView():
 
     def __getattr__(self, name: str) -> Any:
         from .function_wrapper import rfunc
+
         fun: Callable = rfunc(name)
         return fun(self.Robj)
 
@@ -35,8 +37,9 @@ class RView():
     def __iter__(self):
         return self.Robj.__iter__()
 
-    def toPy(self, ignoreS3 = False):
+    def toPy(self, ignoreS3=False):
         from .convert_r2py import convert_r2py
+
         return convert_r2py(self.Robj, ignoreS3=ignoreS3)
 
     def toR(self):
@@ -44,16 +47,17 @@ class RView():
 
 
 def convert_s4(x: ro.methods.RS4) -> Any:
-    from .rutils import get_rclass, as_matrix
     from .nputils import np_collapse
     from .RArray import convert_numpy
+    from .rutils import as_matrix
+    from .rutils import get_rclass
 
     rclass = get_rclass(x)
     if rclass is None:
         return RView(x)
 
     match np_collapse(rclass):
-        case "dgCMatrix": # to do: put this in a seperate function
+        case "dgCMatrix":  # to do: put this in a seperate function
             dense = convert_numpy(as_matrix(x))
             sparse = scipy.sparse.coo_matrix(dense)
             return sparse

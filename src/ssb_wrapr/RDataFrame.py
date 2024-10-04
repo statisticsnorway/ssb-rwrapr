@@ -1,10 +1,10 @@
+import warnings
 from typing import Any
 
 import pandas as pd
 import rpy2.robjects as ro
 import rpy2.robjects.vectors as vc
 from rpy2.robjects import pandas2ri
-import warnings
 
 from ssb_wrapr.RAttributes import get_Rattributes
 
@@ -22,10 +22,11 @@ class RDataFrame(pd.DataFrame):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self._Rattributes = attrs
-    
+
     def toR(self) -> vc.DataFrame:
         from .RAttributes import attributes2r
         from .RAttributes import structure
+
         with (ro.default_converter + pandas2ri.converter).context():
             R_df = ro.conversion.get_conversion().py2rpy(self)
 
@@ -39,10 +40,8 @@ class RDataFrame(pd.DataFrame):
         return pd.DataFrame(self)
 
 
-
 def get_attributes_dataframe(df: vc.DataFrame) -> dict[str, Any] | None:
     return get_Rattributes(df, exclude=["names", "class", "row.names"])
-
 
 
 def toPandas(df: vc.DataFrame) -> pd.DataFrame:

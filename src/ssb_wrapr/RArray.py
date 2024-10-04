@@ -1,17 +1,15 @@
-from typing import Any, Dict
+from typing import Any
+
 import numpy as np
 import rpy2
 import rpy2.robjects.vectors as vc
-
 from numpy.typing import NDArray
 
 from ssb_wrapr.RAttributes import get_Rattributes
-from ssb_wrapr.convert_py2r import convert_py2r
 
 
 class RArray(np.ndarray):
     def __new__(cls, Rdata):
-        from .RAttributes import get_Rattributes
 
         arr = convert_numpy(Rdata)
         if not isinstance(arr, np.ndarray):
@@ -28,7 +26,7 @@ class RArray(np.ndarray):
         if obj is None:
             return
         # Copy the _Rattributes from the source object
-        self._Rattributes = getattr(obj, '_Rattributes', None)
+        self._Rattributes = getattr(obj, "_Rattributes", None)
 
     def __getitem__(self, index):
         result = super().__getitem__(index)
@@ -38,12 +36,12 @@ class RArray(np.ndarray):
             return result
 
         # Copy the _Rattributes
-        if hasattr(self, '_Rattributes') and self._Rattributes is not None:
-            result._Rattributes = getattr(self, '_Rattributes', {}).copy()
+        if hasattr(self, "_Rattributes") and self._Rattributes is not None:
+            result._Rattributes = getattr(self, "_Rattributes", {}).copy()
 
-            orig_dimnames = self._Rattributes.get('dimnames', None)
-            orig_names = self._Rattributes.get('names', None)
-            orig_dim = self._Rattributes.get('dim', None)
+            orig_dimnames = self._Rattributes.get("dimnames", None)
+            orig_names = self._Rattributes.get("names", None)
+            orig_dim = self._Rattributes.get("dim", None)
 
             ndim_self = self.ndim
             ndim_result = result.ndim
@@ -80,7 +78,7 @@ class RArray(np.ndarray):
                         # Dimension is removed, do not add dimname
                         pass
 
-                result._Rattributes['dimnames'] = new_dimnames
+                result._Rattributes["dimnames"] = new_dimnames
 
             # Update names for 1D arrays
             elif orig_names is not None:
@@ -94,18 +92,18 @@ class RArray(np.ndarray):
                         indices = np.arange(len(names_array))[idx]
                         new_names = names_array[indices]
 
-                    result._Rattributes['names'] = new_names
+                    result._Rattributes["names"] = new_names
                 elif ndim_self == 1 and ndim_result == 0:
-                    result._Rattributes.pop('names', None)
+                    result._Rattributes.pop("names", None)
 
             if orig_dim is not None:
                 if ndim_result > 0:
                     new_dim = result.shape
                     new_dim_array = np.array(new_dim)
-                    result._Rattributes['dim'] = new_dim_array
+                    result._Rattributes["dim"] = new_dim_array
                 else:
                     # Result is scalar, remove 'dim' attribute
-                    result._Rattributes.pop('dim', None)
+                    result._Rattributes.pop("dim", None)
 
         return result
 
@@ -147,7 +145,8 @@ class RArray(np.ndarray):
 
     def toR(self):
         from .convert_py2r import convert_numpy2r
-        from .RAttributes import structure, attributes2r
+        from .RAttributes import attributes2r
+        from .RAttributes import structure
 
         R_object = convert_numpy2r(np.asarray(self))
         if self._Rattributes is not None:
@@ -165,15 +164,14 @@ def get_RArray(x: Any) -> RArray | int:
     return y[0] if y.shape == (1,) and y._Rattributes is None else y
 
 
-
-def get_attributes_array(x) -> Dict | None:
+def get_attributes_array(x) -> dict | None:
     return get_Rattributes(x, exclude=["class"])
 
 
 def convert_numpy(x: vc.Vector | NDArray, flatten: bool = False) -> NDArray | None:
     if isinstance(x, rpy2.rinterface_lib.sexp.NULLType):
         return None
-    match x: # this should be expanded upon
+    match x:  # this should be expanded upon
         case vc.BoolVector() | vc.BoolArray() | vc.BoolMatrix():
             dtype = "bool"
         case vc.FloatVector() | vc.FloatArray() | vc.FloatMatrix():

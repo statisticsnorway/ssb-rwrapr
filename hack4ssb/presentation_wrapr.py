@@ -18,15 +18,15 @@
 # Importere `WrapR` og `Numpy`
 
 # %%
-import wrapr
 import numpy as np
+import ssb_wrapr as wr
 
 # %% [markdown]
 # Importere `R`-pakker (`GaussSuppression` og `SSBtools`)
 
 # %%
-GaussSuppression = wrapr.library("GaussSuppression")
-SSBtools = wrapr.library("SSBtools")
+GaussSuppression = wr.library("GaussSuppression")
+SSBtools = wr.library("SSBtools")
 
 # %% [markdown]
 # Åpne et testdataset fra `SSBtools`
@@ -47,7 +47,7 @@ suppressed.sample(5, random_state=22)
 # Hvis du virkelig hater `Python` og i steden vil skrive `R`-kode, så kan du gjøre det også...
 
 # %%
-R = wrapr.library("base") # Importer baselibrariettil R
+R = wr.library("base")  # Importer baselibrariettil R
 
 # %% [markdown]
 # Du trenger ikke å bruke et `Numpy.ndarray`, men kan heller bruke `c()`
@@ -59,11 +59,11 @@ R.c(1, 2, 3)
 # Du trenger heller ikke å bruke en `Pandas.DataFrame`, og kan heller bruke `data.frame`
 
 # %%
-R.data_frame(a = R.c(1, 2, 3), b = R.c(4, 5, 6))
+R.data_frame(a=R.c(1, 2, 3), b=R.c(4, 5, 6))
 
 # %% [markdown]
 # Hvis du har et kult datasett i `R`, kan du også hente det ut i `Python`
 
 # %%
-datasets = wrapr.library("datasets")
+datasets = wr.library("datasets")
 datasets.iris.head()
