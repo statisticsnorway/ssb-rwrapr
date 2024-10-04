@@ -66,6 +66,13 @@ repos:
         language: system
         types: [python]
         stages: [manual]
+      - id: isort
+        name: isort
+        entry: isort
+        require_serial: true
+        language: system
+        types_or: [cython, pyi, python]
+        args: ["--filter-files"]
       - id: ruff
         name: ruff
         entry: ruff check --fix --exit-non-zero-on-fix
@@ -78,3 +85,7 @@ repos:
         language: system
         types_or: [python, jupyter]
         require_serial: true
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.1.0
+    hooks:
+      - id: prettier

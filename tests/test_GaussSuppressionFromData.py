@@ -2,6 +2,7 @@ import numpy as np
 
 import ssb_wrapr as wr
 
+
 ST = wr.library("SSBtools")
 GS = wr.library("GaussSuppression")
 bs = wr.library("base")

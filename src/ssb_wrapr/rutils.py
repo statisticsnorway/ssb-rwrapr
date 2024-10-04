@@ -5,6 +5,7 @@ import numpy as np
 import rpy2.robjects as ro
 from numpy.typing import NDArray
 
+
 supported_classes = {"list", "array", "matrix", "vector", "atomic"}
 
 

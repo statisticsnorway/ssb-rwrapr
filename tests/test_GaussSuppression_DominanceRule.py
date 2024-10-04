@@ -5,6 +5,7 @@ import rpy2
 
 import ssb_wrapr as wr
 
+
 SSBtools = wr.library("SSBtools")
 GaussSuppression = wr.library("GaussSuppression")
 

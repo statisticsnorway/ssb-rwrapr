@@ -18,7 +18,6 @@
 [pypi status]: https://pypi.org/project/ssb-wrapr/
 [documentation]: https://statisticsnorway.github.io/ssb-wrapr
 [tests]: https://github.com/statisticsnorway/ssb-wrapr/actions?workflow=Tests
-
 [sonarcov]: https://sonarcloud.io/summary/overall?id=statisticsnorway_ssb-wrapr
 [sonarquality]: https://sonarcloud.io/summary/overall?id=statisticsnorway_ssb-wrapr
 [pre-commit]: https://github.com/pre-commit/pre-commit
@@ -26,6 +25,7 @@
 [poetry]: https://python-poetry.org/
 
 ## Features
+
 <img src="images/WrapR-logo.png" alt="Logo" align = "right" height="139" class="logo">
 `WrapR` is a `python` package for using R inside of python.
 It is built using `rpy2`, but attempts to be more convient to use.
@@ -51,6 +51,7 @@ df = dplyr.mutate(iris, Sepal = wr.lazily("round(Sepal.Length * 2, 0)"))
 ```
 
 ## To do
+
     1. Port all test files for SSB-GaussSuppression, and SSBtools
     2. Names/Dimnames for Vectors/Arrays/Matrices
     3. Factors/Ordered Vectors

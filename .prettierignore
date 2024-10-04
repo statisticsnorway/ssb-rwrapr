@@ -2,3 +2,6 @@
 # match the prettier format.
 .cookiecutter.json
 .cruft.json
+
+# json files shall have four spaces for indentation.
+.devcontainer/devcontainer.json
