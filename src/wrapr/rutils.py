@@ -14,7 +14,7 @@ def get_rclass(x: Any) -> NDArray[np.str_] | None:
     try:
         f: Callable | Any = rfunc("class")
         return np.asarray(f(x), dtype = "U")
-    except:
+    except Exception:
         return None
 
 def has_unsupported_rclass(x: Any) -> bool:

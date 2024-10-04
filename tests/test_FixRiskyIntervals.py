@@ -5,10 +5,13 @@ import numpy as np
 
 def test_RiskyIntervals():
     if wr.library("Rglpk", interactive=False) is not None:
-        st = wr.library("SSBtools")
-        gs = wr.library("GaussSuppression")
-        bs = wr.library("base")
+        st = wr.library("SSBtools", interactive=False)
+        gs = wr.library("GaussSuppression", interactive=False)
+        bs = wr.library("base", interactive=False)
         
+        if st is None or gs is None or bs is None:
+            pytest.fail("SSBtools, GaussSuppression, or base not found")
+
         z3 = st.SSBtoolsData("z3")
         
         upper = z3["region"].str.isupper()
