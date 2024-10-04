@@ -1,9 +1,11 @@
+default_language_version:
+  python: python3.11
 repos:
   - repo: local
     hooks:
       # General file checkers
       - id: check-added-large-files
-        name: Check for added large files
+        name: Check added large files
         entry: check-added-large-files
         language: system
       - id: check-merge-conflict
@@ -58,13 +60,18 @@ repos:
         entry: check-ast
         language: system
         types: [python]
-      - id: isort
-        name: isort
-        entry: isort
-        require_serial: true
+      - id: darglint
+        name: darglint
+        entry: darglint
         language: system
-        types_or: [cython, pyi, python]
-        args: ["--filter-files"]
+        types: [python]
+        stages: [manual]
+      - id: ruff
+        name: ruff
+        entry: ruff check --fix --exit-non-zero-on-fix
+        language: system
+        types_or: [python, jupyter]
+        require_serial: true
       - id: black
         name: black
         entry: black
