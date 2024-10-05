@@ -132,11 +132,11 @@ class RArray(np.ndarray):
     def _get_dims_kept(self, index_normalized):
         dims_kept = []
         for idx in index_normalized:
-            if isinstance(idx, (slice, type(None), type(Ellipsis))):
+            if isinstance(idx, slice | type(None) | type(Ellipsis)):
                 dims_kept.append(True)
             elif np.isscalar(idx):
                 dims_kept.append(False)
-            elif isinstance(idx, (list, np.ndarray)):
+            elif isinstance(idx, list | np.ndarray):
                 dims_kept.append(True)
             else:
                 # Unknown type, assume dimension is kept
