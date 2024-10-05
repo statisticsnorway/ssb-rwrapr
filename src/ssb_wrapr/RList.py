@@ -95,18 +95,16 @@ def convert_r2pydict(
 ) -> Any:
     from .convert_r2py import convert_r2py
 
-    try:
-        # this needs to be improved considering named vectors
-        if is_RDict and np.all(np.array(X.keys()) is None):
-            Y = list(zip(*X.items(), strict=False))[1]
-            X = convert_r2py(Y)
-        elif is_RDict:
-            X = dict(X)
+    # this needs to be improved considering named vectors
+    if is_RDict and np.all(np.array(X.keys()) is None):
+        Y = list(zip(*X.items(), strict=False))[1]
+        X = convert_r2py(Y)
+    elif is_RDict:
+        X = dict(X)
 
-        for key in X:
-            X[key] = convert_r2py(X[key])
-    finally:
-        return X
+    for key in X:
+        X[key] = convert_r2py(X[key])
+    return X
 
 
 def dict2rlist(x: dict | OrderedDict | RDict) -> ro.ListVector:
