@@ -3,7 +3,7 @@ class Settings:
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
-            cls._instance = super(Settings, cls).__new__(cls)
+            cls._instance = super().__new__(cls)
             cls._instance._initialize(**kwargs)
         return cls._instance
 

@@ -26,7 +26,7 @@ def test_GaussSuppressDec_and_more():
         weightVar="y1",
         printInc=printInc,
     )
-    a2 = GaussSuppression.GaussSuppressDec(
+    GaussSuppression.GaussSuppressDec(
         z2,
         formula=wr.lazily("~region * fylke * kostragr * hovedint"),  # this also works
         freqVar="ant",

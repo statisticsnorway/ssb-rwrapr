@@ -12,7 +12,7 @@ class RView:
         from .RList import RDict
         from .RList import RList
 
-        if isinstance(Robj, (RArray, RDataFrame, RList, RDict)):
+        if isinstance(Robj, RArray | RDataFrame | RList | RDict):
             self.Robj = Robj.toR()
         else:
             self.Robj = Robj

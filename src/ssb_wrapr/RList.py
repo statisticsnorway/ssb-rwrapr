@@ -97,7 +97,7 @@ def convert_r2pydict(
 
     try:
         # this needs to be improved considering named vectors
-        if is_RDict and np.all(np.array(X.keys()) == None):
+        if is_RDict and np.all(np.array(X.keys()) is None):
             Y = list(zip(*X.items(), strict=False))[1]
             X = convert_r2py(Y)
         elif is_RDict:

@@ -4,9 +4,11 @@ from typing import Any
 from .convert_py2r import convert_py_args2r
 
 
-def get_Rattributes(x, exclude=[]) -> Any:
+def get_Rattributes(x, exclude=None) -> Any:
     from .function_wrapper import rfunc
 
+    if exclude is None:
+        exclude = []
     attributes: Callable = rfunc(
         """
     function(x, exclude) {
