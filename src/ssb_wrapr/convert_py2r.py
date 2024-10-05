@@ -101,9 +101,10 @@ def convert_numpy1D(x: npt.NDArray) -> Any:  # RBaseObject:
         case "O":
             try:
                 y = x.astype("U")
-            except:
+            except Exception:
                 warnings.warn(
-                    "dtype = object is not supported, this will probaly not work"
+                    "dtype = object is not supported, this will probably not work",
+                    stacklevel=2,
                 )
                 y = convert_py2r(x.tolist())
             finally:
