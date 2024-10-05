@@ -21,7 +21,6 @@ termcolor = ">=2.4.0"
 numpy = "<2.0"
 scipy = ">=1.3"
 dapla-toolbelt = ">=1.3.2"
-click = ">=8.0.1"
 
 [tool.poetry.group.dev.dependencies]
 pygments = ">=2.10.0"
@@ -47,9 +46,6 @@ isort = ">=5.13.2"
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
-
-[tool.poetry.scripts]
-ssb-wrapr = "ssb_wrapr.__main__:main"
 
 [tool.coverage.paths]
 source = ["src", "*/site-packages"]
@@ -95,7 +91,6 @@ select = [
     "E",    # pycodestyle
     "F",    # pyflakes
     "ISC",  # implicit string concatenation
-#    "I",    # sort imports
     "UP",   # alert you when better syntax is available in your python version
     "RUF",  # the ruff developer's own rules
 ]
