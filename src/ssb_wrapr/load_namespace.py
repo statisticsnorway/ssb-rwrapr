@@ -26,11 +26,11 @@ def try_load_namespace(
         module: rpkg.Package = rpkg.importr(namespace)
     except rpkg.PackageNotInstalledError:
         if not interactive:
-            raise rpkg.PackageNotInstalledError
+            raise
 
         choice = input(namespace + " not installed, do you want to install it? (y/n)\n")
         if choice[0] != "y":
-            raise rpkg.PackageNotInstalledError
+            raise rpkg.PackageNotInstalledError from rpkg.PackageNotInstalledError
         pinfo("Installing package...", verbose=verbose)
         ro.r(f'install.packages("{namespace}")', print_r_warnings=False, invisible=True)
         pinfo("Package installed!", verbose=verbose)

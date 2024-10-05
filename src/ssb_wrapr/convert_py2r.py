@@ -107,14 +107,13 @@ def convert_numpy1D(x: npt.NDArray) -> Any:  # RBaseObject:
                     stacklevel=2,
                 )
                 y = convert_py2r(x.tolist())
-            finally:
-                return ro.StrVector(y)
+            return ro.StrVector(y)
         case _:
             return x
 
 
 def convert_numpy2D(x: npt.NDArray) -> Any:  # RBaseObject:
-    flat_x: NDArray = x.flatten(order="F")
+    flat_x: npt.NDArray = x.flatten(order="F")
     nrow, ncol = x.shape
     y = convert_numpy1D(flat_x)
     f: Callable = ro.r("matrix")
@@ -122,7 +121,7 @@ def convert_numpy2D(x: npt.NDArray) -> Any:  # RBaseObject:
 
 
 def convert_numpyND(x: npt.NDArray) -> Any:  # RBaseObject:
-    flat_x: NDArray = x.flatten(order="F")
+    flat_x: npt.NDArray = x.flatten(order="F")
     dim: tuple = x.shape
     y = convert_numpy1D(flat_x)
     f: Callable = ro.r("array")
@@ -138,7 +137,7 @@ def convert_pysparsematrix(x: scipy.sparse.coo_array | scipy.sparse.coo_matrix):
             x=ro.FloatVector(x.data),
             dims=ro.IntVector(x.shape),
         )
-    except:
+    except Exception:
         return x
 
 

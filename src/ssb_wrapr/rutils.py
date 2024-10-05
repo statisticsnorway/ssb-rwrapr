@@ -19,7 +19,7 @@ def get_rclass(x: Any) -> NDArray[np.str_] | None:
     try:
         f: Callable | Any = rfunc("class")
         return np.asarray(f(x), dtype="U")
-    except:
+    except Exception:
         return None
 
 
@@ -36,7 +36,8 @@ def has_unsupported_rclass(x: Any) -> bool:
     return len(rclass) > 0 and not rclass.issubset(supported_classes)
 
 
-def as_matrix(x: Any, str=None) -> NDArray | Any:
+# TODO: Argument str_ is not used in the function. Remove?
+def as_matrix(x: Any, str_=None) -> NDArray | Any:
     from .function_wrapper import rfunc
 
     f: Callable | Any = rfunc("as.matrix")
