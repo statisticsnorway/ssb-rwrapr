@@ -6,7 +6,7 @@ import rpy2.robjects as ro
 import rpy2.robjects.vectors as vc
 from rpy2.robjects import pandas2ri
 
-from ssb_wrapr.RAttributes import get_Rattributes
+from .RAttributes import get_Rattributes
 
 
 class RDataFrame(pd.DataFrame):

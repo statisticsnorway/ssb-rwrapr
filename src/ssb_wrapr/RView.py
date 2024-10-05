@@ -4,13 +4,17 @@ from typing import Any
 import rpy2.robjects as ro
 import scipy
 
+from .nputils import np_collapse
+from .RList import RDict
+from .RList import RList
+from .rutils import as_matrix
+from .rutils import get_rclass
+
 
 class RView:
     def __init__(self, Robj: Any):
         from .RArray import RArray
         from .RDataFrame import RDataFrame
-        from .RList import RDict
-        from .RList import RList
 
         if isinstance(Robj, RArray | RDataFrame | RList | RDict):
             self.Robj = Robj.toR()
@@ -47,17 +51,14 @@ class RView:
 
 
 def convert_s4(x: ro.methods.RS4) -> Any:
-    from .nputils import np_collapse
     from .RArray import convert_numpy
-    from .rutils import as_matrix
-    from .rutils import get_rclass
 
     rclass = get_rclass(x)
     if rclass is None:
         return RView(x)
 
     match np_collapse(rclass):
-        case "dgCMatrix":  # to do: put this in a seperate function
+        case "dgCMatrix":  # todo: put this in a separate function
             dense = convert_numpy(as_matrix(x))
             sparse = scipy.sparse.coo_matrix(dense)
             return sparse
