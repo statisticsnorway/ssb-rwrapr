@@ -7,10 +7,9 @@ def library(env_name: str, interactive=True) -> Renv | None:
     try:
         return Renv(env_name, interactive=interactive)
     except rpkg.PackageNotInstalledError:
-        if not interactive:
-            return None
-        else:
-            raise rpkg.PackageNotInstalledError
+        if interactive:
+            raise
+        return None
 
 
 def importr(env_name: str, interactive=True) -> Renv | None:

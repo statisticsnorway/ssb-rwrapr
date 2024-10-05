@@ -112,9 +112,7 @@ def fetch_data(dataset: str, module: rpkg.Package) -> pd.DataFrame | RView | Non
         else:
             return convert_r2py(r_object)
 
-    except KeyError:
-        return None
-    except:
+    except (KeyError, Exception):
         return None
 
 
