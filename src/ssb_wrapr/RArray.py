@@ -5,7 +5,7 @@ import rpy2
 import rpy2.robjects.vectors as vc
 from numpy.typing import NDArray
 
-from ssb_wrapr.RAttributes import get_Rattributes
+from .RAttributes import get_Rattributes
 
 
 class RArray(np.ndarray):

@@ -7,12 +7,11 @@ from .convert_py2r import convert_py_args2r
 from .convert_r2py import convert_r2py
 from .lazy_rexpr import lazy_wrap
 from .rutils import rcall
+from .RView import RView
 from .settings import settings
 
 
 def wrap_rfunc(func: Callable | Any, name: str | None) -> Callable | Any:
-    from .RView import RView
-
     # should be a Callable, but may f-up (thus Any)
     if not callable(func):
         return None
