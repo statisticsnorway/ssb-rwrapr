@@ -19,6 +19,7 @@ from .RView import RView
 from .RView import convert_s4
 
 
+# TODO: Consider changing return type hint to union of possible types
 def convert_r2py(x: Any, ignoreS3: bool = False) -> Any:
     # Need to import these here to avoid circular imports
     from .RArray import filter_numpy
