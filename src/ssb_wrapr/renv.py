@@ -17,7 +17,7 @@ from .utils import pinfo
 
 
 class Renv:
-    def __init__(self, env_name: str, interactive: bool=True) -> None:
+    def __init__(self, env_name: str, interactive: bool = True) -> None:
         pinfo("Loading packages...", verbose=True)
         # self.__Renvironments__ = load_base_envs()
         self.__set_base_lib__(
@@ -52,43 +52,67 @@ class Renv:
         capture.capture_r_output()
 
         if name in self.__Rfuncs__:
-            fun: Callable = wrap_rfunc(getattr(self.__base_lib__, name), name=name)
+            fun: Callable[..., Any] | RView | Any | None = wrap_rfunc(
+                getattr(self.__base_lib__, name), name=name
+            )
+            # TODO: How to handle return values of type RView, Any or None? Check with wrap_rfunc implementation.
+            if not callable(fun):
+                raise ValueError(
+                    f"The provided `func` argument: {name} is not callable"
+                )
             self.__attach__(name=name, attr=fun)
             capture.reset_r_output()
-            return getattr(self, name)
         elif name in self.__Rdatasets__:
             self.__attach__(name=name, attr=fetch_data(name, self.__base_lib__))
             capture.reset_r_output()
-            return getattr(self, name)
         else:
-            fun: Callable = rfunc(
-                name
-            )  # in the future this should also work for datasets
+            rfun: Callable[..., Any] | RView | Any | None = rfunc(name)
+            # TODO: How to handle return values of type RView, Any or None? Check with wrap_rfunc implementation.
+            if not callable(rfun):
+                raise ValueError(
+                    f"The provided `func` argument: {name} is not callable"
+                )
+            # in the future this should also work for datasets
             # add error handling for corrupt function, getting stuck to Renv
-            self.__attach__(name=name, attr=fun)
-            return getattr(self, name)
+            self.__attach__(name=name, attr=rfun)
+
+        return getattr(self, name)
 
     def __function__(self, name: str, expr: str) -> None:
-        rfunc: Callable | Any = ro.r(expr, invisible=True, print_r_warnings=False)
+        rfun: Callable[..., Any] | None = ro.r(
+            expr, invisible=True, print_r_warnings=False
+        )
+        if rfun is None:
+            raise ValueError(f"R object: {expr} is not a function")
         # also attach to global namespace
         rcall(f"{name} <- {expr}")
-        pyfunc: Callable = wrap_rfunc(rfunc, name=name)
+        pyfunc: Callable[..., Any] | RView | Any | None = wrap_rfunc(rfun, name=name)
 
+        # TODO: How to handle return values of type RView, Any or None? Check with wrap_rfunc implementation.
+        if not callable(pyfunc):
+            raise ValueError(f"The provided `func` argument: {name} is not callable")
         self.__attach__(name=name, attr=pyfunc)
 
-    def function(self, expr: str) -> Callable:
-        rfunc: Callable | Any = ro.r(expr, invisible=True, print_r_warnings=False)
-        pyfunc: Callable = wrap_rfunc(rfunc, name=None)
+    def function(self, expr: str) -> Callable[..., Any]:
+        rfun: Callable[..., Any] | None = ro.r(
+            expr, invisible=True, print_r_warnings=False
+        )
+        if rfun is None:
+            raise ValueError(f"R object: {expr} is not a function")
+        pyfunc: Callable[..., Any] | RView | Any | None = wrap_rfunc(rfun, name=None)
         if not callable(pyfunc):
             raise ValueError("R object is not a function")
         return pyfunc
 
-    def print(self, x):
-        foo: Callable = rfunc(
+    def print(self, x: Any) -> None:
+        foo: Callable[..., Any] | RView | Any | None = rfunc(
             """function(x, ...) {
             paste(utils::capture.output(print(x, ...)), collapse = "\n")
         }"""
         )
+        # TODO: How to handle return values of type RView, Any or None? Check with wrap_rfunc implementation.
+        if not callable(foo):
+            raise ValueError("The provided `func` argument is not callable")
         print(foo(x))
 
     # def attributes(self, py_object: Any) -> Any:
@@ -109,7 +133,10 @@ def fetch_data(dataset: str, module: rpkg.Package) -> pd.DataFrame | RView | Non
         if settings.Rview:
             return RView(r_object)
         else:
-            return convert_r2py(r_object)
+            result = convert_r2py(r_object)
+            if not isinstance(result, pd.DataFrame):
+                raise ValueError(f"The provided dataset: {dataset} is not a DataFrame")
+            return result
 
     except (KeyError, Exception):
         return None

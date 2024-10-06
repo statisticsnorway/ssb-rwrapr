@@ -11,10 +11,13 @@ from .RView import RView
 from .settings import settings
 
 
-def wrap_rfunc(func: Callable | Any, name: str | None) -> Callable | Any:
+def wrap_rfunc(
+    func: Callable[..., Any], name: str | None
+) -> Callable[..., Any] | RView | Any | None:
+    # TODO: Removed the Any-part of func type annotation. Check why Any was needed.
     # should be a Callable, but may f-up (thus Any)
     if not callable(func):
-        return None
+        return None  # TODO: Should throw exception instead? Why wrap something that is not callable?
 
     def wrap(*args, **kwargs):
         args = list(args) if args is not None else args  # make args mutable
@@ -34,7 +37,7 @@ def wrap_rfunc(func: Callable | Any, name: str | None) -> Callable | Any:
     return wrap
 
 
-def rfunc(name: str) -> Callable | Any:
+def rfunc(name: str) -> Callable[..., Any] | RView | Any | None:
     # Function for getting r-function from global environment
     # BEWARE: THIS FUNCTION WILL TRY TO CONVERT ARGS GOING BOTH IN AND OUT!
     # This function must not be used in Rpy-in functions
