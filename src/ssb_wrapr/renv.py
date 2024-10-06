@@ -17,7 +17,7 @@ from .utils import pinfo
 
 
 class Renv:
-    def __init__(self, env_name, interactive=True):
+    def __init__(self, env_name: str, interactive: bool=True) -> None:
         pinfo("Loading packages...", verbose=True)
         # self.__Renvironments__ = load_base_envs()
         self.__set_base_lib__(
@@ -29,10 +29,9 @@ class Renv:
         self.__setRdatasets__(datasets)
 
         pinfo("Done!", verbose=True)
-        return None
 
-    def __set_base_lib__(self, rpkg: rpkg.Package) -> None:
-        self.__base_lib__ = rpkg
+    def __set_base_lib__(self, rpkg_: rpkg.Package) -> None:
+        self.__base_lib__ = rpkg_
 
     def __setRfuncs__(self, funcs: set[str]) -> None:
         self.__Rfuncs__ = funcs

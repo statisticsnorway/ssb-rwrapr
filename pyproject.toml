@@ -2,7 +2,7 @@
 name = "ssb-wrapr"
 version = "0.1.0"
 description = "Python package for using R in Python"
-authors = ["Kjell Solem Slupphaug <kjell.solem.slupphaug>"]
+authors = ["Kjell Solem Slupphaug <kjell.solem.slupphaug@ssb.no>"]
 license = "MIT"
 readme = "README.md"
 homepage = "https://github.com/statisticsnorway/ssb-wrapr"
@@ -43,6 +43,7 @@ myst-parser = { version = ">=0.16.1" }
 ipykernel = ">=6.15.3"
 pytest-cov = ">=2.8"
 isort = ">=5.13.2"
+pandas-stubs = ">=2.2.2.240909"
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
@@ -66,6 +67,12 @@ warn_unreachable = true
 pretty = true
 show_column_numbers = true
 show_error_context = true
+
+[[tool.mypy.overrides]]
+module = [
+    "rpy2.*",
+]
+ignore_missing_imports = true
 
 [tool.ruff]
 force-exclude = true  # Apply excludes to pre-commit
