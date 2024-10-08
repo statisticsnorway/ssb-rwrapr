@@ -12,7 +12,7 @@ jobs:
     name: ${{ matrix.session }} ${{ matrix.python }} / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     container:
-      image: ghcr.io/arneso-ssb/docker-rpython:latest
+      image: ghcr.io/arneso-ssb/docker-rpython-r2u:1
     strategy:
       fail-fast: false
       matrix:
@@ -37,35 +37,14 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v4
 
+      - name: Mark Git directory as safe  # Needed for pre-commit checks in container
+        run: |
+          git config --global --add safe.directory $GITHUB_WORKSPACE
+
       - name: Set up Python ${{ matrix.python }}
         uses: actions/setup-python@v5.2.0
         with:
           python-version: ${{ matrix.python }}
-
-      - name: Upgrade pip
-        run: |
-          pip install -c ${{ github.workspace }}/.github/workflows/constraints.txt pip
-          pip --version
-
-      - name: Upgrade pip in virtual environments
-        shell: python
-        run: |
-          import os
-          import pip
-
-          with open(os.environ["GITHUB_ENV"], mode="a") as io:
-              print(f"VIRTUALENV_PIP={pip.__version__}", file=io)
-
-      - name: Install Poetry
-        run: |
-          pipx install --pip-args "-c ${{ github.workspace }}/.github/workflows/constraints.txt" poetry
-          poetry --version
-
-      - name: Install Nox
-        run: |
-          pipx install --pip-args "-c ${{ github.workspace }}/.github/workflows/constraints.txt" nox
-          pipx inject --pip-args "-c ${{ github.workspace }}/.github/workflows/constraints.txt" nox nox-poetry
-          nox --version
 
       - name: Compute pre-commit cache key
         if: matrix.session == 'pre-commit'
@@ -94,6 +73,7 @@ jobs:
 
       - name: Run Nox
         run: |
+          export PATH="/root/.local/bin:$PATH"  # Needed when running in container
           nox --python=${{ matrix.python }}
 
       - name: Upload coverage data
@@ -168,4 +148,4 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         # No need to run SonarCloud analysis if dependabot update or token not defined
         if: env.SONAR_TOKEN != '' && (github.actor != 'dependabot[bot]')
-        uses: SonarSource/sonarcloud-github-action@v3.0.0
+        uses: SonarSource/sonarcloud-github-action@v3.1.0
