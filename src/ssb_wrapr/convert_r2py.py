@@ -7,24 +7,24 @@ import rpy2.robjects as ro
 import rpy2.robjects.vectors as vc
 from rpy2.robjects import rpy2
 
-from .RDataFrame import RDataFrame
-from .RDataFrame import attempt_pandas_conversion
-from .RFactor import RFactor
-from .RList import convert_r2pydict
-from .RList import convert_r2pylist
-from .RList import convert_rlist2py
-from .RList import is_rlist
+from .rdataframe import RDataFrame
+from .rdataframe import attempt_pandas_conversion
+from .rfactor import RFactor
+from .rlist import convert_r2pydict
+from .rlist import convert_r2pylist
+from .rlist import convert_rlist2py
+from .rlist import is_rlist
 from .rutils import has_unsupported_rclass
-from .RView import RView
-from .RView import convert_s4
+from .rview import RView
+from .rview import convert_s4
 
 
 # TODO: Consider changing return type hint to union of possible types
 def convert_r2py(x: Any, ignoreS3: bool = False) -> Any:
     # Need to import these here to avoid circular imports
-    from .RArray import filter_numpy
-    from .RArray import get_RArray
-    from .RArray import is_valid_numpy
+    from .rarray import filter_numpy
+    from .rarray import get_RArray
+    from .rarray import is_valid_numpy
 
     match x:
         case str() | int() | bool() | float():

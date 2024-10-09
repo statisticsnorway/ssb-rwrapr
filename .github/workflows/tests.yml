@@ -37,7 +37,7 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v4
 
-      - name: Mark Git directory as safe  # Needed for pre-commit checks in container
+      - name: Mark Git directory as safe # Needed for pre-commit checks in container
         run: |
           git config --global --add safe.directory $GITHUB_WORKSPACE
 

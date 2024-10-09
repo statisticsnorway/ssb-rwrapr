@@ -6,7 +6,7 @@ import rpy2.robjects as ro
 import rpy2.robjects.vectors as vc
 from rpy2.robjects import pandas2ri
 
-from .RAttributes import get_Rattributes
+from .rattributes import get_Rattributes
 
 
 class RDataFrame(pd.DataFrame):
@@ -24,8 +24,8 @@ class RDataFrame(pd.DataFrame):
             self._Rattributes = attrs
 
     def toR(self) -> vc.DataFrame:
-        from .RAttributes import attributes2r
-        from .RAttributes import structure
+        from .rattributes import attributes2r
+        from .rattributes import structure
 
         with (ro.default_converter + pandas2ri.converter).context():
             R_df = ro.conversion.get_conversion().py2rpy(self)

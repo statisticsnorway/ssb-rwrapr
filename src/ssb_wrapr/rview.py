@@ -5,16 +5,16 @@ import rpy2.robjects as ro
 import scipy
 
 from .nputils import np_collapse
-from .RList import RDict
-from .RList import RList
+from .rlist import RDict
+from .rlist import RList
 from .rutils import as_matrix
 from .rutils import get_rclass
 
 
 class RView:
     def __init__(self, Robj: Any):
-        from .RArray import RArray
-        from .RDataFrame import RDataFrame
+        from .rarray import RArray
+        from .rdataframe import RDataFrame
 
         if isinstance(Robj, RArray | RDataFrame | RList | RDict):
             self.Robj = Robj.toR()
@@ -51,7 +51,7 @@ class RView:
 
 
 def convert_s4(x: ro.methods.RS4) -> Any:
-    from .RArray import convert_numpy
+    from .rarray import convert_numpy
 
     rclass = get_rclass(x)
     if rclass is None:

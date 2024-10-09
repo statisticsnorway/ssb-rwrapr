@@ -5,7 +5,7 @@ import rpy2
 import rpy2.robjects.vectors as vc
 from numpy.typing import NDArray
 
-from .RAttributes import get_Rattributes
+from .rattributes import get_Rattributes
 
 
 class RArray(np.ndarray):
@@ -145,8 +145,8 @@ class RArray(np.ndarray):
 
     def toR(self):
         from .convert_py2r import convert_numpy2r
-        from .RAttributes import attributes2r
-        from .RAttributes import structure
+        from .rattributes import attributes2r
+        from .rattributes import structure
 
         R_object = convert_numpy2r(np.asarray(self))
         if self._Rattributes is not None:
