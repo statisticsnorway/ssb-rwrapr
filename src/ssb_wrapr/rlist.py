@@ -22,8 +22,8 @@ class RList(UserList):
         self._Rattributes = attributes
 
     def toR(self):
-        from .RAttributes import attributes2r
-        from .RAttributes import structure
+        from .rattributes import attributes2r
+        from .rattributes import structure
 
         # -> R-dataframe
         R_object = pylist2rlist(self)
@@ -43,8 +43,8 @@ class RDict(UserDict):
         self._Rattributes = attributes
 
     def toR(self):
-        from .RAttributes import attributes2r
-        from .RAttributes import structure
+        from .rattributes import attributes2r
+        from .rattributes import structure
 
         # -> R-dataframe
         R_object = dict2rlist(self)
@@ -68,8 +68,8 @@ def convert_r2pylist(X: list | tuple | UserList | RList) -> Any:
 
 
 def convert_rlist2py(X: vc.ListVector | vc.ListSexpVector) -> Any:
-    from .RArray import convert_numpy
-    from .RAttributes import get_Rattributes
+    from .rarray import convert_numpy
+    from .rattributes import get_Rattributes
 
     names = convert_numpy(X.names, flatten=False)
     attributes = get_Rattributes(X, exclude=["names"])

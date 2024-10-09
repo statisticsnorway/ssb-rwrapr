@@ -10,12 +10,12 @@ import pandas as pd
 import rpy2.robjects as ro
 import scipy
 
-from .RList import RDict
-from .RList import RList
-from .RList import dict2rlist
-from .RList import pylist2rlist
+from .rlist import RDict
+from .rlist import RList
+from .rlist import dict2rlist
+from .rlist import pylist2rlist
 from .rutils import rcall
-from .RView import RView
+from .rview import RView
 
 
 # We can uncomment this when we transition to 3.12
@@ -38,10 +38,10 @@ def convert_py_args2r(args: list[Any], kwargs: dict[str, Any]) -> None:
 
 def convert_py2r(x: Any) -> Any:  # RBaseObject | PyDtype | Any:
     # Need to import these here to avoid circular imports
-    from .RArray import RArray
-    from .RDataFrame import RDataFrame
-    from .RDataFrame import pandas2r
-    from .RFactor import RFactor
+    from .rarray import RArray
+    from .rdataframe import RDataFrame
+    from .rdataframe import pandas2r
+    from .rfactor import RFactor
 
     match x:
         case RView() | RArray() | RList() | RDataFrame() | RDict() | RFactor():

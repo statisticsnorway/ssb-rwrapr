@@ -7,7 +7,7 @@ from .convert_py2r import convert_py_args2r
 from .convert_r2py import convert_r2py
 from .lazy_rexpr import lazy_wrap
 from .rutils import rcall
-from .RView import RView
+from .rview import RView
 from .settings import settings
 
 
