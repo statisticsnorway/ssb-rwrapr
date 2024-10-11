@@ -101,9 +101,11 @@ class Renv:
 
     def rclass(self, x: Any) -> RReturnType:
         """Get the class of an object, as it would be in R."""
-        foo: Callable[..., RReturnType] = rfunc("""function(x) {
+        foo: Callable[..., RReturnType] = rfunc(
+            """function(x) {
             class(x)
-        }""")
+        }"""
+        )
         return foo(x)
 
 

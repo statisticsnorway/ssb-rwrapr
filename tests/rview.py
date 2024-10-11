@@ -1,15 +1,18 @@
 # TODO: This file should be renamed. Has the same name as src/ssb_wrapr/rview.py
-import ssb_wrapr as wr
 import pytest
+
+import ssb_wrapr as wr
 
 
 pytest.fixture(scope="module")
+
+
 def setup_wr():
     bs = wr.library("base", interactive=False)
     dt = wr.library("datasets", interactive=False)
 
     if bs is None or dt is None:
-        pytest.fail(f"Setup failed with exception: {e}") 
+        pytest.fail("Setup failed with exception: rpkg.PackageNotInstalledError")
 
     yield bs, dt
 

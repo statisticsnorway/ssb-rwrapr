@@ -1,11 +1,8 @@
-import warnings
 from collections import OrderedDict
-from collections.abc import Callable
 from types import NoneType
 from typing import Any
 
 import numpy as np
-import numpy.typing as npt
 import pandas as pd
 import rpy2.robjects as ro
 import scipy
@@ -14,7 +11,6 @@ from .rlist import RDict
 from .rlist import RList
 from .rlist import dict2rlist
 from .rlist import pylist2rlist
-from .rutils import rcall
 from .rview import RView
 from .sparse import convert_pysparsematrix
 
@@ -40,11 +36,11 @@ def convert_py_args2r(args: list[Any], kwargs: dict[str, Any]) -> None:
 def convert_py2r(x: Any) -> Any:  # RBaseObject | PyDtype | Any:
     # Need to import these here to avoid circular imports
     from .rarray import RArray
+    from .rarray import convert_numpy2r
     from .rdataframe import RDataFrame
     from .rdataframe import pandas2r
     from .rfactor import RFactor
-    from .rarray import convert_numpy2r
-	
+
     match x:
         case RView() | RArray() | RList() | RDataFrame() | RDict() | RFactor():
             return x.toR()

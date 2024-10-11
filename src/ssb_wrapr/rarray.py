@@ -1,10 +1,14 @@
+import warnings
+from collections.abc import Callable
 from typing import Any
 
 import numpy as np
 import rpy2
+import rpy2.robjects as ro
 import rpy2.robjects.vectors as vc
 from numpy.typing import NDArray
 
+from .convert_py2r import convert_py2r
 from .rattributes import get_Rattributes
 
 
@@ -144,7 +148,6 @@ class RArray(np.ndarray):
         return dims_kept
 
     def toR(self):
-        from .convert_py2r import convert_numpy2r
         from .rattributes import attributes2r
         from .rattributes import structure
 
@@ -168,7 +171,9 @@ def get_attributes_array(x) -> dict | None:
     return get_Rattributes(x, exclude=["class"])
 
 
-def convert_numpy(x: vc.Vector | NDArray, flatten: bool = False) -> NDArray | int | str | float | bool | None:
+def convert_numpy(
+    x: vc.Vector | NDArray, flatten: bool = False
+) -> NDArray | int | str | float | bool | None:
     if isinstance(x, rpy2.rinterface_lib.sexp.NULLType):
         return None
     match x:  # this should be expanded upon
@@ -232,10 +237,12 @@ def convert_numpy1D(x: NDArray) -> Any:  # RBaseObject:
             try:
                 y = x.astype("U")
             except Exception:
-                warnings.warn("dtype = object is not supported, this will probaly not work")
+                warnings.warn(
+                    "dtype = object is not supported, this will probably not work",
+                    stacklevel=2,
+                )
                 y = convert_py2r(x.tolist())
-            finally:
-                return ro.StrVector(y)
+            return ro.StrVector(y)
         case _:
             return x
 
@@ -250,7 +257,7 @@ def convert_numpy2D(x: NDArray) -> Any:  # RBaseObject:
 
 def convert_numpyND(x: NDArray) -> Any:  # RBaseObject:
     flat_x: NDArray = x.flatten(order="F")
-    dim: Tuple = x.shape
+    dim: tuple = x.shape
     y = convert_numpy1D(flat_x)
     f: Callable = ro.r("array")
     return f(y, dim=ro.IntVector(dim))
