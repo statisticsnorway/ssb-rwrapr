@@ -6,6 +6,7 @@ import rpy2.robjects as ro
 import rpy2.robjects.packages as rpkg
 
 from .convert_r2py import convert_r2py
+from .function_wrapper import RReturnType
 from .function_wrapper import rfunc  # wrap_rfunc should perhaps be its own module
 from .function_wrapper import wrap_rfunc  # wrap_rfunc should perhaps be its own module
 from .load_namespace import try_load_namespace
@@ -52,26 +53,16 @@ class Renv:
         capture.capture_r_output()
 
         if name in self.__Rfuncs__:
-            fun: Callable[..., Any] | RView | Any | None = wrap_rfunc(
+            fun: Callable[..., RReturnType] = wrap_rfunc(
                 getattr(self.__base_lib__, name), name=name
             )
-            # TODO: How to handle return values of type RView, Any or None? Check with wrap_rfunc implementation.
-            if not callable(fun):
-                raise ValueError(
-                    f"The provided `func` argument: {name} is not callable"
-                )
             self.__attach__(name=name, attr=fun)
             capture.reset_r_output()
         elif name in self.__Rdatasets__:
             self.__attach__(name=name, attr=fetch_data(name, self.__base_lib__))
             capture.reset_r_output()
         else:
-            rfun: Callable[..., Any] | RView | Any | None = rfunc(name)
-            # TODO: How to handle return values of type RView, Any or None? Check with wrap_rfunc implementation.
-            if not callable(rfun):
-                raise ValueError(
-                    f"The provided `func` argument: {name} is not callable"
-                )
+            rfun: Callable[..., RReturnType] = rfunc(name)
             # in the future this should also work for datasets
             # add error handling for corrupt function, getting stuck to Renv
             self.__attach__(name=name, attr=rfun)
@@ -86,11 +77,7 @@ class Renv:
             raise ValueError(f"R object: {expr} is not a function")
         # also attach to global namespace
         rcall(f"{name} <- {expr}")
-        pyfunc: Callable[..., Any] | RView | Any | None = wrap_rfunc(rfun, name=name)
-
-        # TODO: How to handle return values of type RView, Any or None? Check with wrap_rfunc implementation.
-        if not callable(pyfunc):
-            raise ValueError(f"The provided `func` argument: {name} is not callable")
+        pyfunc: Callable[..., RReturnType] = wrap_rfunc(rfun, name=name)
         self.__attach__(name=name, attr=pyfunc)
 
     def function(self, expr: str) -> Callable[..., Any]:
@@ -99,20 +86,15 @@ class Renv:
         )
         if rfun is None:
             raise ValueError(f"R object: {expr} is not a function")
-        pyfunc: Callable[..., Any] | RView | Any | None = wrap_rfunc(rfun, name=None)
-        if not callable(pyfunc):
-            raise ValueError("R object is not a function")
+        pyfunc: Callable[..., RReturnType] = wrap_rfunc(rfun, name=None)
         return pyfunc
 
     def print(self, x: Any) -> None:
-        foo: Callable[..., Any] | RView | Any | None = rfunc(
+        foo: Callable[..., RReturnType] = rfunc(
             """function(x, ...) {
             paste(utils::capture.output(print(x, ...)), collapse = "\n")
         }"""
         )
-        # TODO: How to handle return values of type RView, Any or None? Check with wrap_rfunc implementation.
-        if not callable(foo):
-            raise ValueError("The provided `func` argument is not callable")
         print(foo(x))
 
     # def attributes(self, py_object: Any) -> Any:
