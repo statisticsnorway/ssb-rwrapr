@@ -11,7 +11,7 @@ def setup_wr():
         dt = wr.library("datasets")
         yield dplyr, dt
     except Exception as e:
-        pytest.fail(f"Setup failed with exception: {e}") 
+        pytest.fail(f"Setup failed with exception: {e}")
 
 
 def test_last(setup_wr):
