@@ -16,6 +16,7 @@ from .rlist import dict2rlist
 from .rlist import pylist2rlist
 from .rutils import rcall
 from .rview import RView
+from .sparse import convert_pysparsematrix
 
 
 # We can uncomment this when we transition to 3.12
@@ -42,7 +43,8 @@ def convert_py2r(x: Any) -> Any:  # RBaseObject | PyDtype | Any:
     from .rdataframe import RDataFrame
     from .rdataframe import pandas2r
     from .rfactor import RFactor
-
+    from .rarray import convert_numpy2r
+	
     match x:
         case RView() | RArray() | RList() | RDataFrame() | RDict() | RFactor():
             return x.toR()
@@ -64,83 +66,11 @@ def convert_py2r(x: Any) -> Any:  # RBaseObject | PyDtype | Any:
             return ro.NULL
         case np.bool_():
             return bool(x)
-        case np.int8() | np.int16() | np.int32() | np.int64():
+        case np.int_() | np.int8() | np.int16() | np.int32() | np.int64():
             return int(x)
-        case np.float16() | np.float32() | np.float64():
+        case np.int_() | np.float16() | np.float32() | np.float64():
             return float(x)
         case np.str_() | np.bytes_():
             return str(x)
         case _:
             return x
-
-
-def convert_numpy2r(x: npt.NDArray) -> Any:  # RBaseObject:
-    y = x.copy()
-    if not y.shape:
-        y = y[np.newaxis]
-    match len(y.shape):
-        case 0:
-            raise ValueError("Unexpected shape of numpy array")
-        case 1:
-            return convert_numpy1D(y)
-        case 2:
-            return convert_numpy2D(y)
-        case _:
-            return convert_numpyND(y)
-
-
-def convert_numpy1D(x: npt.NDArray) -> Any:  # RBaseObject:
-    match x.dtype.kind:
-        case "b":
-            return ro.BoolVector(x)
-        case "i":
-            return ro.IntVector(x)
-        case "f":
-            return ro.FloatVector(x)
-        case "U" | "S":
-            return ro.StrVector(x)
-        case "O":
-            try:
-                y = x.astype("U")
-            except Exception:
-                warnings.warn(
-                    "dtype = object is not supported, this will probably not work",
-                    stacklevel=2,
-                )
-                y = convert_py2r(x.tolist())
-            return ro.StrVector(y)
-        case _:
-            return x
-
-
-def convert_numpy2D(x: npt.NDArray) -> Any:  # RBaseObject:
-    flat_x: npt.NDArray = x.flatten(order="F")
-    nrow, ncol = x.shape
-    y = convert_numpy1D(flat_x)
-    f: Callable = ro.r("matrix")
-    return f(y, nrow=nrow, ncol=ncol)
-
-
-def convert_numpyND(x: npt.NDArray) -> Any:  # RBaseObject:
-    flat_x: npt.NDArray = x.flatten(order="F")
-    dim: tuple = x.shape
-    y = convert_numpy1D(flat_x)
-    f: Callable = ro.r("array")
-    return f(y, dim=ro.IntVector(dim))
-
-
-def convert_pysparsematrix(x: scipy.sparse.coo_array | scipy.sparse.coo_matrix):
-    try:
-        sparseMatrix: Callable = rcall("Matrix::sparseMatrix")
-        return sparseMatrix(
-            i=ro.IntVector(x.row + 1),
-            j=ro.IntVector(x.col + 1),
-            x=ro.FloatVector(x.data),
-            dims=ro.IntVector(x.shape),
-        )
-    except Exception:
-        return x
-
-
-# def pandas2r(x: pd.DataFrame) -> Any:  # RBaseObject:
-#     return ro.DataFrame({k: convert_py2r(x[k].to_numpy()) for k in x})

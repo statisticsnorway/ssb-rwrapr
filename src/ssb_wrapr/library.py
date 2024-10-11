@@ -4,6 +4,7 @@ from .renv import Renv
 
 
 def library(env_name: str, interactive: bool = True) -> Renv | None:
+    """Load an R environment (package) into the current session."""
     try:
         return Renv(env_name, interactive=interactive)
     except rpkg.PackageNotInstalledError:
@@ -13,4 +14,5 @@ def library(env_name: str, interactive: bool = True) -> Renv | None:
 
 
 def importr(env_name: str, interactive: bool = True) -> Renv | None:
+    """Load an R environment (package) into the current session."""
     return library(env_name, interactive=interactive)
