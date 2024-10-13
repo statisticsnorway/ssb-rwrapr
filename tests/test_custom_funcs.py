@@ -1,6 +1,6 @@
 import pytest
 
-import ssb_wrapr as wr
+import wrapr as wr
 
 
 def test_custom_funcs():

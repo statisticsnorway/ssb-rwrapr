@@ -1,4 +1,4 @@
-import ssb_wrapr as wr
+import wrapr as wr
 
 
 def test_toR_AndBackToPyS3():

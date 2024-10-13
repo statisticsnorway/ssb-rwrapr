@@ -1,4 +1,4 @@
-# SSB WrapR
+# WrapR
 
 [![PyPI](https://img.shields.io/pypi/v/ssb-wrapr.svg)][pypi status]
 [![Status](https://img.shields.io/pypi/status/ssb-wrapr.svg)][pypi status]
@@ -34,10 +34,9 @@ instead treating `R` functions as normal `python` functions, where the inputs
 and outputs are `python` objects.
 
 ```python
-import ssb_wrapr as wr
+import wrapr as wr
 import pandas as pd
 import numpy as np
-import pytest
 
 dplyr = wr.library("dplyr")
 dt = wr.library("datasets")
@@ -65,10 +64,10 @@ df = dplyr.mutate(iris, Sepal = wr.lazily("round(Sepal.Length * 2, 0)"))
 
 ## Installation
 
-You can install _SSB WrapR_ via [pip] from [PyPI]:
+You can install _WrapR_ via [pip] from [PyPI]:
 
 ```console
-pip install ssb-wrapr
+pip install wrapr
 ```
 
 ## Usage
@@ -83,7 +82,7 @@ To learn more, see the [Contributor Guide].
 ## License
 
 Distributed under the terms of the [MIT license][license],
-_SSB WrapR_ is free and open source software.
+_WrapR_ is free and open source software.
 
 ## Issues
 
