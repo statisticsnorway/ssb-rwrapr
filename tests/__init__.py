@@ -1,1 +1,1 @@
-"""Test suite for the ssb_wrapr package."""
+"""Test suite for the wrapr package."""

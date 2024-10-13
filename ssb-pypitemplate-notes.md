@@ -10,5 +10,5 @@ This file describes the main changes when converting the repo to ssb-pypitemplat
   are imported every time the function is called.
 - Add devcontainer for working with code locally in vscode and PyCharm.
 - Don't return from `finally` blocks, hides excpetions. Like this one:
-  - src/ssb_wrapr/convert_py2r.py:111:17: B012 `return` inside `finally` blocks cause exceptions to be silenced
+  - src/wrapr/convert_py2r.py:111:17: B012 `return` inside `finally` blocks cause exceptions to be silenced
 - Discuss error handling in `renv.py` and `function_wrapper.py`.

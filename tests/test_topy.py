@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-import ssb_wrapr as wr
+import wrapr as wr
 
 
 def test_toPy():

@@ -55,6 +55,12 @@ jobs:
           version=$(poetry version | awk '{ print $2 }') &&
           poetry version $version.dev.$(date +%s)
 
+      - name: Rename package if TestPyPI
+        if: (!steps.check-version.outputs.tag)
+        run: |
+          pip install tomlkit
+          python3 .github/workflows/replace_packagename.py
+
       - name: Build package
         run: |
           poetry build --ansi

@@ -1,3 +1,5 @@
+"""WrapR."""
+
 import warnings
 
 

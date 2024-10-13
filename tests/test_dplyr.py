@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-import ssb_wrapr as wr
+import wrapr as wr
 
 
 @pytest.fixture(scope="module")

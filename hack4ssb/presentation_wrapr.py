@@ -20,7 +20,7 @@
 # %%
 import numpy as np
 
-import ssb_wrapr as wr
+import wrapr as wr
 
 
 # %% [markdown]

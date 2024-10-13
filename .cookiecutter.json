@@ -12,11 +12,11 @@
   "copyright_owner": "Statistics Norway",
   "copyright_year": "2024",
   "development_status": "Development Status :: 4 - Beta",
-  "email": "kjell.solem.slupphaug",
-  "friendly_name": "SSB WrapR",
+  "email": "kjell.solem.slupphaug@ssb.no",
+  "friendly_name": "WrapR",
   "github_organization": "statisticsnorway",
   "license": "MIT",
-  "package_name": "ssb_wrapr",
+  "package_name": "wrapr",
   "project_name": "ssb-wrapr",
   "version": "0.1.0"
 }
