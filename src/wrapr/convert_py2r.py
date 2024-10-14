@@ -1,15 +1,19 @@
-import warnings
-from numpy._typing import NDArray
-import scipy
-import rpy2.robjects as ro
+from collections import OrderedDict
+from types import NoneType
+from typing import Any
+
 import numpy as np
 import pandas as pd
+import rpy2.robjects as ro
+import scipy
 
-from types import NoneType
-from collections import OrderedDict
-from typing import Any, Callable, Dict, List, Tuple
+from .rlist import RDict
+from .rlist import RList
+from .rlist import dict2rlist
+from .rlist import pylist2rlist
+from .rview import RView
+from .sparse import convert_pysparsematrix
 
-from .rutils import rcall
 
 # We can uncomment this when we transition to 3.12
 # type RBaseObject = (
@@ -22,7 +26,7 @@ from .rutils import rcall
 
 
 # functions for converting from py 2 R -----------------------------------------
-def convert_py_args2r(args: List[Any], kwargs: Dict[str, Any]) -> None:
+def convert_py_args2r(args: list[Any], kwargs: dict[str, Any]) -> None:
     for i, x in enumerate(args):
         args[i] = convert_py2r(x)
     for k, v in kwargs.items():
@@ -30,12 +34,12 @@ def convert_py_args2r(args: List[Any], kwargs: Dict[str, Any]) -> None:
 
 
 def convert_py2r(x: Any) -> Any:  # RBaseObject | PyDtype | Any:
-    from .RView import RView
-    from .RArray import RArray, convert_numpy2r
-    from .RList import RList, RDict, pylist2rlist, dict2rlist
-    from .RFactor import RFactor
-    from .RDataFrame import RDataFrame, pandas2r
-    from .sparse import convert_pysparsematrix
+    # Need to import these here to avoid circular imports
+    from .rarray import RArray
+    from .rarray import convert_numpy2r
+    from .rdataframe import RDataFrame
+    from .rdataframe import pandas2r
+    from .rfactor import RFactor
 
     match x:
         case RView() | RArray() | RList() | RDataFrame() | RDict() | RFactor():

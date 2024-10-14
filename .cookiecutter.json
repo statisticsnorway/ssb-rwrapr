@@ -1,0 +1,22 @@
+{
+  "_copy_without_render": [
+    "*.rst_t"
+  ],
+  "_jinja2_env_vars": {
+    "lstrip_blocks": true,
+    "trim_blocks": true
+  },
+  "_template": "https://github.com/statisticsnorway/ssb-pypitemplate.git",
+  "author": "Kjell Solem Slupphaug",
+  "code_quality_level": "Medium",
+  "copyright_owner": "Statistics Norway",
+  "copyright_year": "2024",
+  "development_status": "Development Status :: 4 - Beta",
+  "email": "kjell.solem.slupphaug@ssb.no",
+  "friendly_name": "WrapR",
+  "github_organization": "statisticsnorway",
+  "license": "MIT",
+  "package_name": "wrapr",
+  "project_name": "ssb-wrapr",
+  "version": "0.1.0"
+}

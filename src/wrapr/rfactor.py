@@ -1,9 +1,12 @@
+from typing import Any
+
 import pandas as pd
 import rpy2.robjects as ro
 import rpy2.robjects.vectors as vc
 from rpy2.robjects import pandas2ri
-from .RAttributes import get_Rattributes
-from typing import Any
+
+from .rattributes import get_Rattributes
+
 
 class RFactor(pd.Series):
     def __init__(self, r_factor: ro.vectors.FactorVector):

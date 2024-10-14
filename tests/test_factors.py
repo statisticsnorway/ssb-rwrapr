@@ -1,7 +1,7 @@
-import wrapr as wr
-import pandas as pd
 import numpy as np
-import pytest
+
+import wrapr as wr
+
 
 def test_factors():
     R = wr.library("base")
