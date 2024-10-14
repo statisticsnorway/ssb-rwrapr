@@ -12,7 +12,7 @@ jobs:
     name: ${{ matrix.session }} ${{ matrix.python }} / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     container:
-      image: ghcr.io/arneso-ssb/docker-rpython-r2u:1
+      image: ghcr.io/statisticsnorway/docker-rpython-base:latest
     strategy:
       fail-fast: false
       matrix:
