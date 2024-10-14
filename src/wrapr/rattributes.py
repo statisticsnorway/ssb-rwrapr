@@ -4,28 +4,28 @@ from typing import Any
 from .convert_py2r import convert_py_args2r
 
 
-def get_Rattributes(x, exclude=None) -> Any:
+def get_Rattributes(x: Any, exclude: list[str] | None = None) -> Any:
     from .function_wrapper import rfunc
 
     if exclude is None:
         exclude = []
-    attributes: Callable = rfunc(
-        """
-    function(x, exclude) {
-        attributes <- attributes(x)
-        if (is.null(attributes)) return(NULL)
 
-        attributes <- attributes[!names(attributes) %in% exclude]
-        if (length(attributes) == 0) return(NULL)
+    attributes: Callable[..., Any] = rfunc("""
+        function(x, exclude) {
+            attributes <- attributes(x)
+            if (is.null(attributes)) return(NULL)
 
-        attributes
-    }
+            attributes <- attributes[!names(attributes) %in% exclude]
+            if (length(attributes) == 0) return(NULL)
+
+            attributes
+        }
     """
     )
     return attributes(x, exclude)
 
 
-def structure(x, **kwargs) -> Any:
+def structure(x: Any, **kwargs: Any) -> Any:
     from .rutils import rcall
 
     return rcall("structure")(x, **kwargs)

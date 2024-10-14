@@ -9,7 +9,7 @@ def convert_pysparsematrix(x: scipy.sparse.coo_array | scipy.sparse.coo_matrix) 
     from .rutils import rcall
 
     try:
-        sparseMatrix: Callable = rcall("Matrix::sparseMatrix")
+        sparseMatrix: Callable[..., Any] = rcall("Matrix::sparseMatrix")
         return sparseMatrix(
             i=ro.IntVector(x.row + 1),
             j=ro.IntVector(x.col + 1),

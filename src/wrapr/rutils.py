@@ -37,7 +37,7 @@ def has_unsupported_rclass(x: Any) -> bool:
 
 
 # TODO: Argument str_ is not used in the function. Remove?
-def as_matrix(x: Any) -> NDArray | Any:
+def as_matrix(x: Any) -> NDArray[Any] | Any:
     from .function_wrapper import rfunc
 
     f: Callable[..., Any] | Any = rfunc("as.matrix")

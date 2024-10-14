@@ -14,7 +14,7 @@ from .convert_py2r import convert_py2r
 from .rattributes import get_Rattributes
 
 
-class RArray(np.ndarray):
+class RArray(np.ndarray[Any, Any]):
     def __new__(cls, Rdata):
 
         arr = convert_numpy(Rdata)
@@ -28,13 +28,13 @@ class RArray(np.ndarray):
         obj._Rattributes = get_attributes_array(Rdata)
         return obj
 
-    def __array_finalize__(self, obj):
+    def __array_finalize__(self, obj: Any) -> None:
         if obj is None:
             return
         # Copy the _Rattributes from the source object
         self._Rattributes = getattr(obj, "_Rattributes", None)
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: Any) -> Any:
         result = super().__getitem__(index)
 
         # If the result is not an instance of RArray, return it as is
@@ -113,7 +113,7 @@ class RArray(np.ndarray):
 
         return result
 
-    def _normalize_index(self, index, ndim):
+    def _normalize_index(self, index: Any, ndim: int) -> tuple[Any]:
         if not isinstance(index, tuple):
             index = (index,)
 
@@ -135,7 +135,7 @@ class RArray(np.ndarray):
 
         return tuple(index_list[:ndim])
 
-    def _get_dims_kept(self, index_normalized):
+    def _get_dims_kept(self, index_normalized: tuple[Any]) -> list[bool]:
         dims_kept = []
         for idx in index_normalized:
             if isinstance(idx, slice | type(None) | type(Ellipsis)):
@@ -149,18 +149,20 @@ class RArray(np.ndarray):
                 dims_kept.append(True)
         return dims_kept
 
-    def toR(self):
+    def toR(self) -> Any:
         from .rattributes import attributes2r
         from .rattributes import structure
 
         R_object = convert_numpy2r(np.asarray(self))
         if self._Rattributes is not None:
             R_attributes = attributes2r(self._Rattributes)
+            if R_attributes:
+                R_object = structure(R_object, **R_attributes)
             R_object = structure(R_object, **R_attributes)
 
         return R_object
 
-    def toPy(self):
+    def toPy(self) -> NDArray[Any]:
         return np.asarray(self)
 
 
@@ -169,12 +171,12 @@ def get_RArray(x: Any) -> RArray | NDArray:
     return y[0] if y.shape == (1,) and y._Rattributes is None else y
 
 
-def get_attributes_array(x) -> dict | None:
+def get_attributes_array(x: Any) -> dict[str, Any] | None | Any:
     return get_Rattributes(x, exclude=["class"])
 
 
-def convert_numpy(x: vc.Vector | NDArray | NULLType,
-                  flatten: bool = False) -> NDArray | int | str | float | bool | None:
+def convert_numpy(x: vc.Vector | NDArray[Any] | NULLType | Any,
+                  flatten: bool = False) -> NDArray[Any] | int | str | float | bool | None:
     if isinstance(x, NULLType):
         return None
     match x:  # this should be expanded upon
@@ -193,7 +195,7 @@ def convert_numpy(x: vc.Vector | NDArray | NULLType,
     return filter_numpy(y, flatten=flatten)
 
 
-def filter_numpy(x: NDArray, flatten: bool) -> NDArray | int | str | float | bool:
+def filter_numpy(x: NDArray[Any], flatten: bool) -> NDArray[Any] | int | str | float | bool:
     # sometimes a numpy array will have one element with shape (,)
     # this should be (1,)
     y = x[np.newaxis][0] if not x.shape else x
@@ -205,11 +207,11 @@ def filter_numpy(x: NDArray, flatten: bool) -> NDArray | int | str | float | boo
     return y
 
 
-def is_valid_numpy(x: NDArray) -> bool:
+def is_valid_numpy(x: NDArray[Any]) -> bool:
     return x.dtype.fields is None
 
 
-def convert_numpy2r(x: NDArray) -> Any:  # RBaseObject:
+def convert_numpy2r(x: NDArray[Any]) -> Any:  # RBaseObject:
     y = x.copy()
     if not y.shape:
         y = y[np.newaxis]
@@ -224,7 +226,7 @@ def convert_numpy2r(x: NDArray) -> Any:  # RBaseObject:
             return convert_numpyND(y)
 
 
-def convert_numpy1D(x: NDArray) -> Any:  # RBaseObject:
+def convert_numpy1D(x: NDArray[Any]) -> Any:  # RBaseObject:
     match x.dtype.kind:
         case "b":
             return ro.BoolVector(x)
@@ -248,17 +250,17 @@ def convert_numpy1D(x: NDArray) -> Any:  # RBaseObject:
             return x
 
 
-def convert_numpy2D(x: NDArray) -> Any:  # RBaseObject:
-    flat_x: NDArray = x.flatten(order="F")
+def convert_numpy2D(x: NDArray[Any]) -> Any:  # RBaseObject:
+    flat_x: NDArray[Any] = x.flatten(order="F")
     nrow, ncol = x.shape
     y = convert_numpy1D(flat_x)
-    f: Callable = ro.r("matrix")
+    f: Callable[..., Any] | Any = ro.r("matrix")
     return f(y, nrow=nrow, ncol=ncol)
 
 
-def convert_numpyND(x: NDArray) -> Any:  # RBaseObject:
-    flat_x: NDArray = x.flatten(order="F")
+def convert_numpyND(x: NDArray[Any]) -> Any:  # RBaseObject:
+    flat_x: NDArray[Any] = x.flatten(order="F")
     dim: tuple = x.shape
     y = convert_numpy1D(flat_x)
-    f: Callable = ro.r("array")
+    f: Callable[..., Any] | Any = ro.r("array")
     return f(y, dim=ro.IntVector(dim))

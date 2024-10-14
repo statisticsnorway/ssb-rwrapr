@@ -34,13 +34,15 @@ class RDataFrame(pd.DataFrame):
             return R_df
         else:
             attributes = attributes2r(self._Rattributes)
+            if attributes is None:
+                return R_df
             return structure(R_df, **attributes)
 
     def toPy(self) -> pd.DataFrame:
         return pd.DataFrame(self)
 
 
-def get_attributes_dataframe(df: vc.DataFrame) -> dict[str, Any] | None:
+def get_attributes_dataframe(df: vc.DataFrame) -> dict[str, Any] | None | Any:
     return get_Rattributes(df, exclude=["names", "class", "row.names"])
 
 

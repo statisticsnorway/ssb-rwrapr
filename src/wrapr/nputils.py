@@ -3,7 +3,7 @@ from numpy.typing import NDArray
 from rpy2.rlike.container import Any
 
 
-def np_contains(x: NDArray, pattern=Any) -> np.bool_:
+def np_contains(x: NDArray[Any], pattern: Any) -> np.bool_:
     return np.any(x == pattern)
 
 

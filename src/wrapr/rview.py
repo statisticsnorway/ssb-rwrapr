@@ -1,4 +1,4 @@
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
 from typing import Any
 
 import rpy2.robjects as ro
@@ -21,32 +21,32 @@ class RView:
         else:
             self.Robj = Robj
 
-    def __str__(self) -> str:
+    def __str__(self) -> str | Any:
         # return captureRprint(self.Robj)
         return self.Robj.__str__()
 
-    def __repr__(self):
+    def __repr__(self) -> str | Any:
         # return self.Robj.__repr__()
         return self.Robj.__str__()
 
     def __getattr__(self, name: str) -> Any:
         from .function_wrapper import rfunc
 
-        fun: Callable = rfunc(name)
+        fun: Callable[..., Any] = rfunc(name)
         return fun(self.Robj)
 
-    def __getitem__(self, *args):
+    def __getitem__(self, *args: Any) -> Any:
         return self.Robj.__getitem__(*args)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Any] | Any:
         return self.Robj.__iter__()
 
-    def toPy(self, ignoreS3=False):
+    def toPy(self, ignoreS3: bool = False) -> Any:
         from .convert_r2py import convert_r2py
 
         return convert_r2py(self.Robj, ignoreS3=ignoreS3)
 
-    def toR(self):
+    def toR(self) -> Any:
         return self.Robj
 
 

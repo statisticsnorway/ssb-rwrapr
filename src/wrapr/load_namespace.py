@@ -35,7 +35,7 @@ def try_load_namespace(namespace: str,
         pinfo("Installing package...", verbose=verbose)
         ro.r(f'install.packages("{namespace}")', print_r_warnings=False, invisible=True)
         pinfo("Package installed!", verbose=verbose)
-        module: rpkg.Package = rpkg.importr(namespace)
+        module = rpkg.importr(namespace)
 
     if hide_r_ouptut:
         capture.reset_r_output()
