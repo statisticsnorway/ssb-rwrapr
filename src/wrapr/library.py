@@ -3,16 +3,16 @@ import rpy2.robjects.packages as rpkg
 from .renv import Renv
 
 
-def library(env_name: str, interactive: bool = True) -> Renv | None:
+def library(env_name: str, interactive: bool = True) -> Renv:
     """Load an R environment (package) into the current session."""
     try:
         return Renv(env_name, interactive=interactive)
     except rpkg.PackageNotInstalledError:
         if interactive:
             raise
-        return None
+        return Renv(None)
 
 
-def importr(env_name: str, interactive: bool = True) -> Renv | None:
+def importr(env_name: str, interactive: bool = True) -> Renv:
     """Load an R environment (package) into the current session."""
     return library(env_name, interactive=interactive)

@@ -18,7 +18,13 @@ from .utils import pinfo
 
 
 class Renv:
-    def __init__(self, env_name: str, interactive: bool = True) -> None:
+    def __init__(self, env_name: str | None, interactive: bool = True) -> None:
+        if (env_name is None) or (env_name == ""):
+            self.__base_lib__ = None
+            self.__Rfuncs__ = None
+            self.__Rdatasets__ = None
+            return
+
         pinfo("Loading packages...", verbose=True)
         self.__set_base_lib__(
             try_load_namespace(env_name, verbose=True, interactive=interactive)

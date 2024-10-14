@@ -6,7 +6,9 @@ import numpy as np
 import rpy2
 import rpy2.robjects as ro
 import rpy2.robjects.vectors as vc
+
 from numpy.typing import NDArray
+from rpy2.rinterface_lib.sexp import NULLType
 
 from .convert_py2r import convert_py2r
 from .rattributes import get_Rattributes
@@ -171,10 +173,9 @@ def get_attributes_array(x) -> dict | None:
     return get_Rattributes(x, exclude=["class"])
 
 
-def convert_numpy(
-    x: vc.Vector | NDArray, flatten: bool = False
-) -> NDArray | int | str | float | bool | None:
-    if isinstance(x, rpy2.rinterface_lib.sexp.NULLType):
+def convert_numpy(x: vc.Vector | NDArray | NULLType,
+                  flatten: bool = False) -> NDArray | int | str | float | bool | None:
+    if isinstance(x, NULLType):
         return None
     match x:  # this should be expanded upon
         case vc.BoolVector() | vc.BoolArray() | vc.BoolMatrix():

@@ -17,14 +17,14 @@ def get_rclass(x: Any) -> NDArray[np.str_] | None:
     from .function_wrapper import rfunc
 
     try:
-        f: Callable | Any = rfunc("class")
+        f: Callable[..., Any] | Any = rfunc("class")
         return np.asarray(f(x), dtype="U")
     except Exception:
         return None
 
 
 def has_unsupported_rclass(x: Any) -> bool:
-    rclass = get_rclass(x)
+    rclass: NDArray[np.str_] | Any = get_rclass(x)
 
     if rclass is None or len(rclass.tolist()) == 0:
         return False
@@ -37,8 +37,8 @@ def has_unsupported_rclass(x: Any) -> bool:
 
 
 # TODO: Argument str_ is not used in the function. Remove?
-def as_matrix(x: Any, str_=None) -> NDArray | Any:
+def as_matrix(x: Any) -> NDArray | Any:
     from .function_wrapper import rfunc
 
-    f: Callable | Any = rfunc("as.matrix")
+    f: Callable[..., Any] | Any = rfunc("as.matrix")
     return f(x)
