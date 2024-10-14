@@ -24,9 +24,7 @@
 [black]: https://github.com/psf/black
 [poetry]: https://python-poetry.org/
 
-## Features
-
-<img src="images/WrapR-logo.png" alt="Logo" align = "right" height="139" class="logo">
+## Features <img src="images/WrapR-logo.png" alt="Logo" align = "right" height="139" class="logo">
 `WrapR` is a `python` package for using R inside of python.
 It is built using `rpy2`, but attempts to be more convient to use.
 Ideally you should never have to worry about using `R` objects,
