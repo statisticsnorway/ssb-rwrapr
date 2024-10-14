@@ -17,15 +17,14 @@ class lazily:
         return self.expr
 
 
-def lazy_wrap(
-    args: list[Any], kwargs: dict[str, Any], func: Callable, func_name: str | None
-) -> Callable | Any:
+def lazy_wrap(args: list[Any],
+              kwargs: dict[str, Any],
+              func: Callable[..., Any],
+              func_name: str | None) -> Callable[..., Any] | Any:
     lazy_arg_exprs: list[str] = []
     for x in args:
         if isinstance(x, lazily):
-            raise TypeError(
-                f"Lazy argument needs to be a keyword argument, {x} is unnamed"
-            )
+            raise TypeError(f"Lazy argument needs to be a keyword argument, {x} is unnamed")
     for k, v in kwargs.copy().items():
         if isinstance(v, lazily):
             lazy_arg_exprs.append(f"{k} = {v!s}")

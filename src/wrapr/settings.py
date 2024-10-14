@@ -1,16 +1,16 @@
-from typing import Optional
+from typing import Any, Optional
 
 class Settings:
     _instance: Optional['Settings'] = None  # Singleton instance of the class
     Rview: bool  # Boolean attribute to store Rview setting
 
-    def __new__(cls, *args, **kwargs) -> 'Settings':
+    def __new__(cls, *args: Any, **kwargs: Any) -> 'Settings':
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._initialize(**kwargs)
         return cls._instance
 
-    def _initialize(self, **kwargs) -> None:
+    def _initialize(self, **kwargs: Any) -> None:
         self.Rview = False  # Initialize the Rview attribute to False
 
     def set_Rview(self, rview: bool) -> None:

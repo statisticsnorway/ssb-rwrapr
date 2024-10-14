@@ -69,9 +69,11 @@ pretty = true
 show_column_numbers = true
 show_error_context = true
 
+
 [[tool.mypy.overrides]]
 module = [
     "rpy2.*",
+    "src/wrapr/sparse.py"
 ]
 ignore_missing_imports = true
 

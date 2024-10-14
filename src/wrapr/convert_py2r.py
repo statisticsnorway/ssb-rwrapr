@@ -60,13 +60,7 @@ def convert_py2r(x: Any) -> Any:  # RBaseObject | PyDtype | Any:
             return convert_py2r(x.to_numpy())
         case NoneType():
             return ro.NULL
-        case np.bool_():
-            return bool(x)
-        case np.int_() | np.int8() | np.int16() | np.int32() | np.int64():
-            return int(x)
-        case np.int_() | np.float16() | np.float32() | np.float64():
-            return float(x)
-        case np.str_() | np.bytes_():
-            return str(x)
+        case _ if np.isscalar(x):
+            return np.asarray(x).item() # x.item() should work, but will give a linter error
         case _:
             return x
