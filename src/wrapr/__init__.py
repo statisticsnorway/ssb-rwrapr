@@ -18,3 +18,20 @@ from .rlist import RList
 from .rview import RView
 from .settings import Settings
 from .settings import settings
+
+
+__all__ = [
+    "RArray",
+    "RDataFrame",
+    "RDict",
+    "RFactor",
+    "RList",
+    "RView",
+    "Renv",
+    "Settings",
+    "importr",
+    "lazily",
+    "library",
+    "settings",
+    "try_load_namespace",
+]
