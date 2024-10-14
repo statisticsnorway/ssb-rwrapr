@@ -1,9 +1,11 @@
+default_language_version:
+  python: python3.11
 repos:
   - repo: local
     hooks:
       # General file checkers
       - id: check-added-large-files
-        name: Check for added large files
+        name: Check added large files
         entry: check-added-large-files
         language: system
       - id: check-merge-conflict
@@ -21,19 +23,19 @@ repos:
         entry: end-of-file-fixer
         language: system
         types: [text]
-        stages: [commit, push, manual]
+        stages: [pre-commit, pre-push, manual]
       - id: trailing-whitespace
         name: Trim Trailing Whitespace
         entry: trailing-whitespace-fixer
         language: system
         types: [text]
-        stages: [commit, push, manual]
+        stages: [pre-commit, pre-push, manual]
       - id: mixed-line-ending
         name: Mixed Line Ending
         entry: mixed-line-ending
         language: system
         types: [text]
-        stages: [commit, push, manual]
+        stages: [pre-commit, pre-push, manual]
 
       # Serialization format checkers
       - id: check-yaml
@@ -58,6 +60,12 @@ repos:
         entry: check-ast
         language: system
         types: [python]
+      - id: darglint
+        name: darglint
+        entry: darglint
+        language: system
+        types: [python]
+        stages: [manual]
       - id: isort
         name: isort
         entry: isort
@@ -65,9 +73,19 @@ repos:
         language: system
         types_or: [cython, pyi, python]
         args: ["--filter-files"]
+      - id: ruff
+        name: ruff
+        entry: ruff check --fix --exit-non-zero-on-fix
+        language: system
+        types_or: [python, jupyter]
+        require_serial: true
       - id: black
         name: black
         entry: black
         language: system
         types_or: [python, jupyter]
         require_serial: true
+#  - repo: https://github.com/pre-commit/mirrors-prettier # Does not work on Dapla and DaplaLab
+#    rev: v3.1.0
+#    hooks:
+#      - id: prettier

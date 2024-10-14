@@ -1,13 +1,16 @@
-import numpy as np
+from collections.abc import Callable
 from typing import Any
-from typing import Callable
-from typing import Dict
 
 from .convert_py2r import convert_py_args2r
 
-def get_Rattributes(x, exclude = []) -> Any:
+
+def get_Rattributes(x, exclude=None) -> Any:
     from .function_wrapper import rfunc
-    attributes: Callable = rfunc("""
+
+    if exclude is None:
+        exclude = []
+    attributes: Callable = rfunc(
+        """
     function(x, exclude) {
         attributes <- attributes(x)
         if (is.null(attributes)) return(NULL)
@@ -16,17 +19,19 @@ def get_Rattributes(x, exclude = []) -> Any:
         if (length(attributes) == 0) return(NULL)
 
         attributes
-    } 
-    """)
+    }
+    """
+    )
     return attributes(x, exclude)
 
 
 def structure(x, **kwargs) -> Any:
     from .rutils import rcall
+
     return rcall("structure")(x, **kwargs)
 
 
-def attributes2r(attrs: Dict[str, Any] | None) -> Dict[str, Any] | None:
+def attributes2r(attrs: dict[str, Any] | None) -> dict[str, Any] | None:
     if attrs is None:
         return {}
     modified_attrs = attrs.copy()

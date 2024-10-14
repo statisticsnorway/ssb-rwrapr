@@ -1,7 +1,7 @@
-import wrapr as wr
 import numpy as np
 import pandas as pd
-import pytest
+
+import wrapr as wr
 
 
 def test_toPy():
@@ -18,9 +18,6 @@ def test_toPy():
     assert type(rarray) is wr.RArray
     assert type(rarray.toPy()) is np.ndarray
 
-    rdataframe = bs.data_frame(a=np.array([1, 2, 3]), 
-                               b=np.array([4, 5, 6]))
+    rdataframe = bs.data_frame(a=np.array([1, 2, 3]), b=np.array([4, 5, 6]))
     assert type(rdataframe) is wr.RDataFrame
     assert type(rdataframe.toPy()) is pd.DataFrame
-
-
