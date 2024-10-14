@@ -67,7 +67,7 @@ df = dplyr.mutate(iris, Sepal = wr.lazily("round(Sepal.Length * 2, 0)"))
 You can install _WrapR_ via [pip] from [PyPI]:
 
 ```console
-pip install wrapr
+pip install rwrapr
 ```
 
 ## Usage

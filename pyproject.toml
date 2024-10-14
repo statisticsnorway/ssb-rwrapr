@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "wrapr"
+name = "rwrapr"
 version = "0.1.0"
 description = "Python package for using R in Python"
 authors = ["Kjell Solem Slupphaug <kjell.solem.slupphaug@ssb.no>"]
@@ -45,7 +45,6 @@ ipykernel = ">=6.15.3"
 pytest-cov = ">=2.8"
 isort = ">=5.13.2"
 pandas-stubs = ">=2.2.2.240909"
-tomlkit = ">=0.13.2"
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
@@ -127,7 +126,6 @@ classmethod-decorators = ["classmethod", "validator", "root_validator", "pydanti
 
 [tool.ruff.lint.per-file-ignores]
 "*/__init__.py" = ["F401"]
-"replace_packagename.py" = ["INP001"]
 "**/tests/*" = [
     "ANN001",  # type annotations don't add value for test functions
     "ANN002",  # type annotations don't add value for test functions
