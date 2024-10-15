@@ -7,7 +7,9 @@ from .utils import ROutputCapture
 from .utils import pinfo
 
 
-def load_base_envs() -> dict[str, rpkg.InstalledSTPackage | rpkg.InstalledPackage | rpkg.Package]:
+def load_base_envs() -> (
+    dict[str, rpkg.InstalledSTPackage | rpkg.InstalledPackage | rpkg.Package]
+):
     # set options for global environment
     rbase = try_load_namespace("base", verbose=False)
     rMatrix = try_load_namespace("Matrix", verbose=False)
@@ -15,10 +17,12 @@ def load_base_envs() -> dict[str, rpkg.InstalledSTPackage | rpkg.InstalledPackag
     return {"base": rbase, "Matrix": rMatrix, "utils": rutils}
 
 
-def try_load_namespace(namespace: str,
-                       verbose: bool = False,
-                       hide_r_ouptut: bool = True,
-                       interactive: bool = True) -> rpkg.Package:
+def try_load_namespace(
+    namespace: str,
+    verbose: bool = False,
+    hide_r_ouptut: bool = True,
+    interactive: bool = True,
+) -> rpkg.Package:
     if hide_r_ouptut:
         capture = ROutputCapture()
         capture.capture_r_output()

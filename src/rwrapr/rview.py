@@ -1,4 +1,5 @@
-from collections.abc import Callable, Iterator
+from collections.abc import Callable
+from collections.abc import Iterator
 from typing import Any
 
 import rpy2.robjects as ro

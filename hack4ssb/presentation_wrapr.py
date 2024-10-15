@@ -19,7 +19,6 @@
 
 # %%
 import numpy as np
-
 import wrapr as wr
 
 
