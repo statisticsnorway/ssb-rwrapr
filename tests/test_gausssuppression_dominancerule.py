@@ -3,7 +3,7 @@ import pandas as pd
 import pytest
 import rpy2
 
-import wrapr as wr
+import rwrapr as wr
 
 
 SSBtools = wr.library("SSBtools")

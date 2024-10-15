@@ -1,6 +1,6 @@
 import numpy as np
 
-import wrapr as wr
+import rwrapr as wr
 
 
 def test_SubsettingRArray():

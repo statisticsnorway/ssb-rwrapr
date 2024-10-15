@@ -1,6 +1,6 @@
 import numpy as np
 
-import wrapr as wr
+import rwrapr as wr
 
 
 base = wr.importr("base")

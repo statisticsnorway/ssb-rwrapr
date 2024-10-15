@@ -70,13 +70,6 @@ Install the package with development requirements:
 poetry install
 ```
 
-You can now run an interactive Python session, or your app:
-
-```console
-poetry run python
-poetry run ssb-wrapr
-```
-
 ## How to test the project
 
 Run the full test suite:
@@ -123,15 +116,15 @@ It is recommended to open an issue before starting work on anything.
 This will allow a chance to talk it over with the owners and validate your approach.
 
 [mit license]: https://opensource.org/licenses/MIT
-[source code]: https://github.com/statisticsnorway/ssb-wrapr
-[documentation]: https://statisticsnorway.github.io/ssb-wrapr
-[issue tracker]: https://github.com/statisticsnorway/ssb-wrapr/issues
+[source code]: https://github.com/statisticsnorway/ssb-rwrapr
+[documentation]: https://statisticsnorway.github.io/ssb-rwrapr
+[issue tracker]: https://github.com/statisticsnorway/ssb-rwrapr/issues
 [pipx]: https://pipx.pypa.io/
 [poetry]: https://python-poetry.org/
 [nox]: https://nox.thea.codes/
 [nox-poetry]: https://nox-poetry.readthedocs.io/
 [pytest]: https://pytest.readthedocs.io/
-[pull request]: https://github.com/statisticsnorway/ssb-wrapr/pulls
+[pull request]: https://github.com/statisticsnorway/ssb-rwrapr/pulls
 
 <!-- github-only -->
 
