@@ -3,10 +3,8 @@ from collections.abc import Callable
 from typing import Any
 
 import numpy as np
-import rpy2
 import rpy2.robjects as ro
 import rpy2.robjects.vectors as vc
-
 from numpy.typing import NDArray
 from rpy2.rinterface_lib.sexp import NULLType
 
@@ -175,8 +173,9 @@ def get_attributes_array(x: Any) -> dict[str, Any] | None | Any:
     return get_Rattributes(x, exclude=["class"])
 
 
-def convert_numpy(x: vc.Vector | NDArray[Any] | NULLType | Any,
-                  flatten: bool = False) -> NDArray[Any] | int | str | float | bool | None:
+def convert_numpy(
+    x: vc.Vector | NDArray[Any] | NULLType | Any, flatten: bool = False
+) -> NDArray[Any] | int | str | float | bool | None:
     if isinstance(x, NULLType):
         return None
     match x:  # this should be expanded upon
@@ -195,7 +194,9 @@ def convert_numpy(x: vc.Vector | NDArray[Any] | NULLType | Any,
     return filter_numpy(y, flatten=flatten)
 
 
-def filter_numpy(x: NDArray[Any], flatten: bool) -> NDArray[Any] | int | str | float | bool:
+def filter_numpy(
+    x: NDArray[Any], flatten: bool
+) -> NDArray[Any] | int | str | float | bool:
     # sometimes a numpy array will have one element with shape (,)
     # this should be (1,)
     y = x[np.newaxis][0] if not x.shape else x

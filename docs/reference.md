@@ -7,154 +7,154 @@ from the root directory.
 
 You need to rerun the command when python files are added, deleted or renamed.
 Copy the content from the generated
-wrapr.rst file to the {eval-rst} block below and
+rwrapr.rst file to the {eval-rst} block below and
 delete the .rst file afterwards.
 -->
 
 ```{eval-rst}
-wrapr package
+rwrapr package
 =============================================================================
 
-wrapr.convert\_py2r module
---------------------------
+rwrapr.convert\_py2r module
+---------------------------
 
-.. automodule:: wrapr.convert_py2r
+.. automodule:: rwrapr.convert_py2r
    :members:
    :undoc-members:
    :show-inheritance:
 
-wrapr.convert\_r2py module
---------------------------
+rwrapr.convert\_r2py module
+---------------------------
 
-.. automodule:: wrapr.convert_r2py
+.. automodule:: rwrapr.convert_r2py
    :members:
    :undoc-members:
    :show-inheritance:
 
-wrapr.function\_wrapper module
-------------------------------
+rwrapr.function\_wrapper module
+-------------------------------
 
-.. automodule:: wrapr.function_wrapper
+.. automodule:: rwrapr.function_wrapper
    :members:
    :undoc-members:
    :show-inheritance:
 
-wrapr.lazy\_rexpr module
-------------------------
+rwrapr.lazy\_rexpr module
+-------------------------
 
-.. automodule:: wrapr.lazy_rexpr
+.. automodule:: rwrapr.lazy_rexpr
    :members:
    :undoc-members:
    :show-inheritance:
 
-wrapr.library module
---------------------
-
-.. automodule:: wrapr.library
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-wrapr.load\_namespace module
-----------------------------
-
-.. automodule:: wrapr.load_namespace
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-wrapr.nputils module
---------------------
-
-.. automodule:: wrapr.nputils
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-wrapr.rarray module
--------------------
-
-.. automodule:: wrapr.rarray
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-wrapr.rattributes module
-------------------------
-
-.. automodule:: wrapr.rattributes
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-wrapr.rdataframe module
------------------------
-
-.. automodule:: wrapr.rdataframe
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-wrapr.renv module
------------------
-
-.. automodule:: wrapr.renv
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-wrapr.rfactor module
---------------------
-
-.. automodule:: wrapr.rfactor
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-wrapr.rlist module
-------------------
-
-.. automodule:: wrapr.rlist
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-wrapr.rutils module
--------------------
-
-.. automodule:: wrapr.rutils
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-wrapr.rview module
-------------------
-
-.. automodule:: wrapr.rview
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-wrapr.settings module
+rwrapr.library module
 ---------------------
 
-.. automodule:: wrapr.settings
+.. automodule:: rwrapr.library
    :members:
    :undoc-members:
    :show-inheritance:
 
-wrapr.sparse module
--------------------
+rwrapr.load\_namespace module
+-----------------------------
 
-.. automodule:: wrapr.sparse
+.. automodule:: rwrapr.load_namespace
    :members:
    :undoc-members:
    :show-inheritance:
 
-wrapr.utils module
+rwrapr.nputils module
+---------------------
+
+.. automodule:: rwrapr.nputils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+rwrapr.rarray module
+--------------------
+
+.. automodule:: rwrapr.rarray
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+rwrapr.rattributes module
+-------------------------
+
+.. automodule:: rwrapr.rattributes
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+rwrapr.rdataframe module
+------------------------
+
+.. automodule:: rwrapr.rdataframe
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+rwrapr.renv module
 ------------------
 
-.. automodule:: wrapr.utils
+.. automodule:: rwrapr.renv
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+rwrapr.rfactor module
+---------------------
+
+.. automodule:: rwrapr.rfactor
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+rwrapr.rlist module
+-------------------
+
+.. automodule:: rwrapr.rlist
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+rwrapr.rutils module
+--------------------
+
+.. automodule:: rwrapr.rutils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+rwrapr.rview module
+-------------------
+
+.. automodule:: rwrapr.rview
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+rwrapr.settings module
+----------------------
+
+.. automodule:: rwrapr.settings
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+rwrapr.sparse module
+--------------------
+
+.. automodule:: rwrapr.sparse
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+rwrapr.utils module
+-------------------
+
+.. automodule:: rwrapr.utils
    :members:
    :undoc-members:
    :show-inheritance:

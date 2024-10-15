@@ -1,6 +1,6 @@
 import pytest
 
-import wrapr as wr
+import rwrapr as wr
 
 
 def test_custom_funcs():

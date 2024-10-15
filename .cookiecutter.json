@@ -13,10 +13,10 @@
   "copyright_year": "2024",
   "development_status": "Development Status :: 4 - Beta",
   "email": "kjell.solem.slupphaug@ssb.no",
-  "friendly_name": "WrapR",
+  "friendly_name": "RWrapR",
   "github_organization": "statisticsnorway",
   "license": "MIT",
-  "package_name": "wrapr",
-  "project_name": "ssb-wrapr",
-  "version": "0.1.0"
+  "package_name": "rwrapr",
+  "project_name": "ssb-rwrapr",
+  "version": "0.1.1"
 }

@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-import wrapr as wr
+import rwrapr as wr
 
 
 def test_RiskyIntervals():

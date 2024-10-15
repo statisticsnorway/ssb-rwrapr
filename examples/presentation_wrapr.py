@@ -6,9 +6,9 @@
 #       format_name: percent
 #       format_version: '1.3'
 #   kernelspec:
-#     display_name: wrapr
+#     display_name: rwrapr
 #     language: python
-#     name: wrapr
+#     name: rwrapr
 # ---
 
 # %% [markdown]
@@ -20,7 +20,7 @@
 # %%
 import numpy as np
 
-import wrapr as wr
+import rwrapr as wr
 
 
 # %% [markdown]

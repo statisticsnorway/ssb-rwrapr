@@ -10,7 +10,8 @@ def get_Rattributes(x: Any, exclude: list[str] | None = None) -> Any:
     if exclude is None:
         exclude = []
 
-    attributes: Callable[..., Any] = rfunc("""
+    attributes: Callable[..., Any] = rfunc(
+        """
         function(x, exclude) {
             attributes <- attributes(x)
             if (is.null(attributes)) return(NULL)
