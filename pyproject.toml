@@ -5,14 +5,14 @@ description = "Python package for using R in Python"
 authors = ["Kjell Solem Slupphaug <kjell.solem.slupphaug@ssb.no>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/statisticsnorway/ssb-wrapr"
-repository = "https://github.com/statisticsnorway/ssb-wrapr"
-documentation = "https://statisticsnorway.github.io/ssb-wrapr"
-packages = [{ include = "wrapr", from = "src" }]
+homepage = "https://github.com/statisticsnorway/ssb-rwrapr"
+repository = "https://github.com/statisticsnorway/ssb-rwrapr"
+documentation = "https://statisticsnorway.github.io/ssb-rwrapr"
+packages = [{ include = "rwrapr", from = "src" }]
 classifiers = ["Development Status :: 4 - Beta"]
 
 [tool.poetry.urls]
-Changelog = "https://github.com/statisticsnorway/ssb-wrapr/releases"
+Changelog = "https://github.com/statisticsnorway/ssb-rwrapr/releases"
 
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
@@ -55,7 +55,7 @@ tests = ["tests", "*/tests"]
 
 [tool.coverage.run]
 branch = true
-source = ["wrapr", "tests"]
+source = ["rwrapr", "tests"]
 relative_files = true
 
 [tool.coverage.report]
