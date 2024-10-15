@@ -1,10 +1,12 @@
-from typing import Any, Optional
+from typing import Any
+from typing import Optional
+
 
 class Settings:
-    _instance: Optional['Settings'] = None  # Singleton instance of the class
+    _instance: Optional["Settings"] = None  # Singleton instance of the class
     Rview: bool  # Boolean attribute to store Rview setting
 
-    def __new__(cls, *args: Any, **kwargs: Any) -> 'Settings':
+    def __new__(cls, *args: Any, **kwargs: Any) -> "Settings":
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._initialize(**kwargs)

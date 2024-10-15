@@ -94,7 +94,10 @@ def is_rlist(X: Any) -> bool:
             return False
 
 
-def convert_r2pydict(X: dict[str, Any] | OrderedDict[str, Any] | UserDict[str, Any] | RDict, is_RDict: bool = False) -> Any:
+def convert_r2pydict(
+    X: dict[str, Any] | OrderedDict[str, Any] | UserDict[str, Any] | RDict,
+    is_RDict: bool = False,
+) -> Any:
     from .convert_r2py import convert_r2py
 
     # this needs to be improved considering named vectors

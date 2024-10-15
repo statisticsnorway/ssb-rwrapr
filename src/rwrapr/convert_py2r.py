@@ -61,6 +61,8 @@ def convert_py2r(x: Any) -> Any:  # RBaseObject | PyDtype | Any:
         case NoneType():
             return ro.NULL
         case _ if np.isscalar(x):
-            return np.asarray(x).item() # x.item() should work, but will give a linter error
+            return np.asarray(
+                x
+            ).item()  # x.item() should work, but will give a linter error
         case _:
             return x
