@@ -13,7 +13,7 @@ from .rattributes import get_Rattributes
 
 
 class RArray(np.ndarray[Any, Any]):
-    def __new__(cls, Rdata):
+    def __new__(cls, Rdata: Any):
 
         arr = convert_numpy(Rdata)
         if not isinstance(arr, np.ndarray):
@@ -58,7 +58,7 @@ class RArray(np.ndarray[Any, Any]):
 
             # Update dimnames for multi-dimensional arrays
             if orig_dimnames is not None:
-                new_dimnames = []
+                new_dimnames: list[NDArray[np.str_] | None] = []
                 for i, keep_dim in enumerate(dims_kept):
                     if i >= len(orig_dimnames):
                         continue  # No dimname for this dimension
