@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath("../src"))
 
 # -- Project information -----------------------------------------------------
 
-project = "WrapR"
+project = "RWrapR"
 copyright = "2024, Statistics Norway"
 author = "Kjell Solem Slupphaug"
 

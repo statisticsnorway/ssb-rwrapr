@@ -1,3 +1,2 @@
 * text=auto eol=lf
-*.ipynb filter=nbstripout
-*.ipynb diff=ipynb
+
