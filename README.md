@@ -1,9 +1,9 @@
 # RWrapR
 
-[![PyPI](https://img.shields.io/pypi/v/ssb-rwrapr.svg)][pypi status]
-[![Status](https://img.shields.io/pypi/status/ssb-rwrapr.svg)][pypi status]
-[![Python Version](https://img.shields.io/pypi/pyversions/ssb-rwrapr)][pypi status]
-[![License](https://img.shields.io/pypi/l/ssb-rwrapr)][license]
+[![PyPI](https://img.shields.io/pypi/v/rwrapr.svg)][pypi status]
+[![Status](https://img.shields.io/pypi/status/rwrapr.svg)][pypi status]
+[![Python Version](https://img.shields.io/pypi/pyversions/rwrapr)][pypi status]
+[![License](https://img.shields.io/pypi/l/rwrapr)][license]
 
 [![Documentation](https://github.com/statisticsnorway/ssb-rwrapr/actions/workflows/docs.yml/badge.svg)][documentation]
 [![Tests](https://github.com/statisticsnorway/ssb-rwrapr/actions/workflows/tests.yml/badge.svg)][tests]
