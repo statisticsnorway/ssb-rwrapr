@@ -1,4 +1,4 @@
-import wrapr as wr
+import rwrapr as wr
 
 
 def test_toR_AndBackToPyS3():

@@ -1,7 +1,7 @@
-# TODO: This file should be renamed. Has the same name as src/wrapr/rview.py
+# TODO: This file should be renamed. Has the same name as src/rwrapr/rview.py
 import pytest
 
-import wrapr as wr
+import rwrapr as wr
 
 
 pytest.fixture(scope="module")
