@@ -10,7 +10,7 @@ from .rattributes import get_Rattributes
 
 class RFactor(pd.Series):
     def __init__(self, r_factor: ro.vectors.FactorVector):
-        super().__init__(convert_rfactor2py(r_factor))
+        super().__init__(convert_rfactor2py(r_factor)) # type: ignore
         self._Rattributes = get_attributes_factor(r_factor)
 
     def toR(self) -> ro.vectors.FactorVector | Any:
@@ -33,6 +33,6 @@ def convert_categorical2r(series: pd.Series) -> ro.vectors.FactorVector | Any:
 
 def convert_rfactor2py(r_factor: ro.vectors.FactorVector) -> pd.Series:
     with (ro.default_converter + pandas2ri.converter).context():
-        series: pd.Series = ro.conversion.get_conversion().rpy2py(r_factor)
+        series = ro.conversion.get_conversion().rpy2py(r_factor)
 
     return pd.Series(series)

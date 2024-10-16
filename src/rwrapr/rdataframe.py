@@ -17,7 +17,7 @@ class RDataFrame(pd.DataFrame):
         else:
             df = data_frame
             attrs = None
-        super().__init__(df)
+        super().__init__(df) # type: ignore
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
