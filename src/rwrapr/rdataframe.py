@@ -12,7 +12,7 @@ from .rattributes import get_Rattributes
 class RDataFrame(pd.DataFrame):
     def __init__(self, data_frame: vc.DataFrame | pd.DataFrame):
         if isinstance(data_frame, vc.DataFrame):
-            df = pandas2r(data_frame)
+            df = r2pandas(data_frame)
             attrs = get_attributes_dataframe(data_frame)
         else:
             df = data_frame
@@ -27,9 +27,7 @@ class RDataFrame(pd.DataFrame):
         from .rattributes import attributes2r
         from .rattributes import structure
 
-        with (ro.default_converter + pandas2ri.converter).context():
-            R_df = ro.conversion.get_conversion().py2rpy(self)
-
+        R_df = pandas2r(self)
         if self._Rattributes is None:
             return R_df
         else:
@@ -46,12 +44,15 @@ def get_attributes_dataframe(df: vc.DataFrame) -> dict[str, Any] | None | Any:
     return get_Rattributes(df, exclude=["names", "class", "row.names"])
 
 
-def pandas2r(df: vc.DataFrame) -> pd.DataFrame:
+def pandas2r(df: pd.DataFrame) -> vc.DataFrame:
     with (ro.default_converter + pandas2ri.converter).context():
-        pd_df: pd.DataFrame = ro.conversion.get_conversion().rpy2py(df)
+        rdf: vc.DataFrame = ro.conversion.get_conversion().py2rpy(df)
+    return rdf
 
-    return pd_df
-
+def r2pandas(df: vc.DataFrame) -> pd.DataFrame:
+    with (ro.default_converter + pandas2ri.converter).context():
+        pdf: pd.DataFrame = ro.conversion.get_conversion().rpy2py(df)
+    return pdf
 
 def attempt_pandas_conversion(data: Any) -> RDataFrame | TypeError:
     try:
