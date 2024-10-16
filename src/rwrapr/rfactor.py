@@ -33,6 +33,6 @@ def convert_categorical2r(series: pd.Series) -> ro.vectors.FactorVector | Any:
 
 def convert_rfactor2py(r_factor: ro.vectors.FactorVector) -> pd.Series:
     with (ro.default_converter + pandas2ri.converter).context():
-        series = ro.conversion.get_conversion().rpy2py(r_factor)
+        series: pd.Series = ro.conversion.get_conversion().rpy2py(r_factor)
 
     return pd.Series(series)

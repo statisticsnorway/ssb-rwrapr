@@ -12,7 +12,7 @@ from .rattributes import get_Rattributes
 class RDataFrame(pd.DataFrame):
     def __init__(self, data_frame: vc.DataFrame | pd.DataFrame):
         if isinstance(data_frame, vc.DataFrame):
-            df = toPandas(data_frame)
+            df = pandas2r(data_frame)
             attrs = get_attributes_dataframe(data_frame)
         else:
             df = data_frame
@@ -46,16 +46,11 @@ def get_attributes_dataframe(df: vc.DataFrame) -> dict[str, Any] | None | Any:
     return get_Rattributes(df, exclude=["names", "class", "row.names"])
 
 
-def toPandas(df: vc.DataFrame) -> pd.DataFrame:
+def pandas2r(df: vc.DataFrame) -> pd.DataFrame:
     with (ro.default_converter + pandas2ri.converter).context():
-        pd_df = ro.conversion.get_conversion().rpy2py(df)
+        pd_df: pd.DataFrame = ro.conversion.get_conversion().rpy2py(df)
 
     return pd_df
-
-
-def pandas2r(data: pd.DataFrame) -> vc.DataFrame:
-    with (ro.default_converter + pandas2ri.converter).context():
-        return ro.conversion.get_conversion().py2rpy(data)
 
 
 def attempt_pandas_conversion(data: Any) -> RDataFrame | TypeError:
