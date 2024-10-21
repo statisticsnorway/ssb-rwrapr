@@ -1,11 +1,11 @@
-from collections import OrderedDict
-from types import NoneType
-from typing import Any
-
 import numpy as np
 import pandas as pd
 import rpy2.robjects as ro
-import scipy
+import scipy # type: ignore
+
+from collections import OrderedDict
+from types import NoneType
+from typing import Any
 
 from .rlist import RDict
 from .rlist import RList
@@ -44,6 +44,8 @@ def convert_py2r(x: Any) -> Any:  # RBaseObject | PyDtype | Any:
     match x:
         case RView() | RArray() | RList() | RDataFrame() | RDict() | RFactor():
             return x.toR()
+        case _ if x is np.nan:
+            return ro.NA_Logical # this should probably be reconsidered at some point (see line 35 in renv.py)
         case np.ndarray():
             return convert_numpy2r(x)
         case scipy.sparse.coo_array() | scipy.sparse.coo_matrix():
@@ -61,8 +63,6 @@ def convert_py2r(x: Any) -> Any:  # RBaseObject | PyDtype | Any:
         case NoneType():
             return ro.NULL
         case _ if np.isscalar(x):
-            return np.asarray(
-                x
-            ).item()  # x.item() should work, but will give a linter error
+            return np.asarray(x).item() # x.item() should work, but will give a linter error
         case _:
             return x

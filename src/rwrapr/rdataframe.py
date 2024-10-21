@@ -32,7 +32,7 @@ class RDataFrame(pd.DataFrame):
             return R_df
         else:
             attributes = attributes2r(self._Rattributes)
-            if attributes is None:
+            if not attributes:
                 return R_df
             return structure(R_df, **attributes)
 

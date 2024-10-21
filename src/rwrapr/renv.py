@@ -1,9 +1,9 @@
-from collections.abc import Callable
-from typing import Any
-
 import pandas as pd
 import rpy2.robjects as ro
 import rpy2.robjects.packages as rpkg
+
+from collections.abc import Callable
+from typing import Any
 
 from .convert_r2py import convert_r2py
 from .function_wrapper import RReturnType
@@ -20,19 +20,24 @@ from .utils import pinfo
 class Renv:
     def __init__(self, env_name: str | None, interactive: bool = True) -> None:
         if (env_name is None) or (env_name == ""):
-            self.__base_lib__ = None
-            self.__Rfuncs__ = None
-            self.__Rdatasets__ = None
+            self.__base_lib__:  rpkg.Package | None = None
+            self.__Rfuncs__:    set[str]     | None = None
+            self.__Rdatasets__: set[str]     | None = None
             return
 
         pinfo("Loading packages...", verbose=True)
-        self.__set_base_lib__(
-            try_load_namespace(env_name, verbose=True, interactive=interactive)
-        )
+        self.__set_base_lib__(try_load_namespace(env_name, verbose=True, interactive=interactive))
 
         funcs, datasets = get_assets(env_name, module=self.__base_lib__)
         self.__setRfuncs__(funcs)
         self.__setRdatasets__(datasets)
+
+        # constants
+        self.NULL = ro.NULL
+        self.NA   = ro.NA
+        self.NaN  = ro.r("NaN")
+        self.Inf  = ro.r("Inf")
+        self.nInf = ro.r("-Inf")
 
         pinfo("Done!", verbose=True)
 
@@ -58,9 +63,8 @@ class Renv:
         capture.capture_r_output()
 
         if name in self.__Rfuncs__:
-            fun: Callable[..., RReturnType] = wrap_rfunc(
-                getattr(self.__base_lib__, name), name=name
-            )
+            fun: Callable[..., RReturnType] = wrap_rfunc(getattr(self.__base_lib__, name),
+                                                         name=name)
             self.__attach__(name=name, attr=fun)
             capture.reset_r_output()
         elif name in self.__Rdatasets__:
@@ -76,9 +80,8 @@ class Renv:
 
     def __function__(self, name: str, expr: str) -> None:
         """Attach an R function to the Renv object."""
-        rfun: Callable[..., Any] | None = ro.r(
-            expr, invisible=True, print_r_warnings=False
-        )
+        rfun: Callable[..., Any] | None = ro.r(expr, invisible=True,
+                                               print_r_warnings=False)
         if rfun is None:
             raise ValueError(f"R object: {expr} is not a function")
         # also attach to global namespace
@@ -88,9 +91,8 @@ class Renv:
 
     def function(self, expr: str) -> Callable[..., Any]:
         """Create a Python function from an R expression."""
-        rfun: Callable[..., Any] | None = ro.r(
-            expr, invisible=True, print_r_warnings=False
-        )
+        rfun: Callable[..., Any] | None = ro.r(expr, invisible=True,
+                                               print_r_warnings=False)
         if rfun is None:
             raise ValueError(f"R object: {expr} is not a function")
         pyfunc: Callable[..., RReturnType] = wrap_rfunc(rfun, name=None)
@@ -99,23 +101,21 @@ class Renv:
     def print(self, x: Any) -> None:
         """Print an object, as it would be printed in R."""
         foo: Callable[..., RReturnType] = rfunc(
-            """function(x, ...) {
+        """
+        function(x, ...) {
             paste(utils::capture.output(print(x, ...)), collapse = "\n")
-        }"""
+        }
+        """
         )
         print(foo(x))
 
     def rclass(self, x: Any) -> RReturnType:
         """Get the class of an object, as it would be in R."""
-        foo: Callable[..., RReturnType] = rfunc(
-            """function(x) {
-            class(x)
-        }"""
-        )
+        foo: Callable[..., RReturnType] = rfunc("class")
         return foo(x)
 
 
-def fetch_data(dataset: str, module: rpkg.Package) -> pd.DataFrame | RView | None:
+def fetch_data(dataset: str, module: rpkg.Package | None) -> pd.DataFrame | RView | None:
     try:
         r_object = rpkg.data(module).fetch(dataset)[dataset]
 
@@ -131,7 +131,7 @@ def fetch_data(dataset: str, module: rpkg.Package) -> pd.DataFrame | RView | Non
         return None
 
 
-def get_assets(env_name: str, module: rpkg.Package) -> tuple[set[str], set[str]]:
+def get_assets(env_name: str, module: rpkg.Package | None) -> tuple[set[str], set[str]]:
     rcode: str = f'library({env_name}); ls("package:{env_name}")'
     # rcode: str = f"ls(\"package:{env_name}\")"
     rattrs: set[str] = {

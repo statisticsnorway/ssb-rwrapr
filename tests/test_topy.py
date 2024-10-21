@@ -1,6 +1,6 @@
+# type: ignore
 import numpy as np
 import pandas as pd
-
 import rwrapr as wr
 
 

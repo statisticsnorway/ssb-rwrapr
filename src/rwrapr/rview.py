@@ -3,7 +3,7 @@ from collections.abc import Iterator
 from typing import Any
 
 import rpy2.robjects as ro
-import scipy
+import scipy # type: ignore
 
 from .nputils import np_collapse
 from .rlist import RDict

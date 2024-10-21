@@ -1,6 +1,6 @@
+# type: ignore
 import numpy as np
 import pytest
-
 import rwrapr as wr
 
 

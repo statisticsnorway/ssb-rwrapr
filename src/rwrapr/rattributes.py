@@ -32,7 +32,7 @@ def structure(x: Any, **kwargs: Any) -> Any:
     return rcall("structure")(x, **kwargs)
 
 
-def attributes2r(attrs: dict[str, Any] | None) -> dict[str, Any] | None:
+def attributes2r(attrs: dict[str, Any] | None) -> dict[str, Any]:
     if attrs is None:
         return {}
     modified_attrs = attrs.copy()

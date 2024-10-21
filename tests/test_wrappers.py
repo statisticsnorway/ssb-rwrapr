@@ -1,5 +1,5 @@
+# type: ignore
 import numpy as np
-
 import rwrapr as wr
 
 

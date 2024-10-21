@@ -1,6 +1,5 @@
-# TODO: This file should be renamed. Has the same name as src/rwrapr/rview.py
+# type: ignore
 import pytest
-
 import rwrapr as wr
 
 

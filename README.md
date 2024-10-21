@@ -56,6 +56,9 @@ df = dplyr.mutate(iris, Sepal = wr.lazily("round(Sepal.Length * 2, 0)"))
     4. Better warning handling (this will likely be tricky)
         - Sometimes we will get datatypes which are incompatible,
             e.g., warning accompanied by
+    5. Better handling of missing values.
+    6. renv.script() for creating r scripts
+
 
 ## Requirements
 

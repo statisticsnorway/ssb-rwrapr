@@ -1,10 +1,10 @@
 import warnings
-from collections.abc import Callable
-from typing import Any
-
 import numpy as np
 import rpy2.robjects as ro
 import rpy2.robjects.vectors as vc
+
+from collections.abc import Callable
+from typing import Any
 from numpy.typing import NDArray
 from rpy2.rinterface_lib.sexp import NULLType
 
@@ -13,8 +13,7 @@ from .rattributes import get_Rattributes
 
 
 class RArray(np.ndarray[Any, Any]):
-    def __new__(cls, Rdata: Any):
-
+    def __new__(cls, Rdata: Any) -> "RArray":
         arr = convert_numpy(Rdata)
         if not isinstance(arr, np.ndarray):
             raise TypeError("convert_numpy(Rdata) must return a numpy.ndarray")
@@ -111,7 +110,7 @@ class RArray(np.ndarray[Any, Any]):
 
         return result
 
-    def _normalize_index(self, index: Any, ndim: int) -> tuple[Any]:
+    def _normalize_index(self, index: Any, ndim: int) -> tuple[slice | int | list[Any] | NDArray[Any], ...]:
         if not isinstance(index, tuple):
             index = (index,)
 
@@ -133,7 +132,7 @@ class RArray(np.ndarray[Any, Any]):
 
         return tuple(index_list[:ndim])
 
-    def _get_dims_kept(self, index_normalized: tuple[Any]) -> list[bool]:
+    def _get_dims_kept(self, index_normalized: tuple[slice | int | list[Any] | NDArray[Any], ...]) -> list[bool]:
         dims_kept = []
         for idx in index_normalized:
             if isinstance(idx, slice | type(None) | type(Ellipsis)):
@@ -164,7 +163,7 @@ class RArray(np.ndarray[Any, Any]):
         return np.asarray(self)
 
 
-def get_RArray(x: Any) -> RArray | NDArray:
+def get_RArray(x: Any) -> RArray | NDArray[Any]:
     y: RArray = RArray(x)
     return y[0] if y.shape == (1,) and y._Rattributes is None else y
 
@@ -173,11 +172,12 @@ def get_attributes_array(x: Any) -> dict[str, Any] | None | Any:
     return get_Rattributes(x, exclude=["class"])
 
 
-def convert_numpy(
-    x: vc.Vector | NDArray[Any] | NULLType | Any, flatten: bool = False
-) -> NDArray[Any] | int | str | float | bool | None:
+def convert_numpy(x: vc.Vector | NDArray[Any] | NULLType | Any,
+                  flatten: bool = False) -> NDArray[Any] | int | str | float | bool | None:
     if isinstance(x, NULLType):
         return None
+
+    dtype: str | None = None
     match x:  # this should be expanded upon
         case vc.BoolVector() | vc.BoolArray() | vc.BoolMatrix():
             dtype = "bool"
@@ -188,15 +188,14 @@ def convert_numpy(
         case vc.StrArray() | vc.StrVector() | vc.StrMatrix():
             dtype = "U"
         case _:
-            dtype = None
+            dtype = None # not really necessary, but for clarity
 
     y = np.asarray(x, dtype=dtype)
     return filter_numpy(y, flatten=flatten)
 
 
-def filter_numpy(
-    x: NDArray[Any], flatten: bool
-) -> NDArray[Any] | int | str | float | bool:
+def filter_numpy(x: NDArray[Any],
+                 flatten: bool) -> NDArray[Any] | int | str | float | bool:
     # sometimes a numpy array will have one element with shape (,)
     # this should be (1,)
     y = x[np.newaxis][0] if not x.shape else x
@@ -241,10 +240,8 @@ def convert_numpy1D(x: NDArray[Any]) -> Any:  # RBaseObject:
             try:
                 y = x.astype("U")
             except Exception:
-                warnings.warn(
-                    "dtype = object is not supported, this will probably not work",
-                    stacklevel=2,
-                )
+                warnings.warn("dtype = object is not supported, this will probably not work",
+                              stacklevel=2)
                 y = convert_py2r(x.tolist())
             return ro.StrVector(y)
         case _:
@@ -261,7 +258,7 @@ def convert_numpy2D(x: NDArray[Any]) -> Any:  # RBaseObject:
 
 def convert_numpyND(x: NDArray[Any]) -> Any:  # RBaseObject:
     flat_x: NDArray[Any] = x.flatten(order="F")
-    dim: tuple = x.shape
+    dim: tuple[int, ...] = x.shape
     y = convert_numpy1D(flat_x)
     f: Callable[..., Any] | Any = ro.r("array")
     return f(y, dim=ro.IntVector(dim))

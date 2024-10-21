@@ -2,7 +2,7 @@ from collections.abc import Callable
 from typing import Any
 
 import rpy2.robjects as ro
-import scipy
+import scipy # type: ignore
 
 
 def convert_pysparsematrix(x: scipy.sparse.coo_array | scipy.sparse.coo_matrix) -> Any:

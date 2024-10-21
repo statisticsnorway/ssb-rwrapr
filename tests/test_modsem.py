@@ -1,3 +1,4 @@
+# type: ignore
 import rwrapr as wr
 
 
