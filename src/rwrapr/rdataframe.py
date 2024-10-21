@@ -1,12 +1,13 @@
 import warnings
-from typing import Any
-
 import pandas as pd
 import rpy2.robjects as ro
 import rpy2.robjects.vectors as vc
+
 from rpy2.robjects import pandas2ri
+from typing import Any
 
 from .rattributes import get_Rattributes
+from .toggle_rview import ToggleRView
 
 
 class RDataFrame(pd.DataFrame):
@@ -37,7 +38,9 @@ class RDataFrame(pd.DataFrame):
             return structure(R_df, **attributes)
 
     def toPy(self) -> pd.DataFrame:
-        return pd.DataFrame(self)
+        with ToggleRView(False):
+            out = pd.DataFrame(self)
+        return out
 
 
 def get_attributes_dataframe(df: vc.DataFrame) -> dict[str, Any] | None | Any:

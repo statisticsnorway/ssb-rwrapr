@@ -18,7 +18,7 @@ from .rlist import RList
 from .rview import RView
 from .settings import Settings
 from .settings import settings
-
+from .toggle_rview import ToggleRView
 
 __all__ = [
     "RArray",
@@ -34,4 +34,5 @@ __all__ = [
     "library",
     "settings",
     "try_load_namespace",
+    "ToggleRView",
 ]

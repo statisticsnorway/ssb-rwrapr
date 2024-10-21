@@ -18,11 +18,34 @@ from .utils import pinfo
 
 
 class Renv:
+    """
+    Represents an R environment in Python for interacting with R packages, functions, and datasets.
+    Functions and datasets are loaded/attached to the environment dynamically. If a function or dataset is not found in the environment,
+    it is searched for in the global R environment.
+
+    Attributes:
+        __base_lib__ (rpkg.Package | None): The loaded R package.
+        __Rfuncs__ (set[str] | None): The set of R functions available in the environment.
+        __Rdatasets__ (set[str] | None): The set of R datasets available in the environment.
+        NULL (Any): Equivalent to R's `NULL`.
+        NA (Any): Equivalent to R's `NA`.
+        NaN (Any): Equivalent to R's `NaN`.
+        Inf (Any): Equivalent to R's `Inf`.
+        nInf (Any): Equivalent to R's `-Inf`.
+    """
+
     def __init__(self, env_name: str | None, interactive: bool = True) -> None:
+        """
+        Initializes the R environment by loading the specified R package and its associated functions and datasets.
+
+        Args:
+            env_name (str | None): The name of the R package to load. If `None` or an empty string, the environment is not initialized.
+            interactive (bool, optional): If True, prompts the user to install missing R packages. Defaults to True.
+        """
         if (env_name is None) or (env_name == ""):
-            self.__base_lib__:  rpkg.Package | None = None
-            self.__Rfuncs__:    set[str]     | None = None
-            self.__Rdatasets__: set[str]     | None = None
+            self.__base_lib__: rpkg.Package | None = None
+            self.__Rfuncs__: set[str] | None = None
+            self.__Rdatasets__: set[str] | None = None
             return
 
         pinfo("Loading packages...", verbose=True)
@@ -32,30 +55,67 @@ class Renv:
         self.__setRfuncs__(funcs)
         self.__setRdatasets__(datasets)
 
-        # constants
+        # Constants
         self.NULL = ro.NULL
-        self.NA   = ro.NA
-        self.NaN  = ro.r("NaN")
-        self.Inf  = ro.r("Inf")
+        self.NA = ro.NA_Logical
+        self.NaN = ro.r("NaN")
+        self.Inf = ro.r("Inf")
         self.nInf = ro.r("-Inf")
 
         pinfo("Done!", verbose=True)
 
     def __set_base_lib__(self, rpkg_: rpkg.Package) -> None:
+        """
+        Sets the base R package for the environment.
+
+        Args:
+            rpkg_ (rpkg.Package): The R package to set.
+        """
         self.__base_lib__ = rpkg_
 
     def __setRfuncs__(self, funcs: set[str]) -> None:
+        """
+        Sets the available R functions for the environment.
+
+        Args:
+            funcs (set[str]): A set of R function names.
+        """
         self.__Rfuncs__ = funcs
 
     def __setRdatasets__(self, datasets: set[str]) -> None:
+        """
+        Sets the available R datasets for the environment.
+
+        Args:
+            datasets (set[str]): A set of R dataset names.
+        """
         self.__Rdatasets__ = datasets
 
     def __attach__(self, name: str, attr: Any) -> None:
+        """
+        Attaches a function or dataset to the environment.
+
+        Args:
+            name (str): The name of the R object (function or dataset).
+            attr (Any): The object to attach (function or dataset).
+        """
         if attr is None:
             return
         setattr(self, name, attr)
 
     def __getattr__(self, name: str) -> Any:
+        """
+        Retrieves an R function or dataset from the environment, attaching it if necessary.
+
+        Args:
+            name (str): The name of the R function or dataset.
+
+        Returns:
+            Any: The R function or dataset, if found.
+
+        Raises:
+            ValueError: If the environment is not correctly initialized or if the object is not found.
+        """
         if self.__Rfuncs__ is None or self.__Rdatasets__ is None:
             raise ValueError("Renv is not correctly initialized")
 
@@ -63,8 +123,7 @@ class Renv:
         capture.capture_r_output()
 
         if name in self.__Rfuncs__:
-            fun: Callable[..., RReturnType] = wrap_rfunc(getattr(self.__base_lib__, name),
-                                                         name=name)
+            fun: Callable[..., RReturnType] = wrap_rfunc(getattr(self.__base_lib__, name), name=name)
             self.__attach__(name=name, attr=fun)
             capture.reset_r_output()
         elif name in self.__Rdatasets__:
@@ -72,45 +131,76 @@ class Renv:
             capture.reset_r_output()
         else:
             rfun: Callable[..., RReturnType] = rfunc(name)
-            # in the future this should also work for datasets
-            # add error handling for corrupt function, getting stuck to Renv
             self.__attach__(name=name, attr=rfun)
 
         return getattr(self, name)
 
     def __function__(self, name: str, expr: str) -> None:
-        """Attach an R function to the Renv object."""
-        rfun: Callable[..., Any] | None = ro.r(expr, invisible=True,
-                                               print_r_warnings=False)
+        """
+        Attaches an R function to the environment.
+
+        Args:
+            name (str): The name of the function.
+            expr (str): The R expression to create the function.
+
+        Raises:
+            ValueError: If the R expression does not correspond to a function.
+        """
+        rfun: Callable[..., Any] | None = ro.r(expr, invisible=True, print_r_warnings=False)
         if rfun is None:
             raise ValueError(f"R object: {expr} is not a function")
-        # also attach to global namespace
+
+        # Attach to the global namespace
         rcall(f"{name} <- {expr}")
         pyfunc: Callable[..., RReturnType] = wrap_rfunc(rfun, name=name)
         self.__attach__(name=name, attr=pyfunc)
 
     def function(self, expr: str) -> Callable[..., Any]:
-        """Create a Python function from an R expression."""
-        rfun: Callable[..., Any] | None = ro.r(expr, invisible=True,
-                                               print_r_warnings=False)
+        """
+        Creates a Python function from an R expression.
+
+        Args:
+            expr (str): The R expression to convert into a function.
+
+        Returns:
+            Callable[..., Any]: A Python function equivalent to the R function.
+
+        Raises:
+            ValueError: If the R expression does not correspond to a function.
+        """
+        rfun: Callable[..., Any] | None = ro.r(expr, invisible=True, print_r_warnings=False)
         if rfun is None:
             raise ValueError(f"R object: {expr} is not a function")
+
         pyfunc: Callable[..., RReturnType] = wrap_rfunc(rfun, name=None)
         return pyfunc
 
     def print(self, x: Any) -> None:
-        """Print an object, as it would be printed in R."""
+        """
+        Prints an object as it would be printed in R.
+
+        Args:
+            x (Any): The object to print.
+        """
         foo: Callable[..., RReturnType] = rfunc(
-        """
-        function(x, ...) {
-            paste(utils::capture.output(print(x, ...)), collapse = "\n")
-        }
-        """
+            """
+            function(x, ...) {
+                paste(utils::capture.output(print(x, ...)), collapse = "\n")
+            }
+            """
         )
         print(foo(x))
 
     def rclass(self, x: Any) -> RReturnType:
-        """Get the class of an object, as it would be in R."""
+        """
+        Gets the class of an object as it would be in R.
+
+        Args:
+            x (Any): The object to get the class of.
+
+        Returns:
+            RReturnType: The class of the object as in R.
+        """
         foo: Callable[..., RReturnType] = rfunc("class")
         return foo(x)
 

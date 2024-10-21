@@ -5,7 +5,7 @@ import scipy # type: ignore
 
 from collections import OrderedDict
 from types import NoneType
-from typing import Any
+from typing import Any, TypeAlias
 
 from .rlist import RDict
 from .rlist import RList
@@ -16,13 +16,13 @@ from .sparse import convert_pysparsematrix
 
 
 # We can uncomment this when we transition to 3.12
-# type RBaseObject = (
-#         ro.FloatVector | ro.FloatVector | ro.IntVector |
-#         ro.ListVector | ro.Array | ro.FactorVector |
-#         ro.Matrix | ro.BoolVector | ro.StrVector
-#     )
-#
-# type PyDtype = (int | bool | str | float)
+RBaseObject: TypeAlias = (
+        ro.FloatVector | ro.FloatVector | ro.IntVector |
+        ro.ListVector | ro.Array | ro.FactorVector |
+        ro.Matrix | ro.BoolVector | ro.StrVector
+     )
+
+PyDtype: TypeAlias = (int | bool | str | float)
 
 
 # functions for converting from py 2 R -----------------------------------------
@@ -33,7 +33,7 @@ def convert_py_args2r(args: list[Any], kwargs: dict[str, Any]) -> None:
         kwargs[k] = convert_py2r(v)
 
 
-def convert_py2r(x: Any) -> Any:  # RBaseObject | PyDtype | Any:
+def convert_py2r(x: Any) -> RBaseObject | PyDtype | Any:
     # Need to import these here to avoid circular imports
     from .rarray import RArray
     from .rarray import convert_numpy2r

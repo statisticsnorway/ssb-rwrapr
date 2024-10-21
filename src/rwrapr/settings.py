@@ -16,6 +16,19 @@ class Settings:
         self.Rview = False  # Initialize the Rview attribute to False
 
     def set_Rview(self, rview: bool) -> None:
+        """
+        Set the Rview attribute to the specified value.
+
+        This method updates the `Rview` attribute to control whether the
+        Rview mode is enabled or disabled. If `True`, Rview mode is enabled;
+        if `False`, Rview mode is disabled. If Rview is True, then only Views of
+        R objects will be displayed in the console. Otherwise, `rwrapr` will try
+        to convert the R object to a Python object and display it.
+
+        Args:
+            rview (bool): A boolean value indicating whether to enable (True)
+                or disable (False) Rview mode.
+        """
         self.Rview = rview  # Set the Rview attribute
 
 

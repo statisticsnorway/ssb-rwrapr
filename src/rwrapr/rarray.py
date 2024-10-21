@@ -4,12 +4,16 @@ import rpy2.robjects as ro
 import rpy2.robjects.vectors as vc
 
 from collections.abc import Callable
-from typing import Any
+from typing import Any, TypeAlias
 from numpy.typing import NDArray
 from rpy2.rinterface_lib.sexp import NULLType
 
 from .convert_py2r import convert_py2r
 from .rattributes import get_Rattributes
+from .toggle_rview import ToggleRView
+
+
+NPArrayIndex: TypeAlias = tuple[slice | int | list[Any] | NDArray[Any], ...]
 
 
 class RArray(np.ndarray[Any, Any]):
@@ -110,7 +114,7 @@ class RArray(np.ndarray[Any, Any]):
 
         return result
 
-    def _normalize_index(self, index: Any, ndim: int) -> tuple[slice | int | list[Any] | NDArray[Any], ...]:
+    def _normalize_index(self, index: Any, ndim: int) -> NPArrayIndex:
         if not isinstance(index, tuple):
             index = (index,)
 
@@ -132,7 +136,7 @@ class RArray(np.ndarray[Any, Any]):
 
         return tuple(index_list[:ndim])
 
-    def _get_dims_kept(self, index_normalized: tuple[slice | int | list[Any] | NDArray[Any], ...]) -> list[bool]:
+    def _get_dims_kept(self, index_normalized: NPArrayIndex) -> list[bool]:
         dims_kept = []
         for idx in index_normalized:
             if isinstance(idx, slice | type(None) | type(Ellipsis)):
@@ -160,7 +164,9 @@ class RArray(np.ndarray[Any, Any]):
         return R_object
 
     def toPy(self) -> NDArray[Any]:
-        return np.asarray(self)
+        with ToggleRView(False):
+            out = np.asarray(self)
+        return out
 
 
 def get_RArray(x: Any) -> RArray | NDArray[Any]:
@@ -242,7 +248,7 @@ def convert_numpy1D(x: NDArray[Any]) -> Any:  # RBaseObject:
             except Exception:
                 warnings.warn("dtype = object is not supported, this will probably not work",
                               stacklevel=2)
-                y = convert_py2r(x.tolist())
+                y = convert_py2r(x.tolist()) # type: ignore
             return ro.StrVector(y)
         case _:
             return x

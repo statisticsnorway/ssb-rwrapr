@@ -9,6 +9,7 @@ import rpy2.robjects as ro
 import rpy2.robjects.vectors as vc
 
 from .rutils import rcall
+from .toggle_rview import ToggleRView
 
 
 class RList(UserList[Any]):
@@ -32,7 +33,9 @@ class RList(UserList[Any]):
         return R_object
 
     def toPy(self) -> list[Any]:
-        return list(self)
+        with ToggleRView(False):
+            out = list(self)
+        return out
 
 
 class RDict(UserDict[str, Any]):
@@ -56,7 +59,9 @@ class RDict(UserDict[str, Any]):
         return R_object
 
     def toPy(self) -> dict[str, Any]:
-        return dict(self)
+        with ToggleRView(False):
+            out = dict(self)
+        return out
 
 
 def convert_r2pylist(X: list[Any] | tuple[Any] | RList) -> list[Any] | tuple[Any]:

@@ -10,6 +10,7 @@ from .rlist import RDict
 from .rlist import RList
 from .rutils import as_matrix
 from .rutils import get_rclass
+from .toggle_rview import ToggleRView
 
 
 class RView:
@@ -44,8 +45,9 @@ class RView:
 
     def toPy(self, ignoreS3: bool = False) -> Any:
         from .convert_r2py import convert_r2py
-
-        return convert_r2py(self.Robj, ignoreS3=ignoreS3)
+        with ToggleRView(False):
+            out = convert_r2py(self.Robj, ignoreS3=ignoreS3)
+        return out
 
     def toR(self) -> Any:
         return self.Robj
