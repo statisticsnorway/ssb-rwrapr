@@ -1,6 +1,8 @@
 from collections.abc import Callable
 from typing import Any
 
+from rwrapr.rlist import RDict
+
 from .convert_py2r import convert_py_args2r
 
 
@@ -10,17 +12,16 @@ def get_Rattributes(x: Any, exclude: list[str] | None = None) -> Any:
     if exclude is None:
         exclude = []
 
-    attributes: Callable[..., Any] = rfunc(
-        """
-        function(x, exclude) {
-            attributes <- attributes(x)
-            if (is.null(attributes)) return(NULL)
+    attributes: Callable[..., Any] = rfunc("""
+    function(x, exclude) {
+        attributes <- attributes(x)
+        if (is.null(attributes)) return(NULL)
 
-            attributes <- attributes[!names(attributes) %in% exclude]
-            if (length(attributes) == 0) return(NULL)
+        attributes <- attributes[!names(attributes) %in% exclude]
+        if (length(attributes) == 0) return(NULL)
 
-            attributes
-        }
+        attributes
+    }
     """
     )
     return attributes(x, exclude)
@@ -32,9 +33,9 @@ def structure(x: Any, **kwargs: Any) -> Any:
     return rcall("structure")(x, **kwargs)
 
 
-def attributes2r(attrs: dict[str, Any] | None) -> dict[str, Any]:
+def attributes2r(attrs: dict[str, Any] | None | RDict) -> dict[str, Any]:
     if attrs is None:
         return {}
-    modified_attrs = attrs.copy()
+    modified_attrs = dict(attrs).copy()
     convert_py_args2r(args=[], kwargs=modified_attrs)
     return modified_attrs

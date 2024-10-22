@@ -29,9 +29,9 @@ def get_attributes_factor(df: vc.FactorVector) -> dict[str, Any] | None | Any:
 
 def convert_categorical2r(series: pd.Series) -> ro.vectors.FactorVector | Any: # type: ignore
     with (ro.default_converter + pandas2ri.converter).context():
-        series = ro.conversion.get_conversion().py2rpy(series)
+        r_factor = ro.conversion.get_conversion().py2rpy(series)
 
-    return series
+    return r_factor
 
 
 def convert_rfactor2py(r_factor: ro.vectors.FactorVector) -> pd.Series: # type: ignore

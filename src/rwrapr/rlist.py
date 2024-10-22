@@ -83,6 +83,9 @@ def convert_rlist2py(X: vc.ListVector | vc.ListSexpVector) -> Any:
 
     attributes = get_Rattributes(X, exclude=["names"])
 
+    if not attributes is None:
+        attributes = dict(attributes)
+
     if names is not None and len(names) and not np.any(names == ""):
         y = convert_r2pydict({n: x for n, x in zip(names, X, strict=False)})
         return RDict(y, attributes=attributes)
@@ -99,10 +102,8 @@ def is_rlist(X: Any) -> bool:
             return False
 
 
-def convert_r2pydict(
-    X: dict[str, Any] | OrderedDict[str, Any] | UserDict[str, Any] | RDict,
-    is_RDict: bool = False,
-) -> Any:
+def convert_r2pydict(X: dict[str, Any] | OrderedDict[str, Any] | UserDict[str, Any] | RDict,
+                     is_RDict: bool = False) -> Any:
     from .convert_r2py import convert_r2py
 
     # this needs to be improved considering named vectors

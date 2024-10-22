@@ -169,9 +169,9 @@ class RArray(np.ndarray[Any, Any]):
         return out
 
 
-def get_RArray(x: Any) -> RArray | NDArray[Any]:
+def get_RArray(x: Any) -> RArray | bool | int | str | float:
     y: RArray = RArray(x)
-    return y[0] if y.shape == (1,) and y._Rattributes is None else y
+    return y[0].item() if y.shape == (1,) and y._Rattributes is None else y
 
 
 def get_attributes_array(x: Any) -> dict[str, Any] | None | Any:
