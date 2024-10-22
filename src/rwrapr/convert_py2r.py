@@ -1,11 +1,12 @@
+from collections import OrderedDict
+from types import NoneType
+from typing import Any
+from typing import TypeAlias
+
 import numpy as np
 import pandas as pd
 import rpy2.robjects as ro
-import scipy # type: ignore
-
-from collections import OrderedDict
-from types import NoneType
-from typing import Any, TypeAlias
+import scipy  # type: ignore
 
 from .rlist import RDict
 from .rlist import RList
@@ -17,12 +18,18 @@ from .sparse import convert_pysparsematrix
 
 # We can uncomment this when we transition to 3.12
 RBaseObject: TypeAlias = (
-        ro.FloatVector | ro.FloatVector | ro.IntVector |
-        ro.ListVector | ro.Array | ro.FactorVector |
-        ro.Matrix | ro.BoolVector | ro.StrVector
-     )
+    ro.FloatVector
+    | ro.FloatVector
+    | ro.IntVector
+    | ro.ListVector
+    | ro.Array
+    | ro.FactorVector
+    | ro.Matrix
+    | ro.BoolVector
+    | ro.StrVector
+)
 
-PyDtype: TypeAlias = (int | bool | str | float)
+PyDtype: TypeAlias = int | bool | str | float
 
 
 # functions for converting from py 2 R -----------------------------------------
@@ -45,7 +52,9 @@ def convert_py2r(x: Any) -> RBaseObject | PyDtype | Any:
         case RView() | RArray() | RList() | RDataFrame() | RDict() | RFactor():
             return x.toR()
         case _ if x is np.nan:
-            return ro.NA_Logical # this should probably be reconsidered at some point (see line 35 in renv.py)
+            return (
+                ro.NA_Logical
+            )  # this should probably be reconsidered at some point (see line 35 in renv.py)
         case np.ndarray():
             return convert_numpy2r(x)
         case scipy.sparse.coo_array() | scipy.sparse.coo_matrix():
@@ -63,6 +72,8 @@ def convert_py2r(x: Any) -> RBaseObject | PyDtype | Any:
         case NoneType():
             return ro.NULL
         case _ if np.isscalar(x):
-            return np.asarray(x).item() # x.item() should work, but will give a linter error
+            return np.asarray(
+                x
+            ).item()  # x.item() should work, but will give a linter error
         case _:
             return x

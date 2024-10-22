@@ -3,7 +3,7 @@ from collections.abc import Iterator
 from typing import Any
 
 import rpy2.robjects as ro
-import scipy # type: ignore
+import scipy  # type: ignore
 
 from .nputils import np_collapse
 from .rlist import RDict
@@ -45,6 +45,7 @@ class RView:
 
     def toPy(self, ignoreS3: bool = False) -> Any:
         from .convert_r2py import convert_r2py
+
         with ToggleRView(False):
             out = convert_r2py(self.Robj, ignoreS3=ignoreS3)
         return out

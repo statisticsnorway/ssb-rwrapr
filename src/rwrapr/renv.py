@@ -1,9 +1,9 @@
+from collections.abc import Callable
+from typing import Any
+
 import pandas as pd
 import rpy2.robjects as ro
 import rpy2.robjects.packages as rpkg
-
-from collections.abc import Callable
-from typing import Any
 
 from .convert_r2py import convert_r2py
 from .function_wrapper import RReturnType
@@ -49,7 +49,9 @@ class Renv:
             return
 
         pinfo("Loading packages...", verbose=True)
-        self.__set_base_lib__(try_load_namespace(env_name, verbose=True, interactive=interactive))
+        self.__set_base_lib__(
+            try_load_namespace(env_name, verbose=True, interactive=interactive)
+        )
 
         funcs, datasets = get_assets(env_name, module=self.__base_lib__)
         self.__setRfuncs__(funcs)
@@ -123,7 +125,9 @@ class Renv:
         capture.capture_r_output()
 
         if name in self.__Rfuncs__:
-            fun: Callable[..., RReturnType] = wrap_rfunc(getattr(self.__base_lib__, name), name=name)
+            fun: Callable[..., RReturnType] = wrap_rfunc(
+                getattr(self.__base_lib__, name), name=name
+            )
             self.__attach__(name=name, attr=fun)
             capture.reset_r_output()
         elif name in self.__Rdatasets__:
@@ -146,7 +150,9 @@ class Renv:
         Raises:
             ValueError: If the R expression does not correspond to a function.
         """
-        rfun: Callable[..., Any] | None = ro.r(expr, invisible=True, print_r_warnings=False)
+        rfun: Callable[..., Any] | None = ro.r(
+            expr, invisible=True, print_r_warnings=False
+        )
         if rfun is None:
             raise ValueError(f"R object: {expr} is not a function")
 
@@ -168,7 +174,9 @@ class Renv:
         Raises:
             ValueError: If the R expression does not correspond to a function.
         """
-        rfun: Callable[..., Any] | None = ro.r(expr, invisible=True, print_r_warnings=False)
+        rfun: Callable[..., Any] | None = ro.r(
+            expr, invisible=True, print_r_warnings=False
+        )
         if rfun is None:
             raise ValueError(f"R object: {expr} is not a function")
 
@@ -205,7 +213,9 @@ class Renv:
         return foo(x)
 
 
-def fetch_data(dataset: str, module: rpkg.Package | None) -> pd.DataFrame | RView | None:
+def fetch_data(
+    dataset: str, module: rpkg.Package | None
+) -> pd.DataFrame | RView | None:
     try:
         r_object = rpkg.data(module).fetch(dataset)[dataset]
 
