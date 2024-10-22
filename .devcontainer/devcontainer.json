@@ -1,6 +1,6 @@
 {
     "name": "R-Python Environment",
-	"image": "ghcr.io/arneso-ssb/docker-rpython:latest",
+	"image": "ghcr.io/statisticsnorway/docker-rpython-dev:latest",
 	"customizations": {
 		"vscode": {
 			"extensions": [
