@@ -1,5 +1,7 @@
 from types import TracebackType
+
 from .settings import settings
+
 
 class ToggleRView:
     """
@@ -36,7 +38,12 @@ class ToggleRView:
         """
         settings.set_Rview(self.temp_state)
 
-    def __exit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: TracebackType | None) -> bool:
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> bool:
         """
         Revert the Rview mode when exiting the context block, considering exceptions.
 

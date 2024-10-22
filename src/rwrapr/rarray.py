@@ -1,10 +1,11 @@
 import warnings
+from collections.abc import Callable
+from typing import Any
+from typing import TypeAlias
+
 import numpy as np
 import rpy2.robjects as ro
 import rpy2.robjects.vectors as vc
-
-from collections.abc import Callable
-from typing import Any, TypeAlias
 from numpy.typing import NDArray
 from rpy2.rinterface_lib.sexp import NULLType
 
@@ -178,8 +179,9 @@ def get_attributes_array(x: Any) -> dict[str, Any] | None | Any:
     return get_Rattributes(x, exclude=["class"])
 
 
-def convert_numpy(x: vc.Vector | NDArray[Any] | NULLType | Any,
-                  flatten: bool = False) -> NDArray[Any] | int | str | float | bool | None:
+def convert_numpy(
+    x: vc.Vector | NDArray[Any] | NULLType | Any, flatten: bool = False
+) -> NDArray[Any] | int | str | float | bool | None:
     if isinstance(x, NULLType):
         return None
 
@@ -194,14 +196,15 @@ def convert_numpy(x: vc.Vector | NDArray[Any] | NULLType | Any,
         case vc.StrArray() | vc.StrVector() | vc.StrMatrix():
             dtype = "U"
         case _:
-            dtype = None # not really necessary, but for clarity
+            dtype = None  # not really necessary, but for clarity
 
     y = np.asarray(x, dtype=dtype)
     return filter_numpy(y, flatten=flatten)
 
 
-def filter_numpy(x: NDArray[Any],
-                 flatten: bool) -> NDArray[Any] | int | str | float | bool:
+def filter_numpy(
+    x: NDArray[Any], flatten: bool
+) -> NDArray[Any] | int | str | float | bool:
     # sometimes a numpy array will have one element with shape (,)
     # this should be (1,)
     y = x[np.newaxis][0] if not x.shape else x
@@ -246,9 +249,11 @@ def convert_numpy1D(x: NDArray[Any]) -> Any:  # RBaseObject:
             try:
                 y = x.astype("U")
             except Exception:
-                warnings.warn("dtype = object is not supported, this will probably not work",
-                              stacklevel=2)
-                y = convert_py2r(x.tolist()) # type: ignore
+                warnings.warn(
+                    "dtype = object is not supported, this will probably not work",
+                    stacklevel=2,
+                )
+                y = convert_py2r(x.tolist())  # type: ignore
             return ro.StrVector(y)
         case _:
             return x

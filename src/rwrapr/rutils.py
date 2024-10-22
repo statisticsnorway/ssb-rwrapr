@@ -45,8 +45,10 @@ def as_matrix(x: Any) -> NDArray[Any] | Any:
 
 
 def is_na(x: Any) -> bool:
-    return (x is ro.NA_Character or
-            x is ro.NA_Integer or
-            x is ro.NA_Real or
-            x is ro.NA_Logical or
-            x is ro.NA_Complex)
+    return (
+        x is ro.NA_Character
+        or x is ro.NA_Integer
+        or x is ro.NA_Real
+        or x is ro.NA_Logical
+        or x is ro.NA_Complex
+    )

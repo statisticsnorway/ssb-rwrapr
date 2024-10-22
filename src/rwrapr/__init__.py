@@ -20,6 +20,7 @@ from .settings import Settings
 from .settings import settings
 from .toggle_rview import ToggleRView
 
+
 __all__ = [
     "RArray",
     "RDataFrame",

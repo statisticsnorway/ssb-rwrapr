@@ -20,7 +20,9 @@ from .settings import settings
 RReturnType: TypeAlias = RView | RArray | RDataFrame | RFactor | RList | RDict | Any
 
 
-def wrap_rfunc(func: Callable[..., Any], name: str | None) -> Callable[..., RReturnType]:
+def wrap_rfunc(
+    func: Callable[..., Any], name: str | None
+) -> Callable[..., RReturnType]:
     if not callable(func):
         raise ValueError(f"The provided `func` argument: {name} is not callable")
 

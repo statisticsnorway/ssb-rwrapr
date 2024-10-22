@@ -1,10 +1,10 @@
 import warnings
+from typing import Any
+
 import pandas as pd
 import rpy2.robjects as ro
 import rpy2.robjects.vectors as vc
-
 from rpy2.robjects import pandas2ri
-from typing import Any
 
 from .rattributes import get_Rattributes
 from .toggle_rview import ToggleRView
@@ -18,7 +18,7 @@ class RDataFrame(pd.DataFrame):
         else:
             df = data_frame
             attrs = None
-        super().__init__(df) # type: ignore
+        super().__init__(df)  # type: ignore
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -52,10 +52,12 @@ def pandas2r(df: pd.DataFrame) -> vc.DataFrame:
         rdf: vc.DataFrame = ro.conversion.get_conversion().py2rpy(df)
     return rdf
 
+
 def r2pandas(df: vc.DataFrame) -> pd.DataFrame:
     with (ro.default_converter + pandas2ri.converter).context():
         pdf: pd.DataFrame = ro.conversion.get_conversion().rpy2py(df)
     return pdf
+
 
 def attempt_pandas_conversion(data: Any) -> RDataFrame | TypeError:
     try:

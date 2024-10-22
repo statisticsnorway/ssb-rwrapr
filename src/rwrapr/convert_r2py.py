@@ -1,10 +1,10 @@
+from typing import Any
+
 import numpy as np
 import pandas as pd
 import rpy2.rlike.container as rcnt
 import rpy2.robjects as ro
 import rpy2.robjects.vectors as vc
-
-from typing import Any
 from rpy2.robjects import rpy2
 
 from .rdataframe import RDataFrame
@@ -14,7 +14,8 @@ from .rlist import convert_r2pydict
 from .rlist import convert_r2pylist
 from .rlist import convert_rlist2py
 from .rlist import is_rlist
-from .rutils import has_unsupported_rclass, is_na
+from .rutils import has_unsupported_rclass
+from .rutils import is_na
 from .rview import RView
 from .rview import convert_s4
 
@@ -32,7 +33,9 @@ def convert_r2py(x: Any, ignoreS3: bool = False) -> Any:
         case rpy2.rinterface_lib.sexp.NULLType():
             return None
         case _ if is_na(x):
-            return np.nan # this should probably be reconsidered at some point (see line 35 in renv.py)
+            return (
+                np.nan
+            )  # this should probably be reconsidered at some point (see line 35 in renv.py)
         case vc.DataFrame():
             return RDataFrame(x)
         case vc.FactorVector():
