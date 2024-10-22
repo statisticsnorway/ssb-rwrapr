@@ -30,9 +30,6 @@ class ToggleRView:
 
         This method is called automatically when the `with` block is entered,
         and it updates the Rview mode to the given temp_state.
-
-        Returns:
-            None
         """
         settings.set_Rview(self.temp_state)
 
