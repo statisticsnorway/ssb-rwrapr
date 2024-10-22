@@ -13,7 +13,7 @@ def library(env_name: str, interactive: bool = True) -> Renv:
 
     Args:
         env_name (str): The name of the R package to load.
-        interactive (bool, optional): If `True`, interactively prompts the user
+        interactive (bool): If `True`, interactively prompts the user
             to install missing R packages. Defaults to `True`.
 
     Returns:
@@ -40,7 +40,7 @@ def importr(env_name: str, interactive: bool = True) -> Renv:
 
     Args:
         env_name (str): The name of the R package to load.
-        interactive (bool, optional): If `True`, interactively prompts the user
+        interactive (bool): If `True`, interactively prompts the user
             to install missing R packages. Defaults to `True`.
 
     Returns:

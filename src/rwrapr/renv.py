@@ -40,7 +40,7 @@ class Renv:
 
         Args:
             env_name (str | None): The name of the R package to load. If `None` or an empty string, the environment is not initialized.
-            interactive (bool, optional): If True, prompts the user to install missing R packages. Defaults to True.
+            interactive (bool): If True, prompts the user to install missing R packages. Defaults to True.
         """
         if (env_name is None) or (env_name == ""):
             self.__base_lib__: rpkg.Package | None = None

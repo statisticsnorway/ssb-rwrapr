@@ -22,8 +22,7 @@ def get_Rattributes(x: Any, exclude: list[str] | None = None) -> Any:
 
         attributes
     }
-    """
-    )
+    """)
     return attributes(x, exclude)
 
 
