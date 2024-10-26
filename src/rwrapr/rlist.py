@@ -15,24 +15,24 @@ from .toggle_rview import ToggleRView
 class RList(UserList[Any]):
     def __init__(self, x: Any, attributes: dict[str, Any] | None):
         super().__init__(x)
-        self._Rattributes = attributes
+        self._rattributes = attributes
 
-    def toR(self) -> Any:
+    def to_r(self) -> Any:
         from .rattributes import attributes2r
         from .rattributes import structure
 
         # -> R-dataframe
-        R_object = pylist2rlist(self)
+        r_object = pylist2rlist(self)
         # -> R-Attributes -> convert to R
-        if self._Rattributes is None:
-            return R_object
-        R_attributes: dict[str, Any] | None = attributes2r(self._Rattributes)
+        if self._rattributes is None:
+            return r_object
+        r_attributes: dict[str, Any] | None = attributes2r(self._rattributes)
 
-        if R_attributes:
-            return structure(R_object, **R_attributes)
-        return R_object
+        if r_attributes:
+            return structure(r_object, **r_attributes)
+        return r_object
 
-    def toPy(self) -> list[Any]:
+    def to_py(self) -> list[Any]:
         with ToggleRView(False):
             out = list(self)
         return out
@@ -41,61 +41,63 @@ class RList(UserList[Any]):
 class RDict(UserDict[str, Any]):
     def __init__(self, x: Any, attributes: dict[str, Any] | None):
         super().__init__(x)
-        self._Rattributes = attributes
+        self._rattributes = attributes
 
-    def toR(self) -> Any:
+    def to_r(self) -> Any:
         from .rattributes import attributes2r
         from .rattributes import structure
 
         # -> R-dataframe
-        R_object = dict2rlist(self)
+        r_object = dict2rlist(self)
         # -> R-Attributes -> convert to R
-        if self._Rattributes is None:
-            return R_object
-        R_attributes: dict[str, Any] | None = attributes2r(self._Rattributes)
+        if self._rattributes is None:
+            return r_object
+        r_attributes: dict[str, Any] | None = attributes2r(self._rattributes)
 
-        if R_attributes:
-            return structure(R_object, **R_attributes)
-        return R_object
+        if r_attributes:
+            return structure(r_object, **r_attributes)
+        return r_object
 
-    def toPy(self) -> dict[str, Any]:
+    def to_py(self) -> dict[str, Any]:
         with ToggleRView(False):
             out = dict(self)
         return out
 
 
-def convert_r2pylist(X: list[Any] | tuple[Any] | RList) -> list[Any] | tuple[Any]:
+def convert_r2pylist(
+    x_collection: list[Any] | tuple[Any] | RList,
+) -> list[Any] | tuple[Any]:
     from .convert_r2py import convert_r2py
 
-    out: tuple[Any] | list[Any] = [convert_r2py(x) for x in X]
-    if isinstance(X, tuple):
+    out: tuple[Any] | list[Any] = [convert_r2py(x) for x in x_collection]
+    if isinstance(x_collection, tuple):
         out = tuple(out)
     return out
 
 
-def convert_rlist2py(X: vc.ListVector | vc.ListSexpVector) -> Any:
+def convert_rlist2py(x_collection: vc.ListVector | vc.ListSexpVector) -> Any:
     from .rarray import convert_numpy
-    from .rattributes import get_Rattributes
+    from .rattributes import get_rattributes
 
-    names = convert_numpy(X.names, flatten=False)
+    names = convert_numpy(x_collection.names, flatten=False)
     if isinstance(names, int | str | float | bool):
         names = np.array([names], dtype="U")
 
-    attributes = get_Rattributes(X, exclude=["names"])
+    attributes = get_rattributes(x_collection, exclude=["names"])
 
     if attributes is not None:
         attributes = dict(attributes)
 
     if names is not None and len(names) and not np.any(names == ""):
-        y = convert_r2pydict({n: x for n, x in zip(names, X, strict=False)})
+        y = convert_r2pydict({n: x for n, x in zip(names, x_collection, strict=False)})
         return RDict(y, attributes=attributes)
     else:
-        y = convert_r2pylist([x for x in X])
+        y = convert_r2pylist([x for x in x_collection])
         return RList(y, attributes=attributes)
 
 
-def is_rlist(X: Any) -> bool:
-    match X:
+def is_rlist(x_collection: Any) -> bool:
+    match x_collection:
         case vc.ListVector() | vc.ListSexpVector():
             return True
         case _:
@@ -103,21 +105,21 @@ def is_rlist(X: Any) -> bool:
 
 
 def convert_r2pydict(
-    X: dict[str, Any] | OrderedDict[str, Any] | UserDict[str, Any] | RDict,
-    is_RDict: bool = False,
+    x_collection: dict[str, Any] | OrderedDict[str, Any] | UserDict[str, Any] | RDict,
+    is_rdict: bool = False,
 ) -> Any:
     from .convert_r2py import convert_r2py
 
     # this needs to be improved considering named vectors
-    if is_RDict and np.all(np.array(X.keys()) is None):
-        Y = list(zip(*X.items(), strict=False))[1]
-        X = convert_r2py(Y)
-    elif is_RDict:
-        X = dict(X)
+    if is_rdict and np.all(np.array(x_collection.keys()) is None):
+        y = list(zip(*x_collection.items(), strict=False))[1]
+        x_collection = convert_r2py(y)
+    elif is_rdict:
+        x_collection = dict(x_collection)
 
-    for key in X:
-        X[key] = convert_r2py(X[key])
-    return X
+    for key in x_collection:
+        x_collection[key] = convert_r2py(x_collection[key])
+    return x_collection
 
 
 def dict2rlist(x: dict[str, Any] | OrderedDict[str, Any] | RDict) -> ro.ListVector:

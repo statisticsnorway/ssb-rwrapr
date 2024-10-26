@@ -6,7 +6,7 @@ import rpy2.robjects as ro
 import rpy2.robjects.vectors as vc
 from rpy2.robjects import pandas2ri
 
-from .rattributes import get_Rattributes
+from .rattributes import get_rattributes
 from .toggle_rview import ToggleRView
 
 
@@ -22,29 +22,29 @@ class RDataFrame(pd.DataFrame):
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            self._Rattributes = attrs
+            self._rattributes = attrs
 
-    def toR(self) -> vc.DataFrame:
+    def to_r(self) -> vc.DataFrame:
         from .rattributes import attributes2r
         from .rattributes import structure
 
-        R_df = pandas2r(self)
-        if self._Rattributes is None:
-            return R_df
+        r_df = pandas2r(self)
+        if self._rattributes is None:
+            return r_df
         else:
-            attributes = attributes2r(self._Rattributes)
+            attributes = attributes2r(self._rattributes)
             if not attributes:
-                return R_df
-            return structure(R_df, **attributes)
+                return r_df
+            return structure(r_df, **attributes)
 
-    def toPy(self) -> pd.DataFrame:
+    def to_py(self) -> pd.DataFrame:
         with ToggleRView(False):
             out = pd.DataFrame(self)
         return out
 
 
 def get_attributes_dataframe(df: vc.DataFrame) -> dict[str, Any] | None | Any:
-    return get_Rattributes(df, exclude=["names", "class", "row.names"])
+    return get_rattributes(df, exclude=["names", "class", "row.names"])
 
 
 def pandas2r(df: pd.DataFrame) -> vc.DataFrame:

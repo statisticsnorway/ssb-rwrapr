@@ -5,7 +5,7 @@ import pytest
 import rwrapr as wr
 
 
-def test_RiskyIntervals():
+def test_risky_intervals():
     if wr.library("Rglpk", interactive=False) is not None:
         st = wr.library("SSBtools", interactive=False)
         gs = wr.library("GaussSuppression", interactive=False)
@@ -24,7 +24,7 @@ def test_RiskyIntervals():
 
         bs.set_seed(123)
         s = bs.sample_int(bs.nrow(z3), size=400) - 1
-        f = wr.lazily("~(region + fylke) * mnd2 + kostragr * hovedint * mnd")
+        f = wr.Lazily("~(region + fylke) * mnd2 + kostragr * hovedint * mnd")
         b = gs.SuppressDominantCells(
             z3.iloc[s, :],
             numVar="value",

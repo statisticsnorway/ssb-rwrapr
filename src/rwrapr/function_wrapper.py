@@ -32,7 +32,7 @@ def wrap_rfunc(
         convert_py_args2r(args=args, kwargs=kwargs)  # type: ignore[arg-type]
         lazyfunc = lazy_wrap(args=args, kwargs=kwargs, func=func, func_name=name)  # type: ignore[arg-type]
         r_object: Any = lazyfunc(*args, **kwargs)
-        if settings.Rview:
+        if settings.rview_mode:
             return RView(r_object)
         else:
             return convert_r2py(r_object)

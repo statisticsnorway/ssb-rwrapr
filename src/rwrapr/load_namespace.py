@@ -12,9 +12,9 @@ def load_base_envs() -> (
 ):
     # set options for global environment
     rbase = try_load_namespace("base", verbose=False)
-    rMatrix = try_load_namespace("Matrix", verbose=False)
+    rmatrix = try_load_namespace("Matrix", verbose=False)
     rutils = try_load_namespace("utils", verbose=False)
-    return {"base": rbase, "Matrix": rMatrix, "utils": rutils}
+    return {"base": rbase, "Matrix": rmatrix, "utils": rutils}
 
 
 def try_load_namespace(

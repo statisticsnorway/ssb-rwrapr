@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import warnings
 from collections.abc import Callable
 from typing import Any
@@ -10,7 +12,7 @@ from numpy.typing import NDArray
 from rpy2.rinterface_lib.sexp import NULLType
 
 from .convert_py2r import convert_py2r
-from .rattributes import get_Rattributes
+from .rattributes import get_rattributes
 from .toggle_rview import ToggleRView
 
 
@@ -18,8 +20,8 @@ NPArrayIndex: TypeAlias = tuple[slice | int | list[Any] | NDArray[Any], ...]
 
 
 class RArray(np.ndarray[Any, Any]):
-    def __new__(cls, Rdata: Any) -> "RArray":
-        arr = convert_numpy(Rdata)
+    def __new__(cls, rdata: Any) -> RArray:
+        arr = convert_numpy(rdata)
         if not isinstance(arr, np.ndarray):
             raise TypeError("convert_numpy(Rdata) must return a numpy.ndarray")
 
@@ -27,14 +29,14 @@ class RArray(np.ndarray[Any, Any]):
         arr_c = np.ascontiguousarray(arr)
         obj = arr_c.view(cls)
 
-        obj._Rattributes = get_attributes_array(Rdata)
+        obj._rattributes = get_attributes_array(rdata)
         return obj
 
     def __array_finalize__(self, obj: Any) -> None:
         if obj is None:
             return
-        # Copy the _Rattributes from the source object
-        self._Rattributes = getattr(obj, "_Rattributes", None)
+        # Copy the _rattributes from the source object
+        self._rattributes = getattr(obj, "_rattributes", None)
 
     def __getitem__(self, index: Any) -> Any:
         result = super().__getitem__(index)
@@ -43,13 +45,13 @@ class RArray(np.ndarray[Any, Any]):
         if not isinstance(result, RArray):
             return result
 
-        # Copy the _Rattributes
-        if hasattr(self, "_Rattributes") and self._Rattributes is not None:
-            result._Rattributes = getattr(self, "_Rattributes", {}).copy()
+        # Copy the _rattributes
+        if hasattr(self, "_rattributes") and self._rattributes is not None:
+            result._rattributes = getattr(self, "_rattributes", {}).copy()
 
-            orig_dimnames = self._Rattributes.get("dimnames", None)
-            orig_names = self._Rattributes.get("names", None)
-            orig_dim = self._Rattributes.get("dim", None)
+            orig_dimnames = self._rattributes.get("dimnames", None)
+            orig_names = self._rattributes.get("names", None)
+            orig_dim = self._rattributes.get("dim", None)
 
             ndim_self = self.ndim
             ndim_result = result.ndim
@@ -86,7 +88,7 @@ class RArray(np.ndarray[Any, Any]):
                         # Dimension is removed, do not add dimname
                         pass
 
-                result._Rattributes["dimnames"] = new_dimnames
+                result._rattributes["dimnames"] = new_dimnames
 
             # Update names for 1D arrays
             elif orig_names is not None:
@@ -100,18 +102,18 @@ class RArray(np.ndarray[Any, Any]):
                         indices = np.arange(len(names_array))[idx]
                         new_names = names_array[indices]
 
-                    result._Rattributes["names"] = new_names
+                    result._rattributes["names"] = new_names
                 elif ndim_self == 1 and ndim_result == 0:
-                    result._Rattributes.pop("names", None)
+                    result._rattributes.pop("names", None)
 
             if orig_dim is not None:
                 if ndim_result > 0:
                     new_dim = result.shape
                     new_dim_array = np.array(new_dim)
-                    result._Rattributes["dim"] = new_dim_array
+                    result._rattributes["dim"] = new_dim_array
                 else:
                     # Result is scalar, remove 'dim' attribute
-                    result._Rattributes.pop("dim", None)
+                    result._rattributes.pop("dim", None)
 
         return result
 
@@ -151,32 +153,32 @@ class RArray(np.ndarray[Any, Any]):
                 dims_kept.append(True)
         return dims_kept
 
-    def toR(self) -> Any:
+    def to_r(self) -> Any:
         from .rattributes import attributes2r
         from .rattributes import structure
 
-        R_object = convert_numpy2r(np.asarray(self))
-        if self._Rattributes is not None:
-            R_attributes = attributes2r(self._Rattributes)
-            if R_attributes:
-                R_object = structure(R_object, **R_attributes)
-            R_object = structure(R_object, **R_attributes)
+        r_object = convert_numpy2r(np.asarray(self))
+        if self._rattributes is not None:
+            r_attributes = attributes2r(self._rattributes)
+            if r_attributes:
+                r_object = structure(r_object, **r_attributes)
+            r_object = structure(r_object, **r_attributes)
 
-        return R_object
+        return r_object
 
-    def toPy(self) -> NDArray[Any]:
+    def to_py(self) -> NDArray[Any]:
         with ToggleRView(False):
             out = np.asarray(self)
         return out
 
 
-def get_RArray(x: Any) -> RArray | bool | int | str | float:
+def get_rarray(x: Any) -> RArray | bool | int | str | float:
     y: RArray = RArray(x)
-    return y[0].item() if y.shape == (1,) and y._Rattributes is None else y
+    return y[0].item() if y.shape == (1,) and y._rattributes is None else y
 
 
 def get_attributes_array(x: Any) -> dict[str, Any] | None | Any:
-    return get_Rattributes(x, exclude=["class"])
+    return get_rattributes(x, exclude=["class"])
 
 
 def convert_numpy(

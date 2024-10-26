@@ -1,35 +1,32 @@
-from typing import Any
-from typing import Optional
+from __future__ import annotations
 
 
 class Settings:
-    _instance: Optional["Settings"] = None  # Singleton instance of the class
-    Rview: bool  # Boolean attribute to store Rview setting
+    _instance: Settings | None = None  # Singleton instance of the class
 
-    def __new__(cls, *args: Any, **kwargs: Any) -> "Settings":
+    def __new__(cls) -> Settings:
         if cls._instance is None:
             cls._instance = super().__new__(cls)
-            cls._instance._initialize(**kwargs)
         return cls._instance
 
-    def _initialize(self, **kwargs: Any) -> None:
-        self.Rview = False  # Initialize the Rview attribute to False
+    def __init__(self) -> None:
+        if not hasattr(self, "rview_mode"):  # Check if already initialized
+            self.rview_mode = False
 
-    def set_Rview(self, rview: bool) -> None:
-        """
-        Set the Rview attribute to the specified value.
+    def set_rview_mode(self, rview_mode: bool) -> None:
+        """Set the rview_mode attribute to the specified value.
 
-        This method updates the `Rview` attribute to control whether the
-        Rview mode is enabled or disabled. If `True`, Rview mode is enabled;
+        This method updates the `rview_mode` attribute to control whether the
+        RView mode is enabled or disabled. If `True`, Rview mode is enabled;
         if `False`, Rview mode is disabled. If Rview is True, then only Views of
         R objects will be displayed in the console. Otherwise, `rwrapr` will try
         to convert the R object to a Python object and display it.
 
         Args:
-            rview (bool): A boolean value indicating whether to enable (True)
-                or disable (False) Rview mode.
+            rview_mode: A boolean value indicating whether to enable (True)
+                or disable (False) RView mode.
         """
-        self.Rview = rview  # Set the Rview attribute
+        self.rview_mode = rview_mode
 
 
 # Singleton instance of Settings

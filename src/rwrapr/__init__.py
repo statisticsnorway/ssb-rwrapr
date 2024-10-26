@@ -5,7 +5,7 @@ import warnings
 
 warnings.simplefilter("always")
 
-from .lazy_rexpr import lazily
+from .lazy_rexpr import Lazily
 from .library import importr
 from .library import library
 from .load_namespace import try_load_namespace
@@ -31,7 +31,7 @@ __all__ = [
     "Renv",
     "Settings",
     "importr",
-    "lazily",
+    "Lazily",
     "library",
     "settings",
     "try_load_namespace",

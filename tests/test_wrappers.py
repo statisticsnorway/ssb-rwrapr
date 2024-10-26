@@ -11,7 +11,7 @@ bs = wr.library("base")
 printInc = False
 
 
-def test_Wrappers():
+def test_wrappers():
     dataset = st.SSBtoolsData("magnitude1")
     dataset["seq2"] = (np.arange(1, bs.nrow(dataset) + 1) - 10) ** 2
     # Table 3 in vignette

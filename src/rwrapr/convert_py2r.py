@@ -19,7 +19,6 @@ from .sparse import convert_pysparsematrix
 # We can uncomment this when we transition to 3.12
 RBaseObject: TypeAlias = (
     ro.FloatVector
-    | ro.FloatVector
     | ro.IntVector
     | ro.ListVector
     | ro.Array
@@ -50,7 +49,7 @@ def convert_py2r(x: Any) -> RBaseObject | PyDtype | Any:
 
     match x:
         case RView() | RArray() | RList() | RDataFrame() | RDict() | RFactor():
-            return x.toR()
+            return x.to_r()
         case _ if x is np.nan:
             return (
                 ro.NA_Logical

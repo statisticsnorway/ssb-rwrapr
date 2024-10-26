@@ -23,7 +23,7 @@ class ToggleRView:
             temp_state (bool): The temp_state to set for the Rview mode when entering
                 the context block.
         """
-        self.orig_state = settings.Rview
+        self.orig_state = settings.rview_mode
         self.temp_state = temp_state
 
     def __enter__(self) -> None:
@@ -33,7 +33,7 @@ class ToggleRView:
         This method is called automatically when the `with` block is entered,
         and it updates the Rview mode to the given temp_state.
         """
-        settings.set_Rview(self.temp_state)
+        settings.set_rview_mode(self.temp_state)
 
     def __exit__(
         self,
@@ -56,7 +56,7 @@ class ToggleRView:
         Returns:
             bool: If False, the exception is propagated. If True, the exception is suppressed.
         """
-        settings.set_Rview(self.orig_state)
+        settings.set_rview_mode(self.orig_state)
 
         # Check if an exception occurred
         if exc_type is not None:

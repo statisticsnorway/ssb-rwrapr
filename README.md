@@ -43,9 +43,8 @@ dt = wr.library("datasets")
 dplyr.last(x=np.array([1, 2, 3, 4]))
 dplyr.last(x=[1, 2, 3, 4])
 
-
 iris = dt.iris
-df = dplyr.mutate(iris, Sepal = wr.lazily("round(Sepal.Length * 2, 0)"))
+df = dplyr.mutate(iris, Sepal=wr.Lazily("round(Sepal.Length * 2, 0)"))
 ```
 
 ## To do

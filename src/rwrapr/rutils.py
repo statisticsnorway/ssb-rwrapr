@@ -36,7 +36,6 @@ def has_unsupported_rclass(x: Any) -> bool:
     return len(rclass) > 0 and not rclass.issubset(supported_classes)
 
 
-# TODO: Argument str_ is not used in the function. Remove?
 def as_matrix(x: Any) -> NDArray[Any] | Any:
     from .function_wrapper import rfunc
 

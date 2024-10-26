@@ -5,7 +5,7 @@ import pandas as pd
 import rpy2.rlike.container as rcnt
 import rpy2.robjects as ro
 import rpy2.robjects.vectors as vc
-from rpy2.robjects import rpy2
+from rpy2.rinterface_lib.sexp import NULLType
 
 from .rdataframe import RDataFrame
 from .rdataframe import attempt_pandas_conversion
@@ -21,16 +21,16 @@ from .rview import convert_s4
 
 
 # TODO: Consider changing return type hint to union of possible types
-def convert_r2py(x: Any, ignoreS3: bool = False) -> Any:
+def convert_r2py(x: Any, ignore_s3: bool = False) -> Any:
     # Need to import these here to avoid circular imports
     from .rarray import filter_numpy
-    from .rarray import get_RArray
+    from .rarray import get_rarray
     from .rarray import is_valid_numpy
 
     match x:
         case str() | int() | bool() | float():
             return x
-        case rpy2.rinterface_lib.sexp.NULLType():
+        case NULLType():
             return None
         case _ if is_na(x):
             return (
@@ -41,17 +41,17 @@ def convert_r2py(x: Any, ignoreS3: bool = False) -> Any:
         case vc.FactorVector():
             return RFactor(x)
         case vc.Vector() | vc.Matrix() | vc.Array() if not is_rlist(x):
-            return get_RArray(x)  # return RArray, or int|str|bool|float if len == 1
+            return get_rarray(x)  # return RArray, or int|str|bool|float if len == 1
         case ro.methods.RS4():
             return convert_s4(x)
-        case _ if has_unsupported_rclass(x) and not ignoreS3:
+        case _ if has_unsupported_rclass(x) and not ignore_s3:
             return RView(x)
         case list():
             return convert_r2pylist(x)
         case tuple():
             return convert_r2pylist(x)
         case rcnt.OrdDict():
-            return convert_r2pydict(x, is_RDict=True)
+            return convert_r2pydict(x, is_rdict=True)
         case dict():
             return convert_r2pydict(x)
         case pd.DataFrame():

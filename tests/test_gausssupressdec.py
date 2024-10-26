@@ -9,12 +9,12 @@ GaussSuppression = wr.importr("GaussSuppression")
 SSBtools = wr.importr("SSBtools")
 
 
-def test_GaussSuppressDec_and_more():
+def test_gausssuppressdec_and_more():
     base.set_seed(123)
     z2 = SSBtools.SSBtoolsData("z2")
     z2["y1"] = base.runif(base.nrow(z2))
     z2["y2"] = base.runif(base.nrow(z2))
-    printInc = False
+    print_inc = False
 
     # Error here if overlapping freqVar, numVar, weightVar not treated correctly.
     a = GaussSuppression.GaussSuppressDec(
@@ -25,17 +25,17 @@ def test_GaussSuppressDec_and_more():
         maxN=2,
         numVar=np.array(["y1", "y2", "ant"]),
         weightVar="y1",
-        printInc=printInc,
+        printInc=print_inc,
     )
     GaussSuppression.GaussSuppressDec(
         z2,
-        formula=wr.lazily("~region * fylke * kostragr * hovedint"),  # this also works
+        formula=wr.Lazily("~region * fylke * kostragr * hovedint"),  # this also works
         freqVar="ant",
         protectZeros=False,
         maxN=2,
         numVar=np.array(["y1", "y2", "ant"]),
         weightVar="y1",
-        printInc=printInc,
+        printInc=print_inc,
     )
 
     # Recalculate suppression from decimals. "kostragr" not included.
@@ -44,7 +44,7 @@ def test_GaussSuppressDec_and_more():
         hierarchies=SSBtools.FindDimLists(z2[["region", "fylke", "hovedint"]]),
         freqVar="ant",
         decVar="freqDec",
-        printInc=printInc,
+        printInc=print_inc,
     )
 
     # Special case where all suppressions found in suppressedData.
@@ -55,7 +55,7 @@ def test_GaussSuppressDec_and_more():
         freqVar="ant",
         maxN=20,
         singleton=None,
-        printInc=printInc,
+        printInc=print_inc,
         forcedInOutput=False,
     )
     # Check that b and d are identical after sorting
@@ -64,4 +64,4 @@ def test_GaussSuppressDec_and_more():
         == np.array([1, 1])
     )
 
-    assert len(a._Rattributes["startRow"]) == 16
+    assert len(a._rattributes["startRow"]) == 16

@@ -2,7 +2,7 @@
 import numpy as np
 import pandas as pd
 import pytest
-import rpy2
+from rpy2.rinterface_lib.embedded import RRuntimeError
 
 import rwrapr as wr
 
@@ -32,7 +32,7 @@ mm = SSBtools.ModelMatrix(d, formula="~ v1 - 1", crossTable=True, sparse=True)
 mm2 = SSBtools.ModelMatrix(d, formula="~ v1 - 1", crossTable=True, sparse=False)
 
 
-def test_Unweighted_dominance():
+def test_unweighted_dominance():
     p1 = GaussSuppression.DominanceRule(
         d, x=mm["modelMatrix"], crossTable=mm["crossTable"], numVar="num", n=2, k=90
     )
@@ -59,7 +59,7 @@ def test_Unweighted_dominance():
     assert np.all(np.logical_and(p1 == p2["primary"], p1 == p3["primary"]))
 
 
-def test_Default_weighted_dominance():
+def test_default_weighted_dominance():
     p = GaussSuppression.DominanceRule(
         d,
         x=mm["modelMatrix"],
@@ -105,7 +105,7 @@ def test_tauargus_dominance():
     #       domWeightMethod = "tauargus"
     #     )
 
-    with pytest.raises(rpy2.rinterface_lib.embedded.RRuntimeError):
+    with pytest.raises(RRuntimeError):
         GaussSuppression.DominanceRule(
             d,
             x=mm["modelMatrix"],
