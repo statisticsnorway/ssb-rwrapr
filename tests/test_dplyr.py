@@ -25,8 +25,8 @@ def test_last(setup_wr):
 def test_mutate(setup_wr):
     dplyr, dt = setup_wr
     iris = dt.iris
-    df = dplyr.mutate(iris, Sepal=wr.lazily("round(Sepal.Length * 2, 0)"))
+    df = dplyr.mutate(iris, Sepal=wr.Lazily("round(Sepal.Length * 2, 0)"))
 
     assert np.all(np.round(df["Sepal.Length"] * 2) == df["Sepal"])
     with pytest.raises(TypeError):
-        dplyr.mutate(iris, wr.lazily("Sepal.Length * 2"))
+        dplyr.mutate(iris, wr.Lazily("Sepal.Length * 2"))

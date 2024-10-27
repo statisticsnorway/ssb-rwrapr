@@ -14,44 +14,44 @@ from .toggle_rview import ToggleRView
 
 
 class RView:
-    def __init__(self, Robj: Any):
+    def __init__(self, robj: Any):
         from .rarray import RArray
         from .rdataframe import RDataFrame
 
-        if isinstance(Robj, RArray | RDataFrame | RList | RDict):
-            self.Robj = Robj.toR()
+        if isinstance(robj, RArray | RDataFrame | RList | RDict):
+            self.robj = robj.to_r()
         else:
-            self.Robj = Robj
+            self.robj = robj
 
     def __str__(self) -> str | Any:
         # return captureRprint(self.Robj)
-        return self.Robj.__str__()
+        return self.robj.__str__()
 
     def __repr__(self) -> str | Any:
         # return self.Robj.__repr__()
-        return self.Robj.__str__()
+        return self.robj.__str__()
 
     def __getattr__(self, name: str) -> Any:
         from .function_wrapper import rfunc
 
         fun: Callable[..., Any] = rfunc(name)
-        return fun(self.Robj)
+        return fun(self.robj)
 
     def __getitem__(self, *args: Any) -> Any:
-        return self.Robj.__getitem__(*args)
+        return self.robj.__getitem__(*args)
 
     def __iter__(self) -> Iterator[Any] | Any:
-        return self.Robj.__iter__()
+        return self.robj.__iter__()
 
-    def toPy(self, ignoreS3: bool = False) -> Any:
+    def to_py(self, ignore_s3: bool = False) -> Any:
         from .convert_r2py import convert_r2py
 
         with ToggleRView(False):
-            out = convert_r2py(self.Robj, ignoreS3=ignoreS3)
+            out = convert_r2py(self.robj, ignore_s3=ignore_s3)
         return out
 
-    def toR(self) -> Any:
-        return self.Robj
+    def to_r(self) -> Any:
+        return self.robj
 
 
 def convert_s4(x: ro.methods.RS4) -> Any:

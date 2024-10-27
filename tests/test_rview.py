@@ -20,10 +20,10 @@ def test_setting_rview(setup_wr):
     with wr.ToggleRView(True):
         l2 = bs.list(1, 2, 3, 4)
         assert isinstance(l2, wr.RView)
-        assert l2.toPy() == [1, 2, 3, 4]
+        assert l2.to_py() == [1, 2, 3, 4]
 
         iris2 = dt.iris
-        df = iris2.toPy()
+        df = iris2.to_py()
         assert isinstance(iris2, wr.RView)
         assert isinstance(df, wr.RDataFrame)
         assert df.columns[0] == "Sepal.Length"

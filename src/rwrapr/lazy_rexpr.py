@@ -7,7 +7,7 @@ from typing import Any
 from .rutils import rcall
 
 
-class lazily:
+class Lazily:
     def __init__(self, expr: str) -> None:
         if not isinstance(expr, str):
             raise TypeError("lazy-expr must be in the form of a string")
@@ -25,12 +25,12 @@ def lazy_wrap(
 ) -> Callable[..., Any] | Any:
     lazy_arg_exprs: list[str] = []
     for x in args:
-        if isinstance(x, lazily):
+        if isinstance(x, Lazily):
             raise TypeError(
                 f"Lazy argument needs to be a keyword argument, {x} is unnamed"
             )
     for k, v in kwargs.copy().items():
-        if isinstance(v, lazily):
+        if isinstance(v, Lazily):
             lazy_arg_exprs.append(f"{k} = {v!s}")
             del kwargs[k]
 

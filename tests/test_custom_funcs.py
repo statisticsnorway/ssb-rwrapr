@@ -12,7 +12,7 @@ def test_custom_funcs():
     assert foo(2) == 4
 
     with pytest.raises(ValueError):
-        foo(b=wr.lazily("2"))
+        foo(b=wr.Lazily("2"))
 
     with pytest.raises(TypeError):
-        base.foo_attached2namespace(wr.lazily("2"))
+        base.foo_attached2namespace(wr.Lazily("2"))

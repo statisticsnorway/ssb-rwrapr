@@ -1,12 +1,11 @@
 from collections.abc import Callable
 from typing import Any
 
-from rwrapr.rlist import RDict
-
 from .convert_py2r import convert_py_args2r
+from .rlist import RDict
 
 
-def get_Rattributes(x: Any, exclude: list[str] | None = None) -> Any:
+def get_rattributes(x: Any, exclude: list[str] | None = None) -> Any:
     from .function_wrapper import rfunc
 
     if exclude is None:

@@ -11,7 +11,7 @@ bs = wr.library("base")
 printInc = False
 
 
-def test_GaussSuppressionFromData_works():
+def test_gausssuppressionfromdata_works():
     m = GS.GaussSuppressionFromData(
         ST.SSBtoolsData("z1"), np.array([1, 2]), 3, printInc=printInc
     )
@@ -43,7 +43,7 @@ x = get_x(mm)
 
 
 # test_that("Advanced with integer overflow", {
-def test_Advanced_with_integer_overflow():
+def test_advanced_with_integer_overflow():
     # This test will not pass on all platforms, ask the original author for more information
     a = GS.GaussSuppressionFromData(
         z3,
@@ -127,7 +127,7 @@ def test_Advanced_with_integer_overflow():
     assert bs.sum(bs.which(a["suppressed"])) == 576555
 
 
-def test_structuralEmpty_and_removeEmpty():
+def test_structural_empty_and_remove_empty():
     a1 = GS.GaussSuppressionFromData(
         z3.iloc[np.arange(100, 300)], np.arange(1, 7), 7, printInc=printInc
     )

@@ -5,9 +5,9 @@ import rwrapr as wr
 
 
 def test_factors():
-    R = wr.library("base")
-    x = R.factor(R.c("a", "b", "c", "b"))
-    attrs = R.attributes(x)
-    assert x._Rattributes is None
+    r = wr.library("base")
+    x = r.factor(r.c("a", "b", "c", "b"))
+    attrs = r.attributes(x)
+    assert x._rattributes is None
     assert np.all(attrs["levels"] == ["a", "b", "c"])
     assert attrs["class"] == "factor"

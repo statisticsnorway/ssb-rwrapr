@@ -24,9 +24,9 @@ class Renv:
     it is searched for in the global R environment.
 
     Attributes:
-        __base_lib__ (rpkg.Package | None): The loaded R package.
-        __Rfuncs__ (set[str] | None): The set of R functions available in the environment.
-        __Rdatasets__ (set[str] | None): The set of R datasets available in the environment.
+        __base_lib (rpkg.Package | None): The loaded R package.
+        __rfuncs (set[str] | None): The set of R functions available in the environment.
+        __rdatasets (set[str] | None): The set of R datasets available in the environment.
         NULL (Any): Equivalent to R's `NULL`.
         NA (Any): Equivalent to R's `NA`.
         NaN (Any): Equivalent to R's `NaN`.
@@ -43,19 +43,19 @@ class Renv:
             interactive (bool): If True, prompts the user to install missing R packages. Defaults to True.
         """
         if (env_name is None) or (env_name == ""):
-            self.__base_lib__: rpkg.Package | None = None
-            self.__Rfuncs__: set[str] | None = None
-            self.__Rdatasets__: set[str] | None = None
+            self.__base_lib: rpkg.Package | None = None
+            self.__rfuncs: set[str] | None = None
+            self.__rdatasets: set[str] | None = None
             return
 
         pinfo("Loading packages...", verbose=True)
-        self.__set_base_lib__(
+        self.__set_base_lib(
             try_load_namespace(env_name, verbose=True, interactive=interactive)
         )
 
-        funcs, datasets = get_assets(env_name, module=self.__base_lib__)
-        self.__setRfuncs__(funcs)
-        self.__setRdatasets__(datasets)
+        funcs, datasets = get_assets(env_name, module=self.__base_lib)
+        self.__set_rfuncs(funcs)
+        self.__set_rdatasets(datasets)
 
         # Constants
         self.NULL = ro.NULL
@@ -66,34 +66,34 @@ class Renv:
 
         pinfo("Done!", verbose=True)
 
-    def __set_base_lib__(self, rpkg_: rpkg.Package) -> None:
+    def __set_base_lib(self, rpkg_: rpkg.Package) -> None:
         """
         Sets the base R package for the environment.
 
         Args:
             rpkg_ (rpkg.Package): The R package to set.
         """
-        self.__base_lib__ = rpkg_
+        self.__base_lib = rpkg_
 
-    def __setRfuncs__(self, funcs: set[str]) -> None:
+    def __set_rfuncs(self, funcs: set[str]) -> None:
         """
         Sets the available R functions for the environment.
 
         Args:
             funcs (set[str]): A set of R function names.
         """
-        self.__Rfuncs__ = funcs
+        self.__rfuncs = funcs
 
-    def __setRdatasets__(self, datasets: set[str]) -> None:
+    def __set_rdatasets(self, datasets: set[str]) -> None:
         """
         Sets the available R datasets for the environment.
 
         Args:
             datasets (set[str]): A set of R dataset names.
         """
-        self.__Rdatasets__ = datasets
+        self.__rdatasets = datasets
 
-    def __attach__(self, name: str, attr: Any) -> None:
+    def __attach(self, name: str, attr: Any) -> None:
         """
         Attaches a function or dataset to the environment.
 
@@ -118,24 +118,24 @@ class Renv:
         Raises:
             ValueError: If the environment is not correctly initialized or if the object is not found.
         """
-        if self.__Rfuncs__ is None or self.__Rdatasets__ is None:
+        if self.__rfuncs is None or self.__rdatasets is None:
             raise ValueError("Renv is not correctly initialized")
 
         capture = ROutputCapture()
         capture.capture_r_output()
 
-        if name in self.__Rfuncs__:
+        if name in self.__rfuncs:
             fun: Callable[..., RReturnType] = wrap_rfunc(
-                getattr(self.__base_lib__, name), name=name
+                getattr(self.__base_lib, name), name=name
             )
-            self.__attach__(name=name, attr=fun)
+            self.__attach(name=name, attr=fun)
             capture.reset_r_output()
-        elif name in self.__Rdatasets__:
-            self.__attach__(name=name, attr=fetch_data(name, self.__base_lib__))
+        elif name in self.__rdatasets:
+            self.__attach(name=name, attr=fetch_data(name, self.__base_lib))
             capture.reset_r_output()
         else:
             rfun: Callable[..., RReturnType] = rfunc(name)
-            self.__attach__(name=name, attr=rfun)
+            self.__attach(name=name, attr=rfun)
 
         return getattr(self, name)
 
@@ -159,7 +159,7 @@ class Renv:
         # Attach to the global namespace
         rcall(f"{name} <- {expr}")
         pyfunc: Callable[..., RReturnType] = wrap_rfunc(rfun, name=name)
-        self.__attach__(name=name, attr=pyfunc)
+        self.__attach(name=name, attr=pyfunc)
 
     def function(self, expr: str) -> Callable[..., Any]:
         """
@@ -219,7 +219,7 @@ def fetch_data(
     try:
         r_object = rpkg.data(module).fetch(dataset)[dataset]
 
-        if settings.Rview:
+        if settings.rview_mode:
             return RView(r_object)
         else:
             result = convert_r2py(r_object)
@@ -241,4 +241,4 @@ def get_assets(env_name: str, module: rpkg.Package | None) -> tuple[set[str], se
 
     pyattrs: set[str] = set(dir(module))
     # return: funcs, other-assets
-    return (rattrs & pyattrs, rattrs - pyattrs)
+    return rattrs & pyattrs, rattrs - pyattrs
