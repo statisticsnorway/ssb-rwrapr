@@ -4,22 +4,22 @@ import numpy as np
 import rwrapr as wr
 
 
-ST = wr.library("SSBtools")
-GS = wr.library("GaussSuppression")
+st = wr.library("SSBtools")
+gs = wr.library("GaussSuppression")
 bs = wr.library("base")
 
 printInc = False
 
 
 def test_gausssuppressionfromdata_works():
-    m = GS.GaussSuppressionFromData(
-        ST.SSBtoolsData("z1"), np.array([1, 2]), 3, printInc=printInc
+    m = gs.GaussSuppressionFromData(
+        st.SSBtoolsData("z1"), np.array([1, 2]), 3, printInc=printInc
     )
-    assert np.all(GS.which(m["suppressed"]) == [12, 13, 22, 23, 42, 43])
+    assert np.all(gs.which(m["suppressed"]) == [12, 13, 22, 23, 42, 43])
 
 
 # Sample with seed inside test_that do not work
-z3 = ST.SSBtoolsData("z3")
+z3 = st.SSBtoolsData("z3")
 upper = z3["region"].str.isupper()
 z3["region"][upper] = z3["region"][upper] + "2"
 z3["region"][~upper] = z3["region"][~upper].str.upper() + "1"
@@ -27,25 +27,22 @@ z3["fylke"] = z3["fylke"].astype("int")
 z3["kostragr"] = z3["kostragr"].astype("int")
 z3["ant"] = z3["ant"].astype("int")
 
-mm = ST.ModelMatrix(z3.iloc[:, np.arange(0, 6)], crossTable=True, sparse=False)
+mm = st.ModelMatrix(z3.iloc[:, np.arange(0, 6)], crossTable=True, sparse=False)
 
-get_x = GS.function(
-    """function(mm) {
-    x = mm$modelMatrix
-    k = 1:20000
-    set.seed(123)
-    sample_k = sample(k)
-    x[k] = x[sample_k]
-    x
-}"""
-)
-x = get_x(mm)
+x_p = mm["modelMatrix"]
+k = np.arange(20000)
+
+bs.set_seed(123)
+sample_k = bs.sample(k)
+y = x_p.flatten(order="F")
+y[k] = y[sample_k]
+x = y.reshape(x_p.shape, order="F")
 
 
 # test_that("Advanced with integer overflow", {
 def test_advanced_with_integer_overflow():
     # This test will not pass on all platforms, ask the original author for more information
-    a = GS.GaussSuppressionFromData(
+    a = gs.GaussSuppressionFromData(
         z3,
         np.arange(1, 7),
         7,
@@ -57,7 +54,7 @@ def test_advanced_with_integer_overflow():
     )
     assert bs.sum(bs.which(a["suppressed"])) == 599685
 
-    a = GS.GaussSuppressionFromData(
+    a = gs.GaussSuppressionFromData(
         z3,
         np.arange(1, 7),
         7,
@@ -69,7 +66,7 @@ def test_advanced_with_integer_overflow():
     assert bs.sum(bs.which(a["suppressed"])) == 525957
 
     # This test involves integer overflow in AnyProportionalGaussInt
-    a = GS.GaussSuppressionFromData(
+    a = gs.GaussSuppressionFromData(
         z3,
         np.arange(1, 7),
         7,
@@ -83,7 +80,7 @@ def test_advanced_with_integer_overflow():
     assert bs.sum(bs.which(a["suppressed"])) == 411693
 
     # This test involves all ways of updating A["r[[i]]"], A$x[[i]], B$r[[i]], B$x[[i]]  (Including integer overflow)
-    a = GS.GaussSuppressionFromData(
+    a = gs.GaussSuppressionFromData(
         z3,
         np.arange(1, 7),
         7,
@@ -97,7 +94,7 @@ def test_advanced_with_integer_overflow():
     )
     assert bs.sum(bs.which(a["suppressed"])) == 411693
 
-    a = GS.GaussSuppressionFromData(
+    a = gs.GaussSuppressionFromData(
         z3,
         np.arange(1, 7),
         7,
@@ -115,7 +112,7 @@ def test_advanced_with_integer_overflow():
     x[:, np.arange(200, 300)] = np.round(
         0.6 * x[:, np.arange(200, 300)] + 0.6 * x[:, np.arange(300, 400)]
     )
-    a = GS.GaussSuppressionFromData(
+    a = gs.GaussSuppressionFromData(
         z3,
         np.arange(1, 7),
         7,
@@ -128,17 +125,17 @@ def test_advanced_with_integer_overflow():
 
 
 def test_structural_empty_and_remove_empty():
-    a1 = GS.GaussSuppressionFromData(
+    a1 = gs.GaussSuppressionFromData(
         z3.iloc[np.arange(100, 300)], np.arange(1, 7), 7, printInc=printInc
     )
-    a2 = GS.GaussSuppressionFromData(
+    a2 = gs.GaussSuppressionFromData(
         z3.iloc[np.arange(100, 300)],
         np.arange(1, 7),
         7,
         printInc=printInc,
         structuralEmpty=True,
     )
-    a3 = GS.GaussSuppressionFromData(
+    a3 = gs.GaussSuppressionFromData(
         z3.iloc[np.arange(100, 300)],
         np.arange(1, 7),
         7,
@@ -151,70 +148,77 @@ def test_structural_empty_and_remove_empty():
     assert np.all(a1.loc[k, "ant"] == 0)
 
 
+def test_extend0_and_various_hierarchy_input():
+    z2 = st.SSBtoolsData("z2")
+
+    with wr.ToggleRView(True):  # add warnings for these unexpected results
+        dimLists = st.FindDimLists(z2.drop("ant", axis=1))
+        hi = bs.list(
+            bs.c("region", "fylke", "kostragr"), hovedint=dimLists.to_py()["hovedint"]
+        )
+
+    a1 = gs.GaussSuppressionFromData(z2, np.arange(1, 5), 5, printInc=printInc)
+    a2 = gs.GaussSuppressionFromData(
+        z2, freqVar="ant", hierarchies=dimLists, printInc=printInc
+    )
+    a3 = gs.GaussSuppressionFromData(
+        z2, freqVar="ant", hierarchies=hi, printInc=printInc
+    )
+
+    assert np.all(a1.reset_index(drop=True) == a2.reset_index(drop=True))
+    assert np.all(a3.reset_index(drop=True) == a2.reset_index(drop=True))
+
+
 #
+#    z2_ = z2[z2["ant"] != 0, ]
 #
+#    a1 = GaussSuppressionFromData(z2_, np.arange(1, 4+1), 5, extend0 = True, output = "publish_inner", printInc = printInc)
 #
-# test_that("extend0 and various hierarchy input", {
-#   z2 = SSBtoolsData("z2")
-#   dimLists = SSBtools::FindDimLists(z2[, -5])
-#   hi = list(c("region", "fylke", "kostragr"), hovedint = dimLists["hovedint"])
+#    expect_identical(a1["publish"], a2)
 #
-#   a1 = GaussSuppressionFromData(z2, np.arange(1, 4+1), 5, printInc = printInc)
-#   a2 = GaussSuppressionFromData(z2, freqVar = "ant", hierarchies = dimLists, printInc = printInc)
-#   a3 = GaussSuppressionFromData(z2, freqVar = "ant", hierarchies = hi, printInc = printInc)
+#    a2 = GaussSuppressionFromData(z2_, freqVar = "ant", hierarchies = dimLists, extend0 = True, output = "publish_inner", printInc = printInc)
+#    a3 = GaussSuppressionFromData(z2_, freqVar = "ant", hierarchies = hi, extend0 = True, output = "publish_inner", printInc = printInc)
 #
-#   expect_identical(a1, a2)
-#   expect_identical(a3, a2)
+#    if (False) { # Include code that shows differences
+#      tail(a1["inner"])
+#      tail(a2["inner"])
+#      tail(a3["inner"])
+#    }
 #
-#   z2_ = z2[z2["ant"] != 0, ]
+#    expect_identical(a1["publish"], a2$publish)
+#    expect_identical(a3["publish"], a2$publish)
 #
-#   a1 = GaussSuppressionFromData(z2_, np.arange(1, 4+1), 5, extend0 = True, output = "publish_inner", printInc = printInc)
+#    expect_equal(a1["inner[names"](a2$inner)], a2$inner, ignore_attr = True)
+#    expect_equal(a3["inner[names"](a1$inner)], a1$inner, ignore_attr = True)
 #
-#   expect_identical(a1["publish"], a2)
+#    a1_ = GaussSuppressionFromData(z2_, np.arange(1, 4+1), 5, extend0 = "all", output = "publish_inner", printInc = printInc)
+#    a2_ = GaussSuppressionFromData(z2_, freqVar = "ant", hierarchies = dimLists, extend0 = "all", output = "publish_inner", printInc = printInc)
+#    a3_ = GaussSuppressionFromData(z2_, freqVar = "ant", hierarchies = hi, extend0 = "all", output = "publish_inner", printInc = printInc)
 #
-#   a2 = GaussSuppressionFromData(z2_, freqVar = "ant", hierarchies = dimLists, extend0 = True, output = "publish_inner", printInc = printInc)
-#   a3 = GaussSuppressionFromData(z2_, freqVar = "ant", hierarchies = hi, extend0 = True, output = "publish_inner", printInc = printInc)
+#    expect_identical(a1, a1_)
+#    expect_identical(a2, a2_)
+#    expect_identical(a3, a3_)
 #
-#   if (False) { # Include code that shows differences
-#     tail(a1["inner"])
-#     tail(a2["inner"])
-#     tail(a3["inner"])
-#   }
+#    z2__ = z2_[z2_["hovedint"] != "trygd", ]
 #
-#   expect_identical(a1["publish"], a2$publish)
-#   expect_identical(a3["publish"], a2$publish)
+#    a2 = GaussSuppressionFromData(z2__, freqVar = "ant", hierarchies = dimLists, extend0 = "all", output = "publish_inner", printInc = printInc)
+#    a3 = GaussSuppressionFromData(z2__, freqVar = "ant", hierarchies = hi, extend0 = "all", output = "publish_inner", printInc = printInc)
 #
-#   expect_equal(a1["inner[names"](a2$inner)], a2$inner, ignore_attr = True)
-#   expect_equal(a3["inner[names"](a1$inner)], a1$inner, ignore_attr = True)
+#    expect_identical(a3["publish"], a2$publish)
+#    expect_equal(a3["inner[names"](a2$inner)], a2$inner, ignore_attr = True)
 #
-#   a1_ = GaussSuppressionFromData(z2_, np.arange(1, 4+1), 5, extend0 = "all", output = "publish_inner", printInc = printInc)
-#   a2_ = GaussSuppressionFromData(z2_, freqVar = "ant", hierarchies = dimLists, extend0 = "all", output = "publish_inner", printInc = printInc)
-#   a3_ = GaussSuppressionFromData(z2_, freqVar = "ant", hierarchies = hi, extend0 = "all", output = "publish_inner", printInc = printInc)
+#    expect_identical(lapply(c(a2, a3), dim), lapply(c(a2_, a3_), dim))
 #
-#   expect_identical(a1, a1_)
-#   expect_identical(a2, a2_)
-#   expect_identical(a3, a3_)
+#    z2___ = z2__[z2__["fylke"] != 10, ]
 #
-#   z2__ = z2_[z2_["hovedint"] != "trygd", ]
+#    a2_ = GaussSuppressionFromData(z2___, freqVar = "ant", hierarchies = dimLists, extend0 = "all", output = "publish_inner", printInc = printInc)
+#    a3_ = GaussSuppressionFromData(z2___, freqVar = "ant", hierarchies = hi, extend0 = "all", output = "publish_inner", printInc = printInc)
 #
-#   a2 = GaussSuppressionFromData(z2__, freqVar = "ant", hierarchies = dimLists, extend0 = "all", output = "publish_inner", printInc = printInc)
-#   a3 = GaussSuppressionFromData(z2__, freqVar = "ant", hierarchies = hi, extend0 = "all", output = "publish_inner", printInc = printInc)
+#    expect_identical(lapply(a2, dim), lapply(a2_, dim))
 #
-#   expect_identical(a3["publish"], a2$publish)
-#   expect_equal(a3["inner[names"](a2$inner)], a2$inner, ignore_attr = True)
-#
-#   expect_identical(lapply(c(a2, a3), dim), lapply(c(a2_, a3_), dim))
-#
-#   z2___ = z2__[z2__["fylke"] != 10, ]
-#
-#   a2_ = GaussSuppressionFromData(z2___, freqVar = "ant", hierarchies = dimLists, extend0 = "all", output = "publish_inner", printInc = printInc)
-#   a3_ = GaussSuppressionFromData(z2___, freqVar = "ant", hierarchies = hi, extend0 = "all", output = "publish_inner", printInc = printInc)
-#
-#   expect_identical(lapply(a2, dim), lapply(a2_, dim))
-#
-#   expect_true(nrow(a3_["inner"]) < nrow(a3$inner))
-#   expect_true(nrow(a3_["publish"]) < nrow(a3$publish))
-# })
+#    expect_true(nrow(a3_["inner"]) < nrow(a3$inner))
+#    expect_true(nrow(a3_["publish"]) < nrow(a3$publish))
+#  })
 #
 #
 #
