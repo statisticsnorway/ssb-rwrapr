@@ -168,60 +168,149 @@ def test_extend0_and_various_hierarchy_input():
     assert np.all(a1.reset_index(drop=True) == a2.reset_index(drop=True))
     assert np.all(a3.reset_index(drop=True) == a2.reset_index(drop=True))
 
+    z2_ = z2.iloc[z2["ant"].to_numpy() != 0]
 
-#
-#    z2_ = z2[z2["ant"] != 0, ]
-#
-#    a1 = GaussSuppressionFromData(z2_, np.arange(1, 4+1), 5, extend0 = True, output = "publish_inner", printInc = printInc)
-#
-#    expect_identical(a1["publish"], a2)
-#
-#    a2 = GaussSuppressionFromData(z2_, freqVar = "ant", hierarchies = dimLists, extend0 = True, output = "publish_inner", printInc = printInc)
-#    a3 = GaussSuppressionFromData(z2_, freqVar = "ant", hierarchies = hi, extend0 = True, output = "publish_inner", printInc = printInc)
-#
-#    if (False) { # Include code that shows differences
-#      tail(a1["inner"])
-#      tail(a2["inner"])
-#      tail(a3["inner"])
-#    }
-#
-#    expect_identical(a1["publish"], a2$publish)
-#    expect_identical(a3["publish"], a2$publish)
-#
-#    expect_equal(a1["inner[names"](a2$inner)], a2$inner, ignore_attr = True)
-#    expect_equal(a3["inner[names"](a1$inner)], a1$inner, ignore_attr = True)
-#
-#    a1_ = GaussSuppressionFromData(z2_, np.arange(1, 4+1), 5, extend0 = "all", output = "publish_inner", printInc = printInc)
-#    a2_ = GaussSuppressionFromData(z2_, freqVar = "ant", hierarchies = dimLists, extend0 = "all", output = "publish_inner", printInc = printInc)
-#    a3_ = GaussSuppressionFromData(z2_, freqVar = "ant", hierarchies = hi, extend0 = "all", output = "publish_inner", printInc = printInc)
-#
-#    expect_identical(a1, a1_)
-#    expect_identical(a2, a2_)
-#    expect_identical(a3, a3_)
-#
-#    z2__ = z2_[z2_["hovedint"] != "trygd", ]
-#
-#    a2 = GaussSuppressionFromData(z2__, freqVar = "ant", hierarchies = dimLists, extend0 = "all", output = "publish_inner", printInc = printInc)
-#    a3 = GaussSuppressionFromData(z2__, freqVar = "ant", hierarchies = hi, extend0 = "all", output = "publish_inner", printInc = printInc)
-#
-#    expect_identical(a3["publish"], a2$publish)
-#    expect_equal(a3["inner[names"](a2$inner)], a2$inner, ignore_attr = True)
-#
-#    expect_identical(lapply(c(a2, a3), dim), lapply(c(a2_, a3_), dim))
-#
-#    z2___ = z2__[z2__["fylke"] != 10, ]
-#
-#    a2_ = GaussSuppressionFromData(z2___, freqVar = "ant", hierarchies = dimLists, extend0 = "all", output = "publish_inner", printInc = printInc)
-#    a3_ = GaussSuppressionFromData(z2___, freqVar = "ant", hierarchies = hi, extend0 = "all", output = "publish_inner", printInc = printInc)
-#
-#    expect_identical(lapply(a2, dim), lapply(a2_, dim))
-#
-#    expect_true(nrow(a3_["inner"]) < nrow(a3$inner))
-#    expect_true(nrow(a3_["publish"]) < nrow(a3$publish))
-#  })
-#
-#
-#
+    a1 = gs.GaussSuppressionFromData(
+        z2_, np.arange(1, 5), 5, extend0=True, output="publish_inner", printInc=printInc
+    )
+
+    assert np.all(a1["publish"].reset_index(drop=True) == a2.reset_index(drop=True))
+
+    a2 = gs.GaussSuppressionFromData(
+        z2_,
+        freqVar="ant",
+        hierarchies=dimLists,
+        extend0=True,
+        output="publish_inner",
+        printInc=printInc,
+    )
+    a3 = gs.GaussSuppressionFromData(
+        z2_,
+        freqVar="ant",
+        hierarchies=hi,
+        extend0=True,
+        output="publish_inner",
+        printInc=printInc,
+    )
+
+    assert np.all(
+        a1["publish"].reset_index(drop=True) == a2["publish"].reset_index(drop=True)
+    )
+    assert np.all(
+        a3["publish"].reset_index(drop=True) == a2["publish"].reset_index(drop=True)
+    )
+
+    assert np.all(
+        a1["inner"][a2["inner"].columns].reset_index(drop=True)
+        == a2["inner"].reset_index(drop=True)
+    )
+    assert np.all(
+        a3["inner"][a1["inner"].columns].reset_index(drop=True)
+        == a1["inner"].reset_index(drop=True)
+    )
+
+    a1_ = gs.GaussSuppressionFromData(
+        z2_,
+        np.arange(1, 5),
+        5,
+        extend0="all",
+        output="publish_inner",
+        printInc=printInc,
+    )
+    a2_ = gs.GaussSuppressionFromData(
+        z2_,
+        freqVar="ant",
+        hierarchies=dimLists,
+        extend0="all",
+        output="publish_inner",
+        printInc=printInc,
+    )
+    a3_ = gs.GaussSuppressionFromData(
+        z2_,
+        freqVar="ant",
+        hierarchies=hi,
+        extend0="all",
+        output="publish_inner",
+        printInc=printInc,
+    )
+
+    assert np.all(
+        a1["publish"].reset_index(drop=True) == a1_["publish"].reset_index(drop=True)
+    )
+    assert np.all(
+        a1["inner"].reset_index(drop=True) == a1_["inner"].reset_index(drop=True)
+    )
+    assert np.all(
+        a2["publish"].reset_index(drop=True) == a2_["publish"].reset_index(drop=True)
+    )
+    assert np.all(
+        a2["inner"].reset_index(drop=True) == a2_["inner"].reset_index(drop=True)
+    )
+    assert np.all(
+        a3["publish"].reset_index(drop=True) == a3_["publish"].reset_index(drop=True)
+    )
+    assert np.all(
+        a3["inner"].reset_index(drop=True) == a3_["inner"].reset_index(drop=True)
+    )
+
+    z2__ = z2_.loc[z2_["hovedint"] != "trygd"]
+
+    a2 = gs.GaussSuppressionFromData(
+        z2__,
+        freqVar="ant",
+        hierarchies=dimLists,
+        extend0="all",
+        output="publish_inner",
+        printInc=printInc,
+    )
+    a3 = gs.GaussSuppressionFromData(
+        z2__,
+        freqVar="ant",
+        hierarchies=hi,
+        extend0="all",
+        output="publish_inner",
+        printInc=printInc,
+    )
+
+    assert np.all(
+        a2["publish"].reset_index(drop=True) == a3["publish"].reset_index(drop=True)
+    )
+    assert np.all(
+        a3["inner"][a2["inner"].columns].reset_index(drop=True)
+        == a2["inner"].reset_index(drop=True)
+    )
+
+    assert np.all(a2["publish"].shape == a2_["publish"].shape)
+    assert np.all(a2["inner"].shape == a2_["inner"].shape)
+    assert np.all(a3["publish"].shape == a3_["publish"].shape)
+    assert np.all(a3["inner"].shape == a3_["inner"].shape)
+
+    z2___ = z2__.loc[z2__["fylke"] != 10]
+
+    a2_ = gs.GaussSuppressionFromData(
+        z2___,
+        freqVar="ant",
+        hierarchies=dimLists,
+        extend0="all",
+        output="publish_inner",
+        printInc=printInc,
+    )
+    a3_ = gs.GaussSuppressionFromData(
+        z2___,
+        freqVar="ant",
+        hierarchies=hi,
+        extend0="all",
+        output="publish_inner",
+        printInc=printInc,
+    )
+
+    assert np.all(a2["publish"].shape == a2_["publish"].shape)
+    assert np.all(a2["inner"].shape == a2_["inner"].shape)
+
+    assert a3_["inner"].shape[0] < a3["inner"].shape[0]
+    assert a3_["publish"].shape[0] < a3["publish"].shape[0]
+
+
 # test_that("DominanceRule and NcontributorsRule + CandidatesNum + singleton + forced/unsafe", {
 #   set.seed(123)
 #   z = SSBtools::MakeMicro(SSBtoolsData("z2"), "ant")
