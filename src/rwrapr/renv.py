@@ -221,7 +221,7 @@ class Renv:
             rview (bool): If True, returns the result as an RView object. Defaults to False.
 
         Returns:
-            RReturnType: The result of the R expression.
+            Any: The result of the R expression, depends on rview argument and setting.
         """
         rview = rview or settings.rview_mode
 
