@@ -212,6 +212,26 @@ class Renv:
         foo: Callable[..., RReturnType] = rfunc("class")
         return foo(x)
 
+    def reval(self, expr: str, rview: bool) -> Any:
+        """
+        Evaluates an R expression.
+
+        Args:
+            expr (str): The R expression to evaluate.
+            rview (bool): If True, returns the result as an RView object. Defaults to False.
+
+        Returns:
+            Any: The result of the R expression, depends on rview argument and setting.
+        """
+        rview = rview or settings.rview_mode
+
+        r_object: Any = ro.r(expr, invisible=True, print_r_warnings=False)
+
+        if rview:
+            return RView(r_object)
+        else:
+            return convert_r2py(r_object)
+
 
 def fetch_data(
     dataset: str, module: rpkg.Package | None

@@ -38,6 +38,9 @@ class RList(UserList[Any]):
         return out
 
 
+ListTypes = list[Any] | tuple[Any] | set[Any] | RList
+
+
 class RDict(UserDict[str, Any]):
     def __init__(self, x: Any, attributes: dict[str, Any] | None):
         super().__init__(x)
@@ -64,9 +67,10 @@ class RDict(UserDict[str, Any]):
         return out
 
 
-def convert_r2pylist(
-    x_collection: list[Any] | tuple[Any] | RList,
-) -> list[Any] | tuple[Any]:
+DictTypes = dict[str, Any] | OrderedDict[str, Any] | UserDict[str, Any] | RDict
+
+
+def convert_r2pylist(x_collection: ListTypes) -> list[Any] | tuple[Any]:
     from .convert_r2py import convert_r2py
 
     out: tuple[Any] | list[Any] = [convert_r2py(x) for x in x_collection]
@@ -80,8 +84,15 @@ def convert_rlist2py(x_collection: vc.ListVector | vc.ListSexpVector) -> Any:
     from .rattributes import get_rattributes
 
     names = convert_numpy(x_collection.names, flatten=False)
+
     if isinstance(names, int | str | float | bool):
         names = np.array([names], dtype="U")
+
+    if names is not None:
+        fill = np.arange(1, len(names) + 1).astype("U")
+        if names.itemsize < fill.itemsize:
+            names = names.astype(fill.dtype)
+        names[names == ""] = fill[names == ""]
 
     attributes = get_rattributes(x_collection, exclude=["names"])
 
@@ -104,10 +115,7 @@ def is_rlist(x_collection: Any) -> bool:
             return False
 
 
-def convert_r2pydict(
-    x_collection: dict[str, Any] | OrderedDict[str, Any] | UserDict[str, Any] | RDict,
-    is_rdict: bool = False,
-) -> Any:
+def convert_r2pydict(x_collection: DictTypes, is_rdict: bool = False) -> Any:
     from .convert_r2py import convert_r2py
 
     # this needs to be improved considering named vectors
@@ -122,13 +130,13 @@ def convert_r2pydict(
     return x_collection
 
 
-def dict2rlist(x: dict[str, Any] | OrderedDict[str, Any] | RDict) -> ro.ListVector:
+def dict2rlist(x: DictTypes) -> ro.ListVector:
     from .convert_py2r import convert_py2r
 
     return ro.ListVector({k: convert_py2r(v) for k, v in x.items()})
 
 
-def pylist2rlist(x: list[Any] | tuple[Any] | set[Any] | RList) -> ro.ListVector:
+def pylist2rlist(x: ListTypes) -> ro.ListVector:
     y: dict[str, Any] = {str(k): v for k, v in enumerate(x)}
     unname: Callable[..., Any] = rcall("unname")
     return unname(dict2rlist(y))
