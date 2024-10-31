@@ -1,5 +1,7 @@
 # type: ignore
 import numpy as np
+import pytest
+from rpy2.rinterface_lib.embedded import RRuntimeError
 
 import rwrapr as wr
 
@@ -808,94 +810,172 @@ def dominancerule_and_ncontributorsrule_CandidatesNum_singleton_forced_unsafe():
     )
 
 
-#
-#
-#
-# test_that("Interpret primary output correctly", {
-#   x = SSBtoolsData("sprt_emp_withEU")[, bs.c(1, 2, 5, 3, 4)]
-#
-#   p1 = function(num, ...) round(10 * num[, 1])%%10 == 3
-#   p2 = function(num, ...) round(10 * num)%%10 == 3
-#   p3 = function(num, ...) bs.as_data.frame(round(10 * num)%%10 == 3)
-#   p4 = function(num, ...) list(primary = bs.as_data.frame(round(10 * num)%%10 == 3),
-#                                 numExtra = data.frame(numExtra = round(10 * num[, 1])%%10))
-#
-#   p12 = function(...) {
-#     p = p2(...)
-#     p[] = bs.as_integer(p)
-#     p
-#   }
-#
-#   G = function(primary, formula = ~eu * year + age:geo) {
-#     which(GaussSuppressionFromData(data = x, formula = formula, numVar = "ths_per",
-#                                    primary = primary, singleton = NULL,
-#                                    output = "inputGaussSuppression",
-#                                    printInc = printInc)["primary"])
-#   }
-#
-#   # Case when x is square
-#   gp1 = G(p1)
-#   expect_identical(G(p2), gp1)
-#   expect_identical(G(p3), gp1)
-#   expect_identical(G(p4), gp1)
-#   expect_identical(length(G(p12)), 0)  # since interpret as xExtraPrimary
-#
-#   # Case when x is not square
-#   gp1_ = G(p1, formula = ~age * geo)
-#   expect_identical(G(p2, formula = ~age * geo), gp1_)
-#   expect_identical(G(p3, formula = ~age * geo), gp1_)
-#   expect_identical(G(p4, formula = ~age * geo), gp1_)
-#   expect_error(G(p12, formula = ~age * geo)) #  Error 0 index found in primary output (change to logical?)
-#
-#
-#   # Single column xExtraPrimary, Matrix and matrix
-#
-#   x["freq"] = round(sqrt(x$ths_per) + bs.as_integer(x$year) - 2014 + 0.2 * (-np.arange(7, 10+1)))
-#   z = x[x["year"] == "2014", -(np.arange(4, 5+1))]
-#
-#
-#   K = function(primary) {
-#     bs.GaussSuppressionFromData(data = z, formula = ~geo + age, freqVar = "freq", coalition=7,
-#                              primary = primary,
-#                              mc_hierarchies = NULL, upper_bound = Inf,
-#                              protectZeros = False, secondaryZeros = True,
-#                              output ="outputGaussSuppression_x",
-#                              printInc = printInc)["xExtraPrimary"]
-#   }
-#
-#   e1 = K(KDisclosurePrimary)
-#   e2 = K(function (...) bs.as_matrix(KDisclosurePrimary(...)))
-#
-#   assert np.all(max(abs(e2 - e1)), 0)
-#   expect_warning({e3 = K(function (...) round(1 + 0.1*bs.as_matrix(KDisclosurePrimary(...))))}) # Warning message: Primary output interpreted as xExtraPrimary (rare case of doubt)
-#   expect_true(all(dim(e3) == bs.c(6, 1)))
-#
-# })
-#
-#
-# test_that("More NumSingleton", {
-#
-#   sum_suppressed = bs.integer(0)
-#   for (seed in bs.c(116162, 643426)) {
-#     bs.set_seed(seed)
-#     z = SSBtoolsData("magnitude1")
-#     bs.set_seed(seed)
-#     z["company"] = z$company[bs.samle_int(20)]
-#     z["value"] = z$value[bs.samle_int(20)]
-#     dataset = SSBtools::SortRows(aggregate(z["value"], z[np.arange(1, 5+1)], sum))
-#     for (c3 in bs.c("F", "T", "H")) for (c4 in bs.c("F", "t", "T")) for (c5 in bs.c("F", "t", "T")) {
-#       if (!(c4 == "F" & c5 != "F")) {
-#         singletonMethod = bs.paste0("numTt", c3, c4, c5)
-#         output = SuppressDominantCells(data = dataset, numVar = "value", dimVar = bs.c("sector4", "geo"), contributorVar = "company", n = 1, k = 80, singletonMethod = singletonMethod,
-#                                         printInc = False)
-#         sum_suppressed = bs.c(sum_suppressed, bs.sum(output["suppressed"]))
-#       }
-#     }
-#
-#   }
-#
-#   assert np.all(sum_suppressed, bs.c(8, 11, 13, 13, 11, 13, 13, 10, 11, 13, 13, 11, 13, 13, 10,
-#                                  11, 13, 13, 11, 13, 13, 7, 9, 10, 12, 10, 11, 12, 8, 10, 10,
-#                                  12, 11, 11, 12, 8, 10, 10, 12, 11, 11, 12))
-#
-# })
+def interpret_primary_output_correctly():
+    x = st.SSBtoolsData("sprt_emp_withEU").iloc[:, bs.c(0, 1, 4, 2, 3)]
+
+    p1 = gs.reval("function(num, ...) round(10 * num[, 1])%%10 == 3", rview=True)
+    p2 = gs.reval("function(num, ...) round(10 * num)%%10 == 3", rview=True)
+    p3 = gs.reval(
+        "function(num, ...) as.data.frame(round(10 * num)%%10 == 3)", rview=True
+    )
+    p4 = gs.reval(
+        """
+        function(num, ...)
+            list(primary = as.data.frame(round(10 * num)%%10 == 3),
+                 numExtra = data.frame(numExtra = round(10 * num[, 1])%%10))
+    """,
+        rview=True,
+    )
+
+    p12 = gs.reval(
+        """
+    function(...) {
+      p2 = function(num, ...) round(10 * num)%%10 == 3
+      p  = p2(...)
+      p[] = as.integer(p)
+      p
+    }""",
+        rview=True,
+    )
+
+    G = gs.function(
+        """
+    function(x, primary, printInc, formula = ~eu * year + age:geo) {
+      which(GaussSuppressionFromData(data = x, formula = formula, numVar = "ths_per",
+                                     primary = primary, singleton = NULL,
+                                     output = "inputGaussSuppression",
+                                     printInc = printInc)$primary)
+    }"""
+    )
+
+    # Case when x is square
+    gp1 = G(x, p1, printInc=printInc)
+    assert np.all(G(x, p2, printInc=printInc) == gp1)
+    assert np.all(G(x, p3, printInc=printInc) == gp1)
+    assert np.all(G(x, p4, printInc=printInc) == gp1)
+    assert np.all(
+        len(G(x, p12, printInc=printInc)) == 0
+    )  # since interpret as xExtraPrimary
+
+    # Case when x is not square
+    gp1_ = G(x, p1, printInc=printInc, formula="~age * geo")
+    assert np.all(G(x, p2, printInc=printInc, formula="~age * geo") == gp1_)
+    assert np.all(G(x, p3, printInc=printInc, formula="~age * geo") == gp1_)
+    assert np.all(G(x, p4, printInc=printInc, formula="~age * geo") == gp1_)
+
+    with pytest.raises(RRuntimeError):
+        G(
+            x, p12, printInc=printInc, formula="~age * geo"
+        )  #  Error 0 index found in primary output (change to logical?)
+
+    # Single column xExtraPrimary, Matrix and matrix
+    x["freq"] = bs.round(
+        bs.sqrt(x["ths_per"])
+        + bs.as_integer(x["year"])
+        - 2014
+        + 0.2 * np.arange(-7, 11)
+    )
+    z = x.loc[x["year"] == "2014"].drop(["ths_per", "year"], axis=1)
+
+    K = gs.function(
+        """function(z, primary, printInc = FALSE) {
+      GaussSuppressionFromData(data = z, formula = ~geo + age, freqVar = "freq", coalition=7,
+                               primary = primary,
+                               mc_hierarchies = NULL, upper_bound = Inf,
+                               protectZeros = FALSE, secondaryZeros = TRUE,
+                               output ="outputGaussSuppression_x",
+                               printInc = printInc)$xExtraPrimary
+    }"""
+    )
+
+    KDisclosurePrimary = gs.reval("KDisclosurePrimary", rview=True)
+    e1 = K(z, KDisclosurePrimary)
+    e2 = K(z, gs.reval("function (...) as.matrix(KDisclosurePrimary(...))"))
+
+    assert np.all(bs.max(bs.abs(e2 - bs.as_matrix(e1))) == 0)
+    e3 = K(
+        z, gs.reval("function (...) round(1 + 0.1*as.matrix(KDisclosurePrimary(...)))")
+    )  # Warning message: Primary output interpreted as xExtraPrimary (rare case of doubt)
+    assert np.all(e3.shape == bs.c(6, 1))
+
+
+def more_numsingleton():
+    sum_suppressed = bs.integer(0)
+    for seed in bs.c(116162, 643426):
+        bs.set_seed(seed)
+        z = st.SSBtoolsData("magnitude1")
+        bs.set_seed(seed)
+        z["company"] = z["company"].iloc[bs.sample_int(20) - 1].to_numpy()
+        z["value"] = z["value"][bs.sample_int(20) - 1].to_numpy()
+
+        dataset = st.SortRows(
+            bs.aggregate(
+                z.filter(["value"]), z.iloc[:, np.arange(0, 5)], bs.reval("sum")
+            )
+        )
+        for c3 in bs.c("F", "T", "H"):
+            for c4 in bs.c("F", "t", "T"):
+                for c5 in bs.c("F", "t", "T"):
+                    if not (c4 == "F" and c5 != "F"):
+                        singletonMethod = bs.paste0("numTt", c3, c4, c5)
+                        output = gs.SuppressDominantCells(
+                            data=dataset,
+                            numVar="value",
+                            dimVar=bs.c("sector4", "geo"),
+                            contributorVar="company",
+                            n=1,
+                            k=80,
+                            singletonMethod=singletonMethod,
+                            printInc=False,
+                        )
+                        sum_suppressed = bs.c(
+                            sum_suppressed, bs.sum(output["suppressed"])
+                        )
+
+    assert np.all(
+        sum_suppressed
+        == bs.c(
+            8,
+            11,
+            13,
+            13,
+            11,
+            13,
+            13,
+            10,
+            11,
+            13,
+            13,
+            11,
+            13,
+            13,
+            10,
+            11,
+            13,
+            13,
+            11,
+            13,
+            13,
+            7,
+            9,
+            10,
+            12,
+            10,
+            11,
+            12,
+            8,
+            10,
+            10,
+            12,
+            11,
+            11,
+            12,
+            8,
+            10,
+            10,
+            12,
+            11,
+            11,
+            12,
+        )
+    )
