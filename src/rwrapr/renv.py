@@ -212,13 +212,15 @@ class Renv:
         foo: Callable[..., RReturnType] = rfunc("class")
         return foo(x)
 
-    def reval(self, expr: str, rview: bool) -> Any:
+    def reval(self, expr: str, rview: bool | None = None) -> Any:
         """
         Evaluates an R expression.
 
         Args:
             expr (str): The R expression to evaluate.
-            rview (bool): If True, returns the result as an RView object. Defaults to False.
+            rview (bool | None): If True, returns the result as an RView object,
+                else as a Python object. Defaults to None. If None,
+                the value of settings.rview_mode is used.
 
         Returns:
             Any: The result of the R expression, depends on rview argument and setting.
