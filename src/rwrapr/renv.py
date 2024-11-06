@@ -218,7 +218,9 @@ class Renv:
 
         Args:
             expr (str): The R expression to evaluate.
-            rview (bool | None): If True, returns the result as an RView object. Defaults to False.
+            rview (bool | None): If True, returns the result as an RView object,
+                else as a Python object. Defaults to None. If None,
+                the value of settings.rview_mode is used.
 
         Returns:
             Any: The result of the R expression, depends on rview argument and setting.
