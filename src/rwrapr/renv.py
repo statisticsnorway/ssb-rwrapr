@@ -5,6 +5,8 @@ import pandas as pd
 import rpy2.robjects as ro
 import rpy2.robjects.packages as rpkg
 
+from rwrapr.rlist import RDict
+
 from .convert_r2py import convert_r2py
 from .function_wrapper import RReturnType
 from .function_wrapper import rfunc  # wrap_rfunc should perhaps be its own module
@@ -233,6 +235,58 @@ class Renv:
             return RView(r_object)
         else:
             return convert_r2py(r_object)
+
+    def rscript(
+        self,
+        path: str | None = None,
+        code: str | None = None,
+        extract: list[str] | None = None,
+    ) -> None | RDict | Any:
+        """
+        Evaluates an R script. If extract is provided, extracts the specified objects from the R environment. If path is provided, reads the R script from the file.
+        Else if code is provided, evaluates the R code directly. code and path cannot be provided at the same time.
+
+        Args:
+            path (str | None): The path to the R script to evaluate. Defaults to None.
+            code (str | None): The R code to evaluate. Defaults to None.
+            extract (list[str]): A list of objects to extract from the R environment.
+
+        Raises:
+            ValueError: If both path and code are provided or if neither path nor code is provided.
+
+        Returns:
+            None | RDict | Any: The extracted objects from the R environment. If no objects are extracted, returns None.
+            if rview_mode is False, returns an RDict object, else returns the extracted objects as RView object.
+        """
+
+        if path is None and code is None:
+            raise ValueError("Either path or code must be provided")
+        if path is not None and code is not None:
+            raise ValueError("Only one of path or code should be provided")
+
+        if path is not None:
+            with open(path) as f:
+                code = f.read()
+
+        if extract:
+            list_args = [x[0] + "=" + x[1] for x in zip(extract, extract, strict=True)]
+            return_statement = f"list({", ".join(list_args)})"
+        else:
+            return_statement = ""
+
+        sep = "\n"
+        header = "function() {"
+        ending = "}"
+
+        if (
+            code is not None
+        ):  # not necessary but the type checker is not able to infer this
+            fun: Callable[..., Any] = self.function(
+                header + sep + code + return_statement + sep + ending
+            )
+            return fun()
+        else:
+            return None
 
 
 def fetch_data(
