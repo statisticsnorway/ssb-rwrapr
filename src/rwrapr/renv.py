@@ -270,7 +270,8 @@ class Renv:
 
         if extract:
             list_args = [x[0] + "=" + x[1] for x in zip(extract, extract, strict=True)]
-            return_statement = f"list({", ".join(list_args)})"
+            arg_sep = ", "  # define outside the fstring to avoid the type checker error
+            return_statement = f"list({arg_sep.join(list_args)})"
         else:
             return_statement = ""
 
