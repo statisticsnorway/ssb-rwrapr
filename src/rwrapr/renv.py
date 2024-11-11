@@ -1,3 +1,4 @@
+import pathlib
 from collections.abc import Callable
 from typing import Any
 
@@ -238,7 +239,7 @@ class Renv:
 
     def rscript(
         self,
-        path: str | None = None,
+        path: str | pathlib.Path | None = None,
         code: str | None = None,
         extract: list[str] | None = None,
     ) -> None | RDict | Any:
@@ -247,7 +248,7 @@ class Renv:
         Else if code is provided, evaluates the R code directly. code and path cannot be provided at the same time.
 
         Args:
-            path (str | None): The path to the R script to evaluate. Defaults to None.
+            path (str | pathlib.Path | None): The path to the R script to evaluate. Defaults to None.
             code (str | None): The R code to evaluate. Defaults to None.
             extract (list[str]): A list of objects to extract from the R environment.
 
@@ -265,6 +266,9 @@ class Renv:
             raise ValueError("Only one of path or code should be provided")
 
         if path is not None:
+            if isinstance(path, str):
+                path = pathlib.Path(path)
+
             with open(path) as f:
                 code = f.read()
 
