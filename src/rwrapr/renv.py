@@ -6,13 +6,12 @@ import pandas as pd
 import rpy2.robjects as ro
 import rpy2.robjects.packages as rpkg
 
-from rwrapr.rlist import RDict
-
 from .convert_r2py import convert_r2py
 from .function_wrapper import RReturnType
 from .function_wrapper import rfunc  # wrap_rfunc should perhaps be its own module
 from .function_wrapper import wrap_rfunc  # wrap_rfunc should perhaps be its own module
 from .load_namespace import try_load_namespace
+from .rlist import RDict
 from .rutils import rcall
 from .rview import RView
 from .settings import settings
