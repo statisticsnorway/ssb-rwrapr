@@ -23,19 +23,16 @@ repos:
         entry: end-of-file-fixer
         language: system
         types: [text]
-        stages: [pre-commit, pre-push, manual]
       - id: trailing-whitespace
         name: Trim Trailing Whitespace
         entry: trailing-whitespace-fixer
         language: system
         types: [text]
-        stages: [pre-commit, pre-push, manual]
       - id: mixed-line-ending
         name: Mixed Line Ending
         entry: mixed-line-ending
         language: system
         types: [text]
-        stages: [pre-commit, pre-push, manual]
 
       # Serialization format checkers
       - id: check-yaml
@@ -65,7 +62,6 @@ repos:
         entry: darglint
         language: system
         types: [python]
-        stages: [manual]
       - id: isort
         name: isort
         entry: isort

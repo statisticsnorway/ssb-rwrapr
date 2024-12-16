@@ -22,6 +22,7 @@ from .toggle_rview import ToggleRView
 
 
 __all__ = [
+    "Lazily",
     "RArray",
     "RDataFrame",
     "RDict",
@@ -30,10 +31,9 @@ __all__ = [
     "RView",
     "Renv",
     "Settings",
+    "ToggleRView",
     "importr",
-    "Lazily",
     "library",
     "settings",
     "try_load_namespace",
-    "ToggleRView",
 ]

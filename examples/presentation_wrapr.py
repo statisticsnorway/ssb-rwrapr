@@ -6,9 +6,9 @@
 #       format_name: percent
 #       format_version: '1.3'
 #   kernelspec:
-#     display_name: rwrapr
+#     display_name: ssb-rwrapr
 #     language: python
-#     name: rwrapr
+#     name: ssb-rwrapr
 # ---
 
 # %% [markdown]
