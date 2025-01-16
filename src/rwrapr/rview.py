@@ -3,14 +3,25 @@ from collections.abc import Iterator
 from typing import Any
 
 import rpy2.robjects as ro
-import scipy  # type: ignore
+import scipy  # type: ignor
+import warnings
 
 from .nputils import np_collapse
 from .rlist import RDict
 from .rlist import RList
 from .rutils import as_matrix
 from .rutils import get_rclass
+from .rutils import has_unsupported_rclass
 from .toggle_rview import ToggleRView
+
+
+def warn_s3_rview(x, ignore_s3) -> None:
+    message: str = """Warning: The object you are trying to convert is an RView object.
+    It might be an unsupported S3 object, which can be unsafe to convert to a python object.
+    Use the `ignore_s3` argument to convert anyway."""
+
+    if has_unsupported_rclass(x) and not ignore_s3:
+        warnings.warn(message, category=UserWarning, stacklevel=2)
 
 
 class RView:
@@ -46,6 +57,7 @@ class RView:
     def to_py(self, ignore_s3: bool = False) -> Any:
         from .convert_r2py import convert_r2py
 
+        warn_s3_rview(self, ignore_s3)
         with ToggleRView(False):
             out = convert_r2py(self.robj, ignore_s3=ignore_s3)
         return out

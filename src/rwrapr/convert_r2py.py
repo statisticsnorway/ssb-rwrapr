@@ -21,16 +21,6 @@ from .rview import RView
 from .rview import convert_s4
 
 
-
-def warn_if_rview(x: Any) -> None:
-    message: str = """Warning: The object you are trying to convert is an RView object.
-    It might be an unsupported S3 object, which can be unsafe to convert to a python object.
-    Use the `ignore_s3` argument to convert anyway."""
-
-    if isinstance(x, RView):
-        warnings.warn(message, category=RuntimeWarning, stacklevel=2)
-
-
 # TODO: Consider changing return type hint to union of possible types
 def convert_r2py(x: Any, ignore_s3: bool = False) -> Any:
     # Need to import these here to avoid circular imports
@@ -56,7 +46,6 @@ def convert_r2py(x: Any, ignore_s3: bool = False) -> Any:
         case ro.methods.RS4():
             return convert_s4(x)
         case _ if has_unsupported_rclass(x) and not ignore_s3:
-            warn_if_rview(x)
             return RView(x)
         case list():
             return convert_r2pylist(x)
