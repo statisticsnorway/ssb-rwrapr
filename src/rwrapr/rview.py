@@ -1,10 +1,10 @@
+import warnings
 from collections.abc import Callable
 from collections.abc import Iterator
 from typing import Any
 
 import rpy2.robjects as ro
-import scipy  # type: ignor
-import warnings
+import scipy  # type: ignore
 
 from .nputils import np_collapse
 from .rlist import RDict
@@ -15,7 +15,7 @@ from .rutils import has_unsupported_rclass
 from .toggle_rview import ToggleRView
 
 
-def warn_s3_rview(x, ignore_s3) -> None:
+def warn_s3_rview(x: Any, ignore_s3: bool) -> None:
     message: str = """Warning: The object you are trying to convert is an RView object.
     It might be an unsupported S3 object, which can be unsafe to convert to a python object.
     Use the `ignore_s3` argument to convert anyway."""
