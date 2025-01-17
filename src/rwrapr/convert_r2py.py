@@ -5,7 +5,6 @@ import pandas as pd
 import rpy2.rlike.container as rcnt
 import rpy2.robjects as ro
 import rpy2.robjects.vectors as vc
-import warnings
 from rpy2.rinterface_lib.sexp import NULLType
 
 from .rdataframe import RDataFrame
