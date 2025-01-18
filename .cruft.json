@@ -1,7 +1,7 @@
 {
   "template": "https://github.com/statisticsnorway/ssb-pypitemplate.git",
-  "commit": "e4eee94f1d7d31406fd6ca71c2bad7a9a313d02b",
-  "checkout": "2024.11.27",
+  "commit": "66884cffa5aa67ed505bb121009501b51cc4d847",
+  "checkout": "2025.1.14",
   "context": {
     "cookiecutter": {
       "project_name": "ssb-rwrapr",
