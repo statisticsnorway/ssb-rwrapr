@@ -49,19 +49,15 @@ df = dplyr.mutate(iris, Sepal=wr.Lazily("round(Sepal.Length * 2, 0)"))
 
 ## To do
 
-    1. Port all test files for SSB-GaussSuppression, and SSBtools
-    2. Names/Dimnames for Vectors/Arrays/Matrices
-    3. Factors/Ordered Vectors
-    4. Better warning handling (this will likely be tricky)
+    1. Better warning handling (this will likely be tricky)
         - Sometimes we will get datatypes which are incompatible,
             e.g., warning accompanied by
-    5. Better handling of missing values.
-    6. renv.script() for creating r scripts
+    2. Better handling of missing values.
 
 
 ## Requirements
 
-- TODO
+- `R` must be installed
 
 ## Installation
 
@@ -74,6 +70,30 @@ pip install rwrapr
 ## Usage
 
 Please see the [Reference Guide] for details.
+
+## Managing R dependencies
+
+`RWrapR` will automatically install the required R packages, using the
+global library path. Sometimes this is not desirable, and you may want to
+use the `renv` package to manage your `R` dependencies. To do this, you can
+use `renv` via the `rwrapr` package.
+
+```python
+import rwrapr as wr
+
+renv = wr.library("renv") # note you must install renv globally first
+renv.init() # initialize renv
+
+renv.install("statisticsnorway/ssb-metodebiblioteket")
+renv.install("metodebiblioteket")
+
+renv.snapshot(type="all") # update lock-file
+```
+
+If you are using `.ipynb` files, you can should add `renv.autoload()` to the
+top of your notebook to ensure that the correct `R` environment is loaded.
+
+For further details, see the [Renv Article](RENV.md)
 
 ## Contributing
 
