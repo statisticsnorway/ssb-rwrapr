@@ -3,7 +3,9 @@ import rpy2.robjects.packages as rpkg
 from .renv import Renv
 
 
-def library(env_name: str, interactive: bool = True) -> Renv:
+def library(
+    env_name: str, interactive: bool = True, lib_loc: str | None = None
+) -> Renv:
     """
     Load an R environment (package) into the current Python session.
 
@@ -15,6 +17,8 @@ def library(env_name: str, interactive: bool = True) -> Renv:
         env_name (str): The name of the R package to load.
         interactive (bool): If `True`, interactively prompts the user
             to install missing R packages. Defaults to `True`.
+        lib_loc (str | None): The location of the R package. Defaults to None
+            (Can be supplied if you are not using the default directory, e.g., if you are using renv).
 
     Returns:
         Renv: The loaded R environment.
@@ -24,14 +28,16 @@ def library(env_name: str, interactive: bool = True) -> Renv:
             `interactive` is set to `True`.
     """
     try:
-        return Renv(env_name, interactive=interactive)
+        return Renv(env_name, interactive=interactive, lib_loc=lib_loc)
     except rpkg.PackageNotInstalledError:
         if interactive:
             raise
         return Renv(None)
 
 
-def importr(env_name: str, interactive: bool = True) -> Renv:
+def importr(
+    env_name: str, interactive: bool = True, lib_loc: str | None = None
+) -> Renv:
     """
     Load an R environment (package) into the current Python session.
 
@@ -42,8 +48,10 @@ def importr(env_name: str, interactive: bool = True) -> Renv:
         env_name (str): The name of the R package to load.
         interactive (bool): If `True`, interactively prompts the user
             to install missing R packages. Defaults to `True`.
+        lib_loc (str | None): The location of the R package. Defaults to None
+            (Can be supplied if you are not using the default directory, e.g., if you are using renv).
 
     Returns:
         Renv: The loaded R environment.
     """
-    return library(env_name, interactive=interactive)
+    return library(env_name, interactive=interactive, lib_loc=lib_loc)
