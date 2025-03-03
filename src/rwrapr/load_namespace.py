@@ -19,6 +19,7 @@ def load_base_envs() -> (
 
 def try_load_namespace(
     namespace: str,
+    lib_loc: str | None = None,
     verbose: bool = False,
     hide_r_ouptut: bool = True,
     interactive: bool = True,
@@ -28,7 +29,7 @@ def try_load_namespace(
         capture.capture_r_output()
     try:
         warnings.filterwarnings("ignore")
-        module: rpkg.Package = rpkg.importr(namespace)
+        module: rpkg.Package = rpkg.importr(namespace, lib_loc=lib_loc)
     except rpkg.PackageNotInstalledError:
         if not interactive:
             raise

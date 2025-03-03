@@ -36,13 +36,17 @@ class Renv:
         nInf (Any): Equivalent to R's `-Inf`.
     """
 
-    def __init__(self, env_name: str | None, interactive: bool = True) -> None:
+    def __init__(
+        self, env_name: str | None, interactive: bool = True, lib_loc: str | None = None
+    ) -> None:
         """
         Initializes the R environment by loading the specified R package and its associated functions and datasets.
 
         Args:
             env_name (str | None): The name of the R package to load. If `None` or an empty string, the environment is not initialized.
             interactive (bool): If True, prompts the user to install missing R packages. Defaults to True.
+            lib_loc (str | None): The location of the R package. Defaults to None
+                (Can be supplied if you are not using the default directory, e.g., if you are using renv).
         """
         if (env_name is None) or (env_name == ""):
             self.__base_lib: rpkg.Package | None = None
@@ -52,7 +56,9 @@ class Renv:
 
         pinfo("Loading packages...", verbose=True)
         self.__set_base_lib(
-            try_load_namespace(env_name, verbose=True, interactive=interactive)
+            try_load_namespace(
+                env_name, verbose=True, interactive=interactive, lib_loc=lib_loc
+            )
         )
 
         funcs, datasets = get_assets(env_name, module=self.__base_lib)
