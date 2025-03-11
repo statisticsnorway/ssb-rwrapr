@@ -12,15 +12,16 @@ from .rlist import RList
 from .rutils import as_matrix
 from .rutils import get_rclass
 from .rutils import has_unsupported_rclass
+from .rutils import rcall
 from .toggle_rview import ToggleRView
 
 
-def warn_s3_rview(x: Any, ignore_s3: bool) -> None:
+def warn_s3_rview(x: Any, ignore_s3_s4: bool) -> None:
     message: str = """Warning: The object you are trying to convert is an RView object.
     It might be an unsupported S3 object, which can be unsafe to convert to a python object.
     Use the `ignore_s3` argument to convert anyway."""
 
-    if has_unsupported_rclass(x) and not ignore_s3:
+    if has_unsupported_rclass(x) and not ignore_s3_s4:
         warnings.warn(message, category=UserWarning, stacklevel=2)
 
 
@@ -54,19 +55,42 @@ class RView:
     def __iter__(self) -> Iterator[Any] | Any:
         return self.robj.__iter__()
 
-    def to_py(self, ignore_s3: bool = False) -> Any:
+    def to_py(self, ignore_s3_s4: bool = False) -> Any:
         from .convert_r2py import convert_r2py
 
-        warn_s3_rview(self, ignore_s3)
+        warn_s3_rview(self, ignore_s3_s4)
+
         with ToggleRView(False):
-            out = convert_r2py(self.robj, ignore_s3=ignore_s3)
+            out = convert_r2py(self.robj, ignore_s3_s4=ignore_s3_s4)
         return out
 
     def to_r(self) -> Any:
         return self.robj
 
 
-def convert_s4(x: ro.methods.RS4) -> Any:
+s4_to_list_r: Callable[..., Any] | Any = rcall(
+    """
+    function(x) {
+      if (!isS4(x)) return(x)
+
+      slots = names(getSlots(class(x)))
+      structure(lapply(slots, function(name) slot(x, name)),
+                names = slots)
+    }
+"""
+)
+
+
+def s4_to_list(x: ro.methods.RS4) -> Any:
+    from .convert_r2py import convert_r2py
+
+    with ToggleRView(False):
+        out = convert_r2py(s4_to_list_r(x))
+
+    return out
+
+
+def convert_s4(x: ro.methods.RS4, ignore_s4: bool) -> Any:
     from .rarray import convert_numpy
 
     rclass = get_rclass(x)
@@ -78,5 +102,7 @@ def convert_s4(x: ro.methods.RS4) -> Any:
             dense = convert_numpy(as_matrix(x))
             sparse = scipy.sparse.coo_matrix(dense)
             return sparse
-        case _:
+        case _ if not ignore_s4:
             return RView(x)
+        case _:
+            return s4_to_list(x)
