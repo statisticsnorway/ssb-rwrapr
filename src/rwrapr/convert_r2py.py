@@ -21,7 +21,7 @@ from .rview import convert_s4
 
 
 # TODO: Consider changing return type hint to union of possible types
-def convert_r2py(x: Any, ignore_s3: bool = False) -> Any:
+def convert_r2py(x: Any, ignore_s3_s4: bool = False) -> Any:
     # Need to import these here to avoid circular imports
     from .rarray import filter_numpy
     from .rarray import get_rarray
@@ -43,8 +43,8 @@ def convert_r2py(x: Any, ignore_s3: bool = False) -> Any:
         case vc.Vector() | vc.Matrix() | vc.Array() if not is_rlist(x):
             return get_rarray(x)  # return RArray, or int|str|bool|float if len == 1
         case ro.methods.RS4():
-            return convert_s4(x)
-        case _ if has_unsupported_rclass(x) and not ignore_s3:
+            return convert_s4(x, ignore_s4=ignore_s3_s4)
+        case _ if has_unsupported_rclass(x) and not ignore_s3_s4:
             return RView(x)
         case list():
             return convert_r2pylist(x)

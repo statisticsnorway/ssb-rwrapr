@@ -46,4 +46,4 @@ def test_ignore_s3_warning(setup_wr):
     est = md.modsem(m1, data=md.oneInt, method="qml")
 
     with pytest.warns(UserWarning):
-        est.to_py(ignore_s3=False)
+        est.to_py(ignore_s3_s4=False)
