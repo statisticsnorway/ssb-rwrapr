@@ -11,7 +11,7 @@ from .toggle_rview import ToggleRView
 
 class RFactor(pd.Series):
     def __init__(self, r_factor: ro.vectors.FactorVector):
-        super().__init__(convert_rfactor2py(r_factor))
+        super().__init__(convert_rfactor2py(r_factor))  # type: ignore
         self._rattributes = get_attributes_factor(r_factor)
 
     def to_r(self) -> ro.vectors.FactorVector | Any:

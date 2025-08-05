@@ -1,6 +1,7 @@
+from typing import Any
+
 import numpy as np
 from numpy.typing import NDArray
-from rpy2.rlike.container import Any
 
 
 def np_contains(x: NDArray[Any], pattern: Any) -> np.bool_:
