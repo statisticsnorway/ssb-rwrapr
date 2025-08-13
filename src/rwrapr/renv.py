@@ -15,7 +15,6 @@ from .rlist import RDict
 from .rutils import rcall
 from .rview import RView
 from .settings import settings
-from .utils import ROutputCapture
 from .utils import pinfo
 
 
@@ -129,18 +128,15 @@ class Renv:
         if self.__rfuncs is None or self.__rdatasets is None:
             raise ValueError("Renv is not correctly initialized")
 
-        capture = ROutputCapture()
-        capture.capture_r_output()
-
         if name in self.__rfuncs:
             fun: Callable[..., RReturnType] = wrap_rfunc(
                 getattr(self.__base_lib, name), name=name
             )
             self.__attach(name=name, attr=fun)
-            capture.reset_r_output()
+
         elif name in self.__rdatasets:
             self.__attach(name=name, attr=fetch_data(name, self.__base_lib))
-            capture.reset_r_output()
+
         else:
             rfun: Callable[..., RReturnType] = rfunc(name)
             self.__attach(name=name, attr=rfun)
