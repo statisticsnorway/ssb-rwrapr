@@ -28,7 +28,7 @@ jobs:
       image: ghcr.io/statisticsnorway/docker-rpython-base:latest
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Mark Git directory as safe # Needed for pre-commit checks in container
         run: |
@@ -41,7 +41,7 @@ jobs:
           poetry --version
 
       - name: Set up Python
-        uses: actions/setup-python@v5.4.0
+        uses: actions/setup-python@v6.0.0
         with:
           python-version: "3.12"
           cache: "poetry"
@@ -55,7 +55,7 @@ jobs:
           poetry run sphinx-build docs docs/_build
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: "docs/_build"
 
