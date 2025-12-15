@@ -17,7 +17,7 @@ def setup_wr():
 
 
 def test_setting_rview(setup_wr):
-    bs, dt, md = setup_wr
+    bs, dt, _md = setup_wr
     with wr.ToggleRView(True):
         l2 = bs.list(1, 2, 3, 4)
         assert isinstance(l2, wr.RView)
@@ -31,7 +31,7 @@ def test_setting_rview(setup_wr):
 
 
 def test_ignore_s3_warning(setup_wr):
-    bs, dt, md = setup_wr
+    _bs, _dt, md = setup_wr
 
     m1 = """
       # Outer Model

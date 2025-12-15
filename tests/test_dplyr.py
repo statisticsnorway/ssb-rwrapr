@@ -16,7 +16,7 @@ def setup_wr():
 
 
 def test_last(setup_wr):
-    dplyr, dt = setup_wr
+    dplyr, _dt = setup_wr
 
     assert dplyr.last(x=np.array([1, 2, 3, 4])) == 4
     assert dplyr.last(x=[1, 2, 3, 4]) == 4  # should now throw error
