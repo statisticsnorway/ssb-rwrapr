@@ -7,9 +7,9 @@ import rpy2.robjects as ro
 import rpy2.robjects.packages as rpkg
 
 from .convert_r2py import convert_r2py
+from .function_wrapper import RFunction  # RFunction should perhaps be its own module
 from .function_wrapper import RReturnType
-from .function_wrapper import rfunc  # wrap_rfunc should perhaps be its own module
-from .function_wrapper import wrap_rfunc  # wrap_rfunc should perhaps be its own module
+from .function_wrapper import rfunc  # RFunction should perhaps be its own module
 from .load_namespace import try_load_namespace
 from .rlist import RDict
 from .rutils import rcall
@@ -129,7 +129,7 @@ class Renv:
             raise ValueError("Renv is not correctly initialized")
 
         if name in self.__rfuncs:
-            fun: Callable[..., RReturnType] = wrap_rfunc(
+            fun: Callable[..., RReturnType] = RFunction(
                 getattr(self.__base_lib, name), name=name
             )
             self.__attach(name=name, attr=fun)
@@ -162,7 +162,7 @@ class Renv:
 
         # Attach to the global namespace
         rcall(f"{name} <- {expr}")
-        pyfunc: Callable[..., RReturnType] = wrap_rfunc(rfun, name=name)
+        pyfunc: Callable[..., RReturnType] = RFunction(rfun, name=name)
         self.__attach(name=name, attr=pyfunc)
 
     def function(self, expr: str) -> Callable[..., Any]:
@@ -184,7 +184,7 @@ class Renv:
         if rfun is None:
             raise ValueError(f"R object: {expr} is not a function")
 
-        pyfunc: Callable[..., RReturnType] = wrap_rfunc(rfun, name=None)
+        pyfunc: Callable[..., RReturnType] = RFunction(rfun, name=None)
         return pyfunc
 
     def print(self, x: Any) -> None:

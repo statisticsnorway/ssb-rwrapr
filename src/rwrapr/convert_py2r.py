@@ -41,6 +41,7 @@ def convert_py_args2r(args: list[Any], kwargs: dict[str, Any]) -> None:
 
 def convert_py2r(x: Any) -> RBaseObject | PyDtype | Any:
     # Need to import these here to avoid circular imports
+    from .function_wrapper import RFunction
     from .rarray import RArray
     from .rarray import convert_numpy2r
     from .rdataframe import RDataFrame
@@ -48,7 +49,15 @@ def convert_py2r(x: Any) -> RBaseObject | PyDtype | Any:
     from .rfactor import RFactor
 
     match x:
-        case RView() | RArray() | RList() | RDataFrame() | RDict() | RFactor():
+        case (
+            RView()
+            | RArray()
+            | RList()
+            | RDataFrame()
+            | RDict()
+            | RFactor()
+            | RFunction()
+        ):
             return x.to_r()
         case _ if x is np.nan:
             return (

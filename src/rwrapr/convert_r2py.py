@@ -23,6 +23,7 @@ from .rview import convert_s4
 # TODO: Consider changing return type hint to union of possible types
 def convert_r2py(x: Any, ignore_s3_s4: bool = False) -> Any:
     # Need to import these here to avoid circular imports
+    from .function_wrapper import RFunction
     from .rarray import filter_numpy
     from .rarray import get_rarray
     from .rarray import is_valid_numpy
@@ -32,6 +33,8 @@ def convert_r2py(x: Any, ignore_s3_s4: bool = False) -> Any:
             return x
         case NULLType():
             return None
+        case _ if callable(x):
+            return RFunction(x)
         case _ if is_na(x):
             return (
                 np.nan
