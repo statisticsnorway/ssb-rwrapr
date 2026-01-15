@@ -20,7 +20,8 @@ from .settings import settings
 RReturnType: TypeAlias = RView | RArray | RDataFrame | RFactor | RList | RDict | Any
 
 
-class RFunction(Callable[..., RReturnType]):
+# class RFunction(Callable[..., RReturnType]): # type: ignore[misc]
+class RFunction:
     def __init__(self, func: Callable[..., Any], name: str | None = None):
 
         if not callable(func):
@@ -50,14 +51,14 @@ class RFunction(Callable[..., RReturnType]):
     def __call__(self, *args: Any, **kwargs: Any) -> RReturnType:
         return self.pyfunc(*args, **kwargs)
 
-    def to_r(self):
+    def to_r(self) -> Callable[..., Any]:
         return self.rfunc
 
-    def to_py(self):
+    def to_py(self) -> Callable[..., RReturnType]:
         return self.pyfunc
 
 
-def rfunc(name: str) -> Callable[..., RReturnType]:
+def rfunc(name: str) -> RFunction:
     # Function for getting r-function from global environment
     # BEWARE: THIS FUNCTION WILL TRY TO CONVERT ARGS GOING BOTH IN AND OUT!
     # This function must not be used in Rpy-in functions

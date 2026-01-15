@@ -44,7 +44,7 @@ class RView:
         return self.robj.__str__()
 
     def __getattr__(self, name: str) -> Any:
-        from .function_wrapper import rfunc
+        from .rfunction import rfunc
 
         fun: Callable[..., Any] = rfunc(name)
         return fun(self.robj)

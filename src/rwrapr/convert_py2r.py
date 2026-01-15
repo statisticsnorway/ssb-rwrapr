@@ -41,12 +41,12 @@ def convert_py_args2r(args: list[Any], kwargs: dict[str, Any]) -> None:
 
 def convert_py2r(x: Any) -> RBaseObject | PyDtype | Any:
     # Need to import these here to avoid circular imports
-    from .function_wrapper import RFunction
     from .rarray import RArray
     from .rarray import convert_numpy2r
     from .rdataframe import RDataFrame
     from .rdataframe import pandas2r
     from .rfactor import RFactor
+    from .rfunction import RFunction
 
     match x:
         case (

@@ -6,7 +6,7 @@ from .rlist import RDict
 
 
 def get_rattributes(x: Any, exclude: list[str] | None = None) -> Any:
-    from .function_wrapper import rfunc
+    from .rfunction import rfunc
 
     if exclude is None:
         exclude = []
