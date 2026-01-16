@@ -46,9 +46,18 @@ def convert_py2r(x: Any) -> RBaseObject | PyDtype | Any:
     from .rdataframe import RDataFrame
     from .rdataframe import pandas2r
     from .rfactor import RFactor
+    from .rfunction import RFunction
 
     match x:
-        case RView() | RArray() | RList() | RDataFrame() | RDict() | RFactor():
+        case (
+            RView()
+            | RArray()
+            | RList()
+            | RDataFrame()
+            | RDict()
+            | RFactor()
+            | RFunction()
+        ):
             return x.to_r()
         case _ if x is np.nan:
             return (

@@ -7,10 +7,10 @@ import rpy2.robjects as ro
 import rpy2.robjects.packages as rpkg
 
 from .convert_r2py import convert_r2py
-from .function_wrapper import RReturnType
-from .function_wrapper import rfunc  # wrap_rfunc should perhaps be its own module
-from .function_wrapper import wrap_rfunc  # wrap_rfunc should perhaps be its own module
 from .load_namespace import try_load_namespace
+from .rfunction import RFunction  # RFunction should perhaps be its own module
+from .rfunction import RReturnType
+from .rfunction import rfunc  # RFunction should perhaps be its own module
 from .rlist import RDict
 from .rutils import rcall
 from .rview import RView
@@ -129,16 +129,14 @@ class Renv:
             raise ValueError("Renv is not correctly initialized")
 
         if name in self.__rfuncs:
-            fun: Callable[..., RReturnType] = wrap_rfunc(
-                getattr(self.__base_lib, name), name=name
-            )
+            fun: RFunction = RFunction(getattr(self.__base_lib, name), name=name)
             self.__attach(name=name, attr=fun)
 
         elif name in self.__rdatasets:
             self.__attach(name=name, attr=fetch_data(name, self.__base_lib))
 
         else:
-            rfun: Callable[..., RReturnType] = rfunc(name)
+            rfun: RFunction = rfunc(name)
             self.__attach(name=name, attr=rfun)
 
         return getattr(self, name)
@@ -162,10 +160,10 @@ class Renv:
 
         # Attach to the global namespace
         rcall(f"{name} <- {expr}")
-        pyfunc: Callable[..., RReturnType] = wrap_rfunc(rfun, name=name)
+        pyfunc: RFunction = RFunction(rfun, name=name)
         self.__attach(name=name, attr=pyfunc)
 
-    def function(self, expr: str) -> Callable[..., Any]:
+    def function(self, expr: str) -> RFunction:
         """
         Creates a Python function from an R expression.
 
@@ -173,7 +171,7 @@ class Renv:
             expr (str): The R expression to convert into a function.
 
         Returns:
-            Callable[..., Any]: A Python function equivalent to the R function.
+            RFunction: A Python function equivalent to the R function.
 
         Raises:
             ValueError: If the R expression does not correspond to a function.
@@ -184,7 +182,7 @@ class Renv:
         if rfun is None:
             raise ValueError(f"R object: {expr} is not a function")
 
-        pyfunc: Callable[..., RReturnType] = wrap_rfunc(rfun, name=None)
+        pyfunc: RFunction = RFunction(rfun, name=None)
         return pyfunc
 
     def print(self, x: Any) -> None:
@@ -194,7 +192,7 @@ class Renv:
         Args:
             x (Any): The object to print.
         """
-        foo: Callable[..., RReturnType] = rfunc(
+        foo: RFunction = rfunc(
             """
             function(x, ...) {
                 paste(utils::capture.output(print(x, ...)), collapse = "\n")
@@ -213,7 +211,7 @@ class Renv:
         Returns:
             RReturnType: The class of the object as in R.
         """
-        foo: Callable[..., RReturnType] = rfunc("class")
+        foo: RFunction = rfunc("class")
         return foo(x)
 
     def reval(self, expr: str, rview: bool | None = None) -> Any:

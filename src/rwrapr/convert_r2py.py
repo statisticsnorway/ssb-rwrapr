@@ -26,12 +26,15 @@ def convert_r2py(x: Any, ignore_s3_s4: bool = False) -> Any:
     from .rarray import filter_numpy
     from .rarray import get_rarray
     from .rarray import is_valid_numpy
+    from .rfunction import RFunction
 
     match x:
         case str() | int() | bool() | float():
             return x
         case NULLType():
             return None
+        case _ if callable(x):
+            return RFunction(x)
         case _ if is_na(x):
             return (
                 np.nan

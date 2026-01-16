@@ -14,7 +14,7 @@ def rcall(expr: str) -> Any:
 
 
 def get_rclass(x: Any) -> NDArray[np.str_] | None:
-    from .function_wrapper import rfunc
+    from .rfunction import rfunc
 
     try:
         f: Callable[..., Any] | Any = rfunc("class")
@@ -37,7 +37,7 @@ def has_unsupported_rclass(x: Any) -> bool:
 
 
 def as_matrix(x: Any) -> NDArray[Any] | Any:
-    from .function_wrapper import rfunc
+    from .rfunction import rfunc
 
     f: Callable[..., Any] | Any = rfunc("as.matrix")
     return f(x)
