@@ -15,7 +15,6 @@ from .rlist import pylist2rlist
 from .rview import RView
 from .sparse import convert_pysparsematrix
 
-
 # We can uncomment this when we transition to 3.12
 RBaseObject: TypeAlias = (
     ro.FloatVector

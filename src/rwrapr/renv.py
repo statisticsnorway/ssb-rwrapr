@@ -192,13 +192,11 @@ class Renv:
         Args:
             x (Any): The object to print.
         """
-        foo: RFunction = rfunc(
-            """
+        foo: RFunction = rfunc("""
             function(x, ...) {
                 paste(utils::capture.output(print(x, ...)), collapse = "\n")
             }
-            """
-        )
+            """)
         print(foo(x))
 
     def rclass(self, x: Any) -> RReturnType:

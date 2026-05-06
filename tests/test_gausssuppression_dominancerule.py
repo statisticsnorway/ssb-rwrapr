@@ -6,7 +6,6 @@ from rpy2.rinterface_lib.embedded import RRuntimeError
 
 import rwrapr as wr
 
-
 SSBtools = wr.library("SSBtools")
 GaussSuppression = wr.library("GaussSuppression")
 

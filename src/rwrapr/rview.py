@@ -68,8 +68,7 @@ class RView:
         return self.robj
 
 
-s4_to_list_r: Callable[..., Any] | Any = rcall(
-    """
+s4_to_list_r: Callable[..., Any] | Any = rcall("""
     function(x) {
       if (!isS4(x)) return(x)
 
@@ -77,8 +76,7 @@ s4_to_list_r: Callable[..., Any] | Any = rcall(
       structure(lapply(slots, function(name) slot(x, name)),
                 names = slots)
     }
-"""
-)
+""")
 
 
 def s4_to_list(x: ro.methods.RS4) -> Any:

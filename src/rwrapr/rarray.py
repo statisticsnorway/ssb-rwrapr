@@ -15,7 +15,6 @@ from .convert_py2r import convert_py2r
 from .rattributes import get_rattributes
 from .toggle_rview import ToggleRView
 
-
 NPArrayIndex: TypeAlias = tuple[slice | int | list[Any] | NDArray[Any], ...]
 
 
