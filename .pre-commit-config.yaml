@@ -62,13 +62,6 @@ repos:
         entry: darglint
         language: system
         types: [python]
-      - id: isort
-        name: isort
-        entry: isort
-        require_serial: true
-        language: system
-        types_or: [cython, pyi, python]
-        args: ["--filter-files"]
       - id: ruff
         name: ruff
         entry: ruff check --fix --exit-non-zero-on-fix
