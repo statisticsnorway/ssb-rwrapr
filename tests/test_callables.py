@@ -25,14 +25,12 @@ def test_pass_basefunc(setup_wr):
 def test_pass_customfuncs(setup_wr):
     R, _dt = setup_wr
 
-    custom_func_scalar = R.function(
-        """
+    custom_func_scalar = R.function("""
     function(x) {
         # a scalar function so we can call Vectorize later
         sum(rep(x, max(floor(x), 1)))
     }
-    """
-    )
+    """)
 
     assert custom_func_scalar(9) == 81
 

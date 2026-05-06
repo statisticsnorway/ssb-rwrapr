@@ -23,7 +23,6 @@ import pandas as pd
 
 import rwrapr as wr
 
-
 # %% [markdown]
 # Leser inn et datasett med pandas på vanlig måte:
 

@@ -5,7 +5,6 @@ from rpy2.rinterface_lib.embedded import RRuntimeError
 
 import rwrapr as wr
 
-
 st = wr.library("SSBtools")
 gs = wr.library("GaussSuppression")
 bs = wr.library("base")
@@ -838,15 +837,13 @@ def interpret_primary_output_correctly():
         rview=True,
     )
 
-    G = gs.function(
-        """
+    G = gs.function("""
     function(x, primary, printInc, formula = ~eu * year + age:geo) {
       which(GaussSuppressionFromData(data = x, formula = formula, numVar = "ths_per",
                                      primary = primary, singleton = NULL,
                                      output = "inputGaussSuppression",
                                      printInc = printInc)$primary)
-    }"""
-    )
+    }""")
 
     # Case when x is square
     gp1 = G(x, p1, printInc=printInc)
@@ -877,16 +874,14 @@ def interpret_primary_output_correctly():
     )
     z = x.loc[x["year"] == "2014"].drop(["ths_per", "year"], axis=1)
 
-    K = gs.function(
-        """function(z, primary, printInc = FALSE) {
+    K = gs.function("""function(z, primary, printInc = FALSE) {
       GaussSuppressionFromData(data = z, formula = ~geo + age, freqVar = "freq", coalition=7,
                                primary = primary,
                                mc_hierarchies = NULL, upper_bound = Inf,
                                protectZeros = FALSE, secondaryZeros = TRUE,
                                output ="outputGaussSuppression_x",
                                printInc = printInc)$xExtraPrimary
-    }"""
-    )
+    }""")
 
     KDisclosurePrimary = gs.reval("KDisclosurePrimary", rview=True)
     e1 = K(z, KDisclosurePrimary)

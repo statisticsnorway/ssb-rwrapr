@@ -16,7 +16,6 @@ from .rutils import rcall
 from .rview import RView
 from .settings import settings
 
-
 RReturnType: TypeAlias = RView | RArray | RDataFrame | RFactor | RList | RDict | Any
 
 

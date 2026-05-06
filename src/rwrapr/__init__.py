@@ -2,7 +2,6 @@
 
 import warnings
 
-
 warnings.simplefilter("always")
 
 from .lazy_rexpr import Lazily
@@ -19,7 +18,6 @@ from .rview import RView
 from .settings import Settings
 from .settings import settings
 from .toggle_rview import ToggleRView
-
 
 __all__ = [
     "Lazily",
